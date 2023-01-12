@@ -1,3 +1,3 @@
 ﻿
-using var game = new Test.Lab0();
+using var game = new Test.Lab1();
 game.Run();

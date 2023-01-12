@@ -4,14 +4,25 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Test
 {
-    public class Lab0 : Game
+    public class Lab1 : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        public Lab0()
+        // Lab Excercise
+        Effect effect; 
+
+        VertexPositionTexture[] vertices =
+        {
+            new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(1, 0.5f)),
+            new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(0, -1)),
+            new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(0, 1))
+        };
+
+    public Lab1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -27,7 +38,8 @@ namespace Test
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            effect = Content.Load<Effect>("SimplestShader");
+            effect.Parameters["MyTexture"].SetValue(Content.Load<Texture2D>("logo_mg"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -43,8 +55,13 @@ namespace Test
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            // TODO: Add your drawing code here
+            foreach (var pass in effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+            }
 
             base.Draw(gameTime);
         }
