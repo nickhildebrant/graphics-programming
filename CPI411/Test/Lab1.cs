@@ -14,8 +14,8 @@ namespace Test
 
         VertexPositionTexture[] vertices =
         {
-            new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(1, 0.5f)),
-            new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(0, -1)),
+            new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(0.5f, 0)),
+            new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(1, 1)),
             new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(0, 1))
         };
 
