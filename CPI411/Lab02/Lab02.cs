@@ -10,6 +10,7 @@ namespace Lab02
         private SpriteBatch _spriteBatch;
 
         float angle;
+        float distance = 2f;
 
         Effect effect;
 
@@ -54,22 +55,32 @@ namespace Lab02
 
             if(Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                angle += 0.002f;
-                //Vector3 cameraPosition = distance * new Vector3((float)System.Math.Sin(angle), 0, (float)System.Math.Cos(angle));
+                angle += 0.1f;
                 Vector3 offset = new Vector3((float)System.Math.Cos(angle), (float)System.Math.Sin(angle), 0f);
                 effect.Parameters["offset"].SetValue(offset);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                angle -= 0.002f;
-                //Vector3 cameraPosition = distance * new Vector3((float)System.Math.Sin(angle), 0, (float)System.Math.Cos(angle));
+                angle -= 0.1f;
                 Vector3 offset = new Vector3((float)System.Math.Cos(angle), (float)System.Math.Sin(angle), 0f);
                 effect.Parameters["offset"].SetValue(offset);
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                distance += 0.05f;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                distance -= 0.05f;
+            }
+
+            Vector3 cameraPosition = distance * new Vector3((float)System.Math.Sin(angle), 0, (float)System.Math.Cos(angle));
+
             world = Matrix.Identity;
-            view = Matrix.CreateLookAt(new Vector3(0, 0, 3), new Vector3(), new Vector3(0, 1, 0));
+            view = Matrix.CreateLookAt(cameraPosition, new Vector3(), new Vector3(0, 1, 0));
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
             effect.Parameters["World"].SetValue(world);
