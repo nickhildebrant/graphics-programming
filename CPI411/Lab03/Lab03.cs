@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Lab03
 {
@@ -45,7 +46,7 @@ namespace Lab03
 
             effect = Content.Load<Effect>("SimpleShading");
             model = Content.Load<Model>("bunny");
-            //font = Content.Load<SpriteFont>("font");
+            font = Content.Load<SpriteFont>("font");
         }
 
         protected override void Update(GameTime gameTime)
@@ -79,10 +80,6 @@ namespace Lab03
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.DepthStencilState = new DepthStencilState();
 
-            _spriteBatch.Begin();
-            //_spriteBatch.DrawString(font, "angle:" + angle, Vector2.UnitX + Vector2.UnitY * 12, Color.White);
-            _spriteBatch.End();
-
             effect.CurrentTechnique = effect.Techniques[0];
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
@@ -93,7 +90,7 @@ namespace Lab03
                     effect.Parameters["View"].SetValue(view);
                     effect.Parameters["Projection"].SetValue(projection);
                     effect.Parameters["AmbientColor"].SetValue(Color.Black.ToVector3());
-                    effect.Parameters["AmbientIntensity"].SetValue(2f);
+                    effect.Parameters["AmbientIntensity"].SetValue(0.5f);
                     effect.Parameters["DiffuseColor"].SetValue(new Vector3(0.75f, 0.75f, 0.75f));
                     effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Up);
                     effect.Parameters["DiffuseIntensity"].SetValue(1f);
@@ -111,6 +108,10 @@ namespace Lab03
                     }
                 }
             }
+
+            //_spriteBatch.Begin();
+            //_spriteBatch.DrawString(font, "angle:" + angle, Vector2.UnitX + Vector2.UnitY * 12, Color.Black);
+            //_spriteBatch.End();
 
             base.Draw(gameTime);
         }
