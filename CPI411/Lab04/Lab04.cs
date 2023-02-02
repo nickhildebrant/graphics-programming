@@ -13,7 +13,7 @@ namespace Lab04
         Effect effect;
         Matrix world, view, projection;
 
-        Vector3 camera;
+        Vector3 cameraPosition;
 
         Vector4 ambient = new Vector4(0, 0, 0, 0);
         float ambientIntensity = 0.1f;
@@ -21,8 +21,8 @@ namespace Lab04
         Vector3 diffuseLightDirection = new Vector3(1, 1, 1);
         float diffuseIntensity = 1.0f;
 
-        Vector3 specularColor = new Vector3(1, 1, 1);
-        float shininess;
+        Vector4 specularColor = new Vector4(1, 1, 1, 1);
+        float shininess = 20f;
 
         float angle, angle2;
         float distance = 1f;
@@ -39,8 +39,6 @@ namespace Lab04
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -56,10 +54,10 @@ namespace Lab04
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Pressed)
             {
-                angle += 0.1f * (Mouse.GetState().X - previousMouseState.X);
-                angle2 += 0.1f * (Mouse.GetState().Y - previousMouseState.Y);
+                angle -= (previousMouseState.X - Mouse.GetState().X) / 100f;
+                angle2 -= (previousMouseState.Y - Mouse.GetState().Y) / 100f;
             }
 
             if (Mouse.GetState().RightButton == ButtonState.Pressed)
@@ -69,16 +67,19 @@ namespace Lab04
 
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                shininess += 0.1f;
+                shininess += 0.2f;
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                shininess -= 0.1f;
+                shininess -= 0.2f;
             }
 
-            camera = Vector3.Transform(distance * new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
-            view = Matrix.CreateLookAt(camera, Vector3.Zero, Vector3.UnitY);
+            cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
+            view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Up);
+
+            //camera = Vector3.Transform(distance * new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
+            //view = Matrix.CreateLookAt(camera, Vector3.Zero, Vector3.UnitY);
 
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
@@ -91,7 +92,7 @@ namespace Lab04
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            effect.CurrentTechnique = effect.Techniques[0];
+            effect.CurrentTechnique = effect.Techniques[1]; // 0 per vertex, 1 per pixel
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 foreach (ModelMesh mesh in model.Meshes)
@@ -109,7 +110,7 @@ namespace Lab04
                     effect.Parameters["Shininess"].SetValue(shininess);
 
                     effect.Parameters["LightPosition"].SetValue(diffuseLightDirection);
-                    effect.Parameters["CameraPosition"].SetValue(camera);
+                    effect.Parameters["CameraPosition"].SetValue(cameraPosition);
 
                     Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
                     effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
@@ -120,7 +121,7 @@ namespace Lab04
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
                         GraphicsDevice.Indices = part.IndexBuffer;
 
-                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, 0, part.NumVertices, part.StartIndex, part.PrimitiveCount);
+                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
                     }
                 }
             }
