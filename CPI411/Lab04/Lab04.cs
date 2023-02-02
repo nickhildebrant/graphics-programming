@@ -29,6 +29,8 @@ namespace Lab04
 
         MouseState previousMouseState;
 
+        int currTechnique = 1;
+
         public Lab04()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -75,6 +77,16 @@ namespace Lab04
                 shininess -= 0.2f;
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.F1))
+            {
+                currTechnique = 0;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.F2))
+            {
+                currTechnique = 1;
+            }
+
             cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
             view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Up);
 
@@ -92,7 +104,7 @@ namespace Lab04
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            effect.CurrentTechnique = effect.Techniques[1]; // 0 per vertex, 1 per pixel
+            effect.CurrentTechnique = effect.Techniques[currTechnique]; // 0 per vertex, 1 per pixel
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 foreach (ModelMesh mesh in model.Meshes)
