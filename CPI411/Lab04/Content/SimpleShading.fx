@@ -16,7 +16,7 @@ float Shininess;
 float3 CameraPosition;
 float3 LightPosition;
 
-struct VertexSahderInput {
+struct VertexShaderInput {
 	float4 Position: POSITION;
 	float4 Normal: NORMAL;
 };
@@ -38,10 +38,10 @@ VertexShaderOutput GourandVertexShaderFunction(VertexShaderInput input)
 	output.WorldPosition = 0;
 	output.Normal = 0;
 
-	float3 N = ;
-	float3 V = ;
-	float3 L = ;
-	float3 R = ;
+	float3 N = input.Normal;
+	float3 L = normalize(LightPosition - input.Position);
+	float3 V = normalize(CameraPosition - input.Position);
+	float3 R = normalize(L + V);
 	float4 ambient = AmbientColor * AmbientIntensity;
 	float4 diffuse = DiffuseIntensity * DiffuseColor * max(0, dot(N, L));
 	float4 specular = pow(max(0, dot(V, R)), Shininess) * SpecularColor * SpecularIntensity;
