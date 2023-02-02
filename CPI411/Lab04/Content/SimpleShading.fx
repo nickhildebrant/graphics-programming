@@ -3,36 +3,53 @@ float4x4  View;
 float4x4  Projection;
 float4x4  WorldInverseTranspose;
 
-float4    AmbientColor;
-float     AmbientIntensity;
-float3    DiffuseLightDirection;
-float4    DiffuseColor;
-float     DiffuseIntensity;
+float4 AmbientColor;
+float AmbientIntensity;
 
-struct VertexInput {
+float4 DiffuseColor;
+float DiffuseIntensity;
+
+float4 SpecularColor;
+float SpecularIntensity = 1;
+float Shininess;
+
+float3 CameraPosition;
+float3 LightPosition;
+
+struct VertexSahderInput {
 	float4 Position: POSITION;
 	float4 Normal: NORMAL;
 };
 
-struct VertexOutput {
-	float4 Position: POSITION;
-	float4 Color: COLOR;
+struct VertexShaderOutput {
+	float4 Position : POSITION;
+	float4 Color : COLOR;
+	float4 Normal : TEXCOORD0;
+	float4 WorldPosition: TEXCOORD1;
 };
 
-VertexOutput MyVertexShader(VertexInput input) : POSITION
+VertexShaderOutput GourandVertexShaderFunction(VertexShaderInput input)
 {
-	VertexOutput output;
-	float4 worldPos = mul(input.Position, World);
-	float4 viewPos = mul(worldPos, View);
-	output.Position = mul(viewPos, Projection);
+	VertexShaderOutput output;
 
-	float4 normal = mul(input.Normal, WorldInverseTranspose);
-	float lightIntensity = dot(normal, DiffuseLightDirection);
-	output.Color = saturate(DiffuseColor * DiffuseIntensity * lightIntensity);
+	float4 worldPosition = mul(input.Position, World);
+	float4 viewPosition = mul(worldPosition, View);
+	output.Position = mul(viewPosition, Projection);
+	output.WorldPosition = 0;
+	output.Normal = 0;
+
+	float3 N = ;
+	float3 V = ;
+	float3 L = ;
+	float3 R = ;
+	float4 ambient = AmbientColor * AmbientIntensity;
+	float4 diffuse = DiffuseIntensity * DiffuseColor * max(0, dot(N, L));
+	float4 specular = pow(max(0, dot(V, R)), Shininess) * SpecularColor * SpecularIntensity;
+	output.Color = saturate(ambient + diffuse + specular);
 	return output;
 }
 
-float4 MyPixelShader(VertexOutput input) : COLOR
+float4 GourandPixelShaderFunction(VertexShaderOutput input) : COLOR
 {
 	return saturate(input.Color + AmbientColor * AmbientIntensity);
 }
@@ -41,7 +58,7 @@ technique MyTechnique
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 MyVertexShader();
-		PixelShader = compile ps_4_0 MyPixelShader();
+		VertexShader = compile vs_4_0 GourandVertexShaderFunction();
+		PixelShader = compile ps_4_0 GourandPixelShaderFunction();
 	}
 }
