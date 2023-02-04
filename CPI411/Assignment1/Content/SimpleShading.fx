@@ -29,7 +29,7 @@ struct VertexShaderOutput {
 	float4 WorldPosition: TEXCOORD1;
 };
 
-VertexShaderOutput GouraudVertexShaderFunction(VertexShaderInput input)
+VertexShaderOutput GouraudVertex(VertexShaderInput input)
 {
 	VertexShaderOutput output;
 
@@ -52,13 +52,13 @@ VertexShaderOutput GouraudVertexShaderFunction(VertexShaderInput input)
 	return output;
 }
 
-float4 GouraudPixelShaderFunction(VertexShaderOutput input) : COLOR
+float4 GouraudPixel(VertexShaderOutput input) : COLOR
 {
 	return input.Color;
 }
 
 // Phong Shader - per pixel
-VertexShaderOutput PhongVertexShaderFunction(VertexShaderInput input)
+VertexShaderOutput PhongVertex(VertexShaderInput input)
 {
 	VertexShaderOutput output;
 
@@ -72,7 +72,7 @@ VertexShaderOutput PhongVertexShaderFunction(VertexShaderInput input)
 	return output;
 }
 
-float4 PhongPixelShaderFunction(VertexShaderOutput input) : COLOR0
+float4 PhongPixel(VertexShaderOutput input) : COLOR0
 {
 	float3 N = normalize((mul(input.Normal, WorldInverseTranspose)).xyz);
 	float3 L = normalize(LightPosition);
@@ -88,7 +88,7 @@ float4 PhongPixelShaderFunction(VertexShaderOutput input) : COLOR0
 }
 
 // Toon Shader
-VertexShaderOutput ToonVertexShaderFunction(VertexShaderInput input)
+VertexShaderOutput ToonVertex(VertexShaderInput input)
 {
 	VertexShaderOutput output;
 
@@ -101,7 +101,7 @@ VertexShaderOutput ToonVertexShaderFunction(VertexShaderInput input)
 	return output;
 }
 
-float4 ToonPixelShaderFunction(VertexShaderOutput input) : COLOR0
+float4 ToonPixel(VertexShaderOutput input) : COLOR0
 {
 	float3 L = normalize(LightPosition);
 	float3 V = normalize(CameraPosition - input.WorldPosition.xyz);
@@ -131,8 +131,8 @@ technique Gouraud
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 GouraudVertexShaderFunction();
-		PixelShader = compile ps_4_0 GouraudPixelShaderFunction();
+		VertexShader = compile vs_4_0 GouraudVertex();
+		PixelShader = compile ps_4_0 GouraudPixel();
 	}
 }
 
@@ -140,8 +140,26 @@ technique Phong
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 PhongVertexShaderFunction();
-		PixelShader = compile ps_4_0 PhongPixelShaderFunction();
+		VertexShader = compile vs_4_0 PhongVertex();
+		PixelShader = compile ps_4_0 PhongPixel();
+	}
+}
+
+technique PhongBlinn
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_4_0 PhongVertex();
+		PixelShader = compile ps_4_0 PhongPixel();
+	}
+}
+
+technique Schlick
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_4_0 PhongVertex();
+		PixelShader = compile ps_4_0 PhongPixel();
 	}
 }
 
@@ -149,7 +167,16 @@ technique Toon
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 ToonVertexShaderFunction();
-		PixelShader = compile ps_4_0 ToonPixelShaderFunction();
+		VertexShader = compile vs_4_0 ToonVertex();
+		PixelShader = compile ps_4_0 ToonPixel();
+	}
+}
+
+technique HalfLife
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_4_0 PhongVertex();
+		PixelShader = compile ps_4_0 PhongPixel();
 	}
 }
