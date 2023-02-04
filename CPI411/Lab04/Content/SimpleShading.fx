@@ -7,6 +7,7 @@ float4 AmbientColor;
 float AmbientIntensity;
 
 float4 DiffuseColor;
+float3 DiffuseLightDirection;
 float DiffuseIntensity;
 
 float4 SpecularColor;
@@ -28,7 +29,7 @@ struct VertexShaderOutput {
 	float4 WorldPosition: TEXCOORD1;
 };
 
-VertexShaderOutput GourandVertexShaderFunction(VertexShaderInput input)
+VertexShaderOutput GouraudVertexShaderFunction(VertexShaderInput input)
 {
 	VertexShaderOutput output;
 
@@ -42,6 +43,7 @@ VertexShaderOutput GourandVertexShaderFunction(VertexShaderInput input)
 	float3 L = normalize(LightPosition);
 	float3 V = normalize(CameraPosition - worldPosition.xyz);
 	float3 R = reflect(-L, N);
+
 	float4 ambient = AmbientColor * AmbientIntensity;
 	float4 diffuse = DiffuseIntensity * DiffuseColor * max(0, dot(N, L));
 	float4 specular = pow(max(0, dot(V, R)), Shininess) * SpecularColor * SpecularIntensity;
@@ -50,9 +52,9 @@ VertexShaderOutput GourandVertexShaderFunction(VertexShaderInput input)
 	return output;
 }
 
-float4 GourandPixelShaderFunction(VertexShaderOutput input) : COLOR
+float4 GouraudPixelShaderFunction(VertexShaderOutput input) : COLOR
 {
-	return saturate(input.Color + AmbientColor * AmbientIntensity);
+	return input.Color;
 }
 
 // Phong Shader - per pixel
@@ -64,7 +66,7 @@ VertexShaderOutput PhongVertexShaderFunction(VertexShaderInput input)
 	float4 viewPosition = mul(worldPosition, View);
 	output.Position = mul(viewPosition, Projection);
 	output.WorldPosition = worldPosition;
-	output.Normal = mul(input.Normal, WorldInverseTranspose);
+	output.Normal = input.Normal;
 	output.Color = 0;
 
 	return output;
@@ -85,12 +87,52 @@ float4 PhongPixelShaderFunction(VertexShaderOutput input) : COLOR0
 	return color;
 }
 
-technique Gourand
+// Toon Shader
+VertexShaderOutput ToonVertexShaderFunction(VertexShaderInput input)
+{
+	VertexShaderOutput output;
+
+	float4 worldPosition = mul(input.Position, World);
+	float4 viewPosition = mul(worldPosition, View);
+	output.Position = mul(viewPosition, Projection);
+	output.WorldPosition = worldPosition;
+	output.Normal = input.Normal;
+
+	return output;
+}
+
+float4 ToonPixelShaderFunction(VertexShaderOutput input) : COLOR0
+{
+	float3 L = normalize(LightPosition);
+	float3 V = normalize(CameraPosition - input.WorldPosition.xyz);
+	float3 N = normalize((mul(input.Normal, WorldInverseTranspose)).xyz);
+	float3 R = reflect(-L,N);
+	float D = dot(V, R);
+
+	if (D < -0.7)
+	{
+		return float4(0, 0, 0, 1);
+	}
+	else if (D < 0.2)
+	{
+		return float4(0.25, 0.25, 0.25, 1);
+	}
+	else if (D < 0.97)
+	{
+		return float4(0.5, 0.5, 0.5, 1);
+	}
+	else
+	{
+		return float4(1, 1, 1, 1);
+	}
+}
+
+technique Gouraud
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 GourandVertexShaderFunction();
-		PixelShader = compile ps_4_0 GourandPixelShaderFunction();
+		VertexShader = compile vs_4_0 GouraudVertexShaderFunction();
+		PixelShader = compile ps_4_0 GouraudPixelShaderFunction();
 	}
 }
 
@@ -100,5 +142,14 @@ technique Phong
 	{
 		VertexShader = compile vs_4_0 PhongVertexShaderFunction();
 		PixelShader = compile ps_4_0 PhongPixelShaderFunction();
+	}
+}
+
+technique Toon
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_4_0 ToonVertexShaderFunction();
+		PixelShader = compile ps_4_0 ToonPixelShaderFunction();
 	}
 }

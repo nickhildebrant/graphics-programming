@@ -21,6 +21,8 @@ namespace Lab04
         Vector3 diffuseLightDirection = new Vector3(1, 1, 1);
         float diffuseIntensity = 1.0f;
 
+        Vector3 lightDirection = new Vector3(0.5f, 0.6f, 0.4f);
+
         Vector4 specularColor = new Vector4(1, 1, 1, 1);
         float shininess = 20f;
 
@@ -29,7 +31,7 @@ namespace Lab04
 
         MouseState previousMouseState;
 
-        int currTechnique = 1;
+        int currTechnique = 0;
 
         public Lab04()
         {
@@ -77,14 +79,22 @@ namespace Lab04
                 shininess -= 0.2f;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.F1))
+            // Gouraud shader
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 currTechnique = 0;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.F2))
+            // Phong Shader
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 currTechnique = 1;
+            }
+
+            // Toon Shader
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                currTechnique = 2;
             }
 
             cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
@@ -117,11 +127,12 @@ namespace Lab04
                     effect.Parameters["AmbientIntensity"].SetValue(ambientIntensity);
                     effect.Parameters["DiffuseColor"].SetValue(diffuseColor);
                     effect.Parameters["DiffuseIntensity"].SetValue(diffuseIntensity);
+                    effect.Parameters["DiffuseLightDirection"].SetValue(diffuseLightDirection);
 
                     effect.Parameters["SpecularColor"].SetValue(specularColor);
                     effect.Parameters["Shininess"].SetValue(shininess);
 
-                    effect.Parameters["LightPosition"].SetValue(diffuseLightDirection);
+                    effect.Parameters["LightPosition"].SetValue(lightDirection);
                     effect.Parameters["CameraPosition"].SetValue(cameraPosition);
 
                     Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
