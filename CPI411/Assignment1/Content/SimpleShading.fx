@@ -59,7 +59,7 @@ float4 GouraudPixel(VertexShaderOutput input) : COLOR
 }
 
 // Phong Shader - per pixel
-VertexShaderOutput PhongVertex(VertexShaderInput input)
+VertexShaderOutput PerPixelVS(VertexShaderInput input)
 {
 	VertexShaderOutput output;
 
@@ -180,7 +180,7 @@ technique Phong
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 PhongVertex();
+		VertexShader = compile vs_4_0 PerPixelVS();
 		PixelShader = compile ps_4_0 PhongPixel();
 	}
 }
@@ -189,7 +189,7 @@ technique PhongBlinn
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 PhongVertex();
+		VertexShader = compile vs_4_0 PerPixelVS();
 		PixelShader = compile ps_4_0 PhongBlinnPixel();
 	}
 }
@@ -198,7 +198,7 @@ technique Schlick
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 PhongVertex();
+		VertexShader = compile vs_4_0 PerPixelVS();
 		PixelShader = compile ps_4_0 SchlickPixel();
 	}
 }
@@ -207,7 +207,7 @@ technique Toon
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 PhongVertex();
+		VertexShader = compile vs_4_0 PerPixelVS();
 		PixelShader = compile ps_4_0 ToonPixel();
 	}
 }
@@ -216,7 +216,7 @@ technique HalfLife
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 PhongVertex();
+		VertexShader = compile vs_4_0 PerPixelVS();
 		PixelShader = compile ps_4_0 HalfLifePixel();
 	}
 }
