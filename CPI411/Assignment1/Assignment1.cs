@@ -9,7 +9,8 @@ namespace Assignment1
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Model model;
+        Model currentModel;
+        Model box, bunny, sphere, teapot, torus;
         Effect effect;
         Matrix world, view, projection;
 
@@ -24,6 +25,7 @@ namespace Assignment1
         Vector3 lightDirection = new Vector3(0.5f, 0.6f, 0.4f);
 
         Vector4 specularColor = new Vector4(1, 1, 1, 1);
+        float specularIntensity = 1.0f;
         float shininess = 20f;
 
         float cameraAngle1, cameraAngle2;
@@ -52,7 +54,14 @@ namespace Assignment1
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             effect = Content.Load<Effect>("SimpleShading");
-            model = Content.Load<Model>("bunny");
+
+            box = Content.Load<Model>("box");
+            bunny = Content.Load<Model>("bunny");
+            sphere = Content.Load<Model>("sphere");
+            teapot = Content.Load<Model>("teapot");
+            torus = Content.Load<Model>("Torus");
+
+            currentModel = box;
         }
 
         protected override void Update(GameTime gameTime)
@@ -73,6 +82,25 @@ namespace Assignment1
                 distance += diff;
             }
 
+            cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2));
+            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(), Vector3.Up);
+            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 1000);
+
+            // 1 - Box Model
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { currentModel = box; }
+
+            // 2 - Sphere Model
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { currentModel = sphere; }
+
+            // 3 - Torus Model
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { currentModel = torus; }
+
+            // 4 - Teapot Model
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { currentModel = teapot; }
+
+            // 5 - Bunny Model
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { currentModel = bunny; }
+
             // F1 - Gouraud shader
             if (Keyboard.GetState().IsKeyDown(Keys.F1)) { currTechnique = 0; }
 
@@ -91,9 +119,17 @@ namespace Assignment1
             // F6 - Half Life Shader
             if (Keyboard.GetState().IsKeyDown(Keys.F6)) { currTechnique = 5; }
 
-            cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2));
-            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(), Vector3.Up);
-            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 1000);
+            // + Increase specular intensity
+            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus)) { specularIntensity += 0.2f; }
+
+            // - Decrease specular intensity
+            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus)) { specularIntensity -= 0.2f; }
+
+            // L-Ctrl + Increase shininess
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemPlus)) { shininess += 0.2f; }
+
+            // L-Ctrl - Decrease shininess
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemMinus)) { shininess -= 0.2f; }
 
             previousMouseState = Mouse.GetState();
 
@@ -107,7 +143,7 @@ namespace Assignment1
             effect.CurrentTechnique = effect.Techniques[currTechnique]; // 0 per vertex, 1 per pixel
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
-                foreach (ModelMesh mesh in model.Meshes)
+                foreach (ModelMesh mesh in currentModel.Meshes)
                 {
                     effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
                     effect.Parameters["View"].SetValue(view);
@@ -120,6 +156,7 @@ namespace Assignment1
                     effect.Parameters["DiffuseLightDirection"].SetValue(diffuseLightDirection);
 
                     effect.Parameters["SpecularColor"].SetValue(specularColor);
+                    effect.Parameters["SpecularIntensity"].SetValue(specularIntensity);
                     effect.Parameters["Shininess"].SetValue(shininess);
 
                     effect.Parameters["LightPosition"].SetValue(lightDirection);

@@ -11,7 +11,7 @@ float3 DiffuseLightDirection;
 float DiffuseIntensity;
 
 float4 SpecularColor;
-float SpecularIntensity = 1;
+float SpecularIntensity;
 float Shininess;
 
 float3 CameraPosition;
@@ -29,6 +29,7 @@ struct VertexShaderOutput {
 	float4 WorldPosition: TEXCOORD1;
 };
 
+// Gouraud Shader - per vertex
 VertexShaderOutput GouraudVertex(VertexShaderInput input)
 {
 	VertexShaderOutput output;
@@ -87,20 +88,40 @@ float4 PhongPixel(VertexShaderOutput input) : COLOR0
 	return color;
 }
 
-// Toon Shader
-VertexShaderOutput ToonVertex(VertexShaderInput input)
+// Phong Blinn Shader
+float4 PhongBlinnPixel(VertexShaderOutput input) : COLOR0
 {
-	VertexShaderOutput output;
+	float3 N = normalize((mul(input.Normal, WorldInverseTranspose)).xyz);
+	float3 L = normalize(LightPosition);
+	float3 V = normalize(CameraPosition - input.WorldPosition.xyz);
+	float3 H = normalize(L + V);
 
-	float4 worldPosition = mul(input.Position, World);
-	float4 viewPosition = mul(worldPosition, View);
-	output.Position = mul(viewPosition, Projection);
-	output.WorldPosition = worldPosition;
-	output.Normal = input.Normal;
-
-	return output;
+	float4 ambient = AmbientColor * AmbientIntensity;
+	float4 diffuse = DiffuseIntensity * DiffuseColor * max(0, dot(N, L));
+	float4 specular = max(0, pow(max(0, dot(H, N)), Shininess)) * SpecularColor * SpecularIntensity;
+	float4 color = saturate(ambient + diffuse + specular);
+	color.a = 1;
+	return color;
 }
 
+// Schlick Shader
+float4 SchlickPixel(VertexShaderOutput input) : COLOR0
+{
+	float3 N = normalize((mul(input.Normal, WorldInverseTranspose)).xyz);
+	float3 L = normalize(LightPosition);
+	float3 V = normalize(CameraPosition - input.WorldPosition.xyz);
+	float3 R = reflect(-L, N);
+	float4 T = max(0, dot(V, R));
+
+	float4 ambient = AmbientColor * AmbientIntensity;
+	float4 diffuse = DiffuseIntensity * DiffuseColor * max(0, dot(N, L));
+	float4 specular = SpecularColor * SpecularIntensity * T / (Shininess + T - T * Shininess);
+	float4 color = saturate(ambient + diffuse + specular);
+	color.a = 1;
+	return color;
+}
+
+// Toon Shader
 float4 ToonPixel(VertexShaderOutput input) : COLOR0
 {
 	float3 L = normalize(LightPosition);
@@ -127,6 +148,25 @@ float4 ToonPixel(VertexShaderOutput input) : COLOR0
 	}
 }
 
+float4 HalfLifePixel(VertexShaderOutput input) : COLOR0
+{
+	float4 color;
+
+	float3 L = normalize(LightPosition);
+	float3 V = normalize(CameraPosition - input.WorldPosition.xyz);
+	float3 N = normalize((mul(input.Normal, WorldInverseTranspose)).xyz);
+	float3 R = reflect(-L, N);
+	float4 T = max(0, dot(V, R));
+
+	float4 ambient = AmbientColor * AmbientIntensity;
+	float4 diffuse = DiffuseIntensity * DiffuseColor * (pow(dot(N, L), 2) / 2);
+
+	float4 specular = SpecularColor * SpecularIntensity * T / (Shininess + T - T * Shininess);
+	color = ambient + diffuse + specular;
+	color.a = 1;
+	return color;
+}
+
 technique Gouraud
 {
 	pass Pass1
@@ -150,7 +190,7 @@ technique PhongBlinn
 	pass Pass1
 	{
 		VertexShader = compile vs_4_0 PhongVertex();
-		PixelShader = compile ps_4_0 PhongPixel();
+		PixelShader = compile ps_4_0 PhongBlinnPixel();
 	}
 }
 
@@ -159,7 +199,7 @@ technique Schlick
 	pass Pass1
 	{
 		VertexShader = compile vs_4_0 PhongVertex();
-		PixelShader = compile ps_4_0 PhongPixel();
+		PixelShader = compile ps_4_0 SchlickPixel();
 	}
 }
 
@@ -167,7 +207,7 @@ technique Toon
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_4_0 ToonVertex();
+		VertexShader = compile vs_4_0 PhongVertex();
 		PixelShader = compile ps_4_0 ToonPixel();
 	}
 }
@@ -177,6 +217,6 @@ technique HalfLife
 	pass Pass1
 	{
 		VertexShader = compile vs_4_0 PhongVertex();
-		PixelShader = compile ps_4_0 PhongPixel();
+		PixelShader = compile ps_4_0 HalfLifePixel();
 	}
 }
