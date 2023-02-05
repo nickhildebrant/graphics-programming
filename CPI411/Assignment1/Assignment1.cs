@@ -79,6 +79,23 @@ namespace Assignment1
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
+            // Resets Camera & Light
+            if (Keyboard.GetState().IsKeyDown(Keys.S) && previousKeyboardState.IsKeyUp(Keys.S))
+            {
+                cameraAngle1 = 0;
+                cameraAngle2 = 0;
+
+                cameraX = 0;
+                cameraY = 0;
+
+                distance = 1;
+
+                lightDirection = new Vector3(0.5f, 0.6f, 0.4f);
+
+                lightAngle1 = 0;
+                lightAngle2 = 0;
+            }
+
             // Camera rotation controller
             if (Mouse.GetState().LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Pressed)
             {
@@ -95,12 +112,12 @@ namespace Assignment1
             // Camera translation controller
             if (Mouse.GetState().MiddleButton == ButtonState.Pressed && previousMouseState.MiddleButton == ButtonState.Pressed)
             {
-                cameraX -= (previousMouseState.X - Mouse.GetState().X) / 100f;
-                cameraY -= (previousMouseState.Y - Mouse.GetState().Y) / 100f;
+                cameraX += (Mouse.GetState().X - previousMouseState.X) / 100f;
+                cameraY += (Mouse.GetState().Y - previousMouseState.Y) / 100f;
             }
 
-            cameraPosition = Vector3.Transform(new Vector3(cameraX, cameraY, 20), Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2));
-            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(cameraX, cameraY, 0), Vector3.Up);
+            cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2));
+            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(), Vector3.Up);
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 1000);
 
             // Info UI
