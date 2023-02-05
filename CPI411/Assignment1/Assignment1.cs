@@ -43,7 +43,7 @@ namespace Assignment1
 
         int currTechnique = 0;
 
-        bool showInfo = false, showHelp = true;
+        bool showInfo = true, showHelp = true;
 
         public Assignment1()
         {
@@ -94,6 +94,11 @@ namespace Assignment1
 
                 lightAngle1 = 0;
                 lightAngle2 = 0;
+
+                diffuseColor = new Vector4(1, 1, 1, 1);
+                specularColor = new Vector4(1, 1, 1, 1);
+                specularIntensity = 1f;
+                diffuseIntensity = 1f;
             }
 
             // Camera rotation controller
@@ -116,9 +121,47 @@ namespace Assignment1
                 cameraY += (Mouse.GetState().Y - previousMouseState.Y) / 100f;
             }
 
-            cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2));
-            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(), Vector3.Up);
+            cameraPosition = Vector3.Transform(new Vector3(cameraX, cameraY, 20), Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2));
+            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(cameraX, cameraY, 0), Vector3.Up);
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 1000);
+
+            // Left decrease lightX
+            if (Keyboard.GetState().IsKeyDown(Keys.Left)) { lightDirection.X -= 0.1f; lightAngle2 -= 0.1f; }
+
+            // Right increase lightX
+            if (Keyboard.GetState().IsKeyDown(Keys.Right)) { lightDirection.X += 0.1f; lightAngle2 += 0.1f; }
+
+            // Up increase lightY
+            if (Keyboard.GetState().IsKeyDown(Keys.Up)) { lightDirection.Y += 0.1f; lightAngle1 -= 0.1f; }
+
+            // Down decrease lightY
+            if (Keyboard.GetState().IsKeyDown(Keys.Down)) { lightDirection.Y -= 0.1f; lightAngle1 += 0.1f; }
+
+            lightDirection = Vector3.Transform(new Vector3(0.5f, 0.6f, 0.4f), Matrix.CreateRotationX(lightAngle1) * Matrix.CreateRotationY(lightAngle2));
+
+            // Increase Diffuse Intensity
+            if (Keyboard.GetState().IsKeyDown(Keys.L) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) { diffuseIntensity += 0.01f; }
+
+            // Decrease Diffuse Intensity
+            if (Keyboard.GetState().IsKeyDown(Keys.L) && Keyboard.GetState().IsKeyDown(Keys.LeftShift) && diffuseIntensity > 0) { diffuseIntensity -= 0.01f; }
+
+            // Increase red in light
+            if (Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift) && specularColor.X < 1.0f) { specularColor.X += 0.01f; diffuseColor.X += 0.01f; }
+
+            // Decreases red in light
+            if (Keyboard.GetState().IsKeyDown(Keys.R) && Keyboard.GetState().IsKeyDown(Keys.LeftShift) && specularColor.X > 0f) { specularColor.X -= 0.01f; diffuseColor.X -= 0.01f; }
+
+            // Increase green in light
+            if (Keyboard.GetState().IsKeyDown(Keys.G) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift) && specularColor.Y < 1.0f) { specularColor.Y += 0.01f; diffuseColor.Y += 0.01f; }
+
+            // Decreases green in light
+            if (Keyboard.GetState().IsKeyDown(Keys.G) && Keyboard.GetState().IsKeyDown(Keys.LeftShift) && specularColor.Y > 0f) { specularColor.Y -= 0.01f; diffuseColor.Y -= 0.01f; }
+
+            // Increase blue in light
+            if (Keyboard.GetState().IsKeyDown(Keys.B) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift) && specularColor.Z < 1.0f) { specularColor.Z += 0.01f; diffuseColor.Z += 0.01f; }
+
+            // Decreases blue in light
+            if (Keyboard.GetState().IsKeyDown(Keys.B) && Keyboard.GetState().IsKeyDown(Keys.LeftShift) && specularColor.Z > 0f) { specularColor.Z -= 0.01f; diffuseColor.Z -= 0.01f; }
 
             // Info UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && previousKeyboardState.IsKeyUp(Keys.H)) { showInfo = !showInfo; }
@@ -160,16 +203,28 @@ namespace Assignment1
             if (Keyboard.GetState().IsKeyDown(Keys.F6)) { currTechnique = 5; shaderName = "Half-Life"; }
 
             // + Increase specular intensity
-            if (!Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemPlus)) { specularIntensity += 0.2f; }
+            if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemPlus)) 
+            { specularIntensity += 0.2f; }
 
             // - Decrease specular intensity
-            if (!Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemMinus)) { specularIntensity -= 0.2f; }
+            if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemMinus)) 
+            { specularIntensity -= 0.2f; }
 
             // L-Ctrl + Increase shininess
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemPlus)) { shininess += 0.2f; }
+            if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemPlus)) 
+            { shininess += 0.2f; }
 
             // L-Ctrl - Decrease shininess
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemMinus)) { shininess -= 0.2f; }
+            if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemMinus)) 
+            { shininess -= 0.2f; }
+
+            // L-Shift + Increase light intensity
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemPlus))
+            { diffuseIntensity += 0.2f; }
+
+            // L-Shift - Decrease light intensity
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.OemMinus))
+            { diffuseIntensity -= 0.2f; }
 
             previousMouseState = Mouse.GetState();
             previousKeyboardState = Keyboard.GetState();
@@ -222,13 +277,13 @@ namespace Assignment1
             _spriteBatch.Begin();
             if (showInfo)
             {
-                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngle2.ToString("0.00") + ", " + cameraAngle1.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 5, Color.White);
-                _spriteBatch.DrawString(font, "Light Angle: (" + lightAngle2.ToString("0.00") + ", " + lightAngle1.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 25, Color.White);
-                _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 45, Color.White);
-                _spriteBatch.DrawString(font, "Diffuse Intensity: " + diffuseIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 65, Color.White);
-                _spriteBatch.DrawString(font, "Ambient Intensity: " + ambientIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 85, Color.White);
-                _spriteBatch.DrawString(font, "Specular Intensity: " + specularIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 105, Color.White);
-                _spriteBatch.DrawString(font, "Light Color: " + specularColor.ToString(), Vector2.UnitX + Vector2.UnitY * 125, Color.White);
+                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 5, Color.White);
+                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngle2.ToString("0.00") + ", " + cameraAngle1.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 25, Color.White);
+                _spriteBatch.DrawString(font, "Light Angle: (" + lightAngle2.ToString("0.00") + ", " + lightAngle1.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 45, Color.White);
+                _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 65, Color.White);
+                _spriteBatch.DrawString(font, "Specular Intensity: " + specularIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 85, Color.White);
+                _spriteBatch.DrawString(font, "Light Intensity: " + diffuseIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 105, Color.White);
+                _spriteBatch.DrawString(font, "Light Color: (" + specularColor.X.ToString("0.00") + ", " + specularColor.Y.ToString("0.00") + ", " + specularColor.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 125, Color.White);
                 _spriteBatch.DrawString(font, "Shininess: " + shininess.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 145, Color.White);
             }
 
@@ -247,8 +302,9 @@ namespace Assignment1
                 _spriteBatch.DrawString(font, "G Key: Green Value of Light", Vector2.UnitX * 500 + Vector2.UnitY * 205, Color.White);
                 _spriteBatch.DrawString(font, "B Key: Blue Value of Light", Vector2.UnitX * 500 + Vector2.UnitY * 225, Color.White);
                 _spriteBatch.DrawString(font, "+/- : Specular Intensity", Vector2.UnitX * 500 + Vector2.UnitY * 245, Color.White);
-                _spriteBatch.DrawString(font, "1-2-3-4-5: Change Model", Vector2.UnitX * 500 + Vector2.UnitY * 265, Color.White);
-                _spriteBatch.DrawString(font, "F1-F2-F3-F4-F5-F6 Change Shader", Vector2.UnitX * 500 + Vector2.UnitY * 285, Color.White);
+                _spriteBatch.DrawString(font, "L-CTRL & +/- : Shininess", Vector2.UnitX * 500 + Vector2.UnitY * 265, Color.White);
+                _spriteBatch.DrawString(font, "1-2-3-4-5: Change Model", Vector2.UnitX * 500 + Vector2.UnitY * 285, Color.White);
+                _spriteBatch.DrawString(font, "F1-F2-F3-F4-F5-F6 Change Shader", Vector2.UnitX * 500 + Vector2.UnitY * 305, Color.White);
             }
             _spriteBatch.End();
 
