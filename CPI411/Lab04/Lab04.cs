@@ -98,7 +98,7 @@ namespace Lab04
             }
 
             cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
-            view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Up);
+            view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
 
             //camera = Vector3.Transform(distance * new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
             //view = Matrix.CreateLookAt(camera, Vector3.Zero, Vector3.UnitY);
