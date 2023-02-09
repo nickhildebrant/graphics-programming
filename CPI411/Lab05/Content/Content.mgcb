@@ -32,6 +32,12 @@
 /processorParam:TextureFormat=Compressed
 /build:cube.fbx
 
+#begin Skybox.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Skybox.fx
+
 #begin SunsetPNG1.png
 /importer:TextureImporter
 /processor:TextureProcessor
