@@ -38,6 +38,7 @@ namespace Lab05
         public Lab05()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -60,19 +61,15 @@ namespace Lab05
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            // Camera rotation controller
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Pressed)
             {
-                angle += 0.1f * (Mouse.GetState().X - previousMouseState.X);
-                angle2 += 0.1f * (Mouse.GetState().Y - previousMouseState.Y);
-            }
-
-            if (Mouse.GetState().RightButton == ButtonState.Pressed)
-            {
-                distance += 0.1f * (Mouse.GetState().Y - previousMouseState.Y);
+                angle -= (previousMouseState.X - Mouse.GetState().X) / 100f;
+                angle2 -= (previousMouseState.Y - Mouse.GetState().Y) / 100f;
             }
 
             cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
-            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
+            view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
             previousMouseState = Mouse.GetState();
