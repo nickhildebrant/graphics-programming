@@ -68,6 +68,16 @@ namespace Lab05
                 angle2 -= (previousMouseState.Y - Mouse.GetState().Y) / 100f;
             }
 
+            if(Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                angle -= 0.01f;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                angle += 0.01f;
+            }
+
             cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
             view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
