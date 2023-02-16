@@ -59,7 +59,7 @@ float4 ReflectionPixelShader(VertexShaderOutput input) : COLOR0
 {
 	return texCUBE(SkyboxSampler, normalize(input.Reflection));
 
-	/*float4 reflectedColor = texCUBE(SkyBoxSampler, input.R);
+	/*float4 reflectedColor = texCUBE(SkyboxSampler, input.Reflection);
 	float4 decalColor = tex2D(tsampler1, input.texCoord);
 	return lerp(decalColor, reflectedColor, 0.5);*/
 }

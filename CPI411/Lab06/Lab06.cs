@@ -13,7 +13,7 @@ namespace Lab06
 
         Model model;
         Effect effect;
-        Texture texture;
+        Texture2D texture;
 
         Skybox skybox;
 
@@ -43,7 +43,7 @@ namespace Lab06
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             model = Content.Load<Model>("Helicopter");
-            texture = Content.Load<Texture>("HelicopterTexture");
+            texture = Content.Load<Texture2D>("HelicopterTexture");
             effect = Content.Load<Effect>("Reflection");
 
             string[] skyboxTextures =
@@ -80,7 +80,7 @@ namespace Lab06
                 angle += 0.01f;
             }
 
-            cameraPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
+            cameraPosition = Vector3.Transform(new Vector3(0, 0, 3), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
             view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
@@ -122,7 +122,7 @@ namespace Lab06
                         effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
                         effect.Parameters["CameraPosition"].SetValue(cameraPosition);
 
-                        effect.Parameters["decalMap"].SetValue(texture);
+                        //effect.Parameters["decalMap"].SetValue(texture);
                         effect.Parameters["environmentMap"].SetValue(cameraPosition);
 
                         pass.Apply();
