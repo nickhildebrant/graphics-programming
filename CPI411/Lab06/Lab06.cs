@@ -22,6 +22,7 @@ namespace Lab06
         Matrix projection;
 
         float angle, angle2;
+        float distance = 1f;
 
         MouseState previousMouseState;
 
@@ -80,8 +81,13 @@ namespace Lab06
                 angle += 0.01f;
             }
 
+            if (Mouse.GetState().RightButton == ButtonState.Pressed)
+            {
+                distance += 0.1f * (Mouse.GetState().Y - previousMouseState.Y);
+            }
+
             cameraPosition = Vector3.Transform(new Vector3(0, 0, 3), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
-            view = Matrix.CreateLookAt(cameraPosition, new Vector3(), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
+            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
             previousMouseState = Mouse.GetState();
