@@ -123,7 +123,7 @@ namespace Lab06
                         effect.Parameters["CameraPosition"].SetValue(cameraPosition);
 
                         //effect.Parameters["decalMap"].SetValue(texture);
-                        effect.Parameters["environmentMap"].SetValue(cameraPosition);
+                        effect.Parameters["environmentMap"].SetValue(skybox.skyBoxTexture);
 
                         pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);

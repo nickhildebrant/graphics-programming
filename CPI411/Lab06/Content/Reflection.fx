@@ -7,7 +7,7 @@ float4x4 WorldInverseTranspose;
 float3 CameraPosition;
 
 texture decalMap;
-texture environmentMap;
+Texture2D environmentMap;
 
 sampler tsampler1 = sampler_state {
 	texture = <decalMap>;
@@ -29,13 +29,15 @@ samplerCUBE SkyboxSampler = sampler_state
 };
 
 struct VertexShaderInput {
-	float4 Position : POSITION0;
-	float4 Normal : NORMAL0;
+	float4 Position: POSITION0;
+	float2 TextureCoordinate: TEXCOORD0;
+	float4 Normal: NORMAL0;
 };
 
 struct VertexShaderOutput {
-	float4 Position : POSITION0;
-	float3 Reflection : TEXCOORD0;
+	float4 Position: POSITION0;
+	float2 TextureCoordinate: TEXCOORD0;
+	float3 Reflection : TEXCOORD1;
 };
 
 VertexShaderOutput ReflectionVertexShader(VertexShaderInput input)
@@ -48,7 +50,6 @@ VertexShaderOutput ReflectionVertexShader(VertexShaderInput input)
 
 	float4 VertexPosition = mul(input.Position, World);
 	float3 ViewDirection = CameraPosition - VertexPosition;
-
 	float3 Normal = normalize(mul(input.Normal, WorldInverseTranspose));
 	output.Reflection = reflect(-normalize(ViewDirection), normalize(Normal));
 
@@ -57,11 +58,11 @@ VertexShaderOutput ReflectionVertexShader(VertexShaderInput input)
 
 float4 ReflectionPixelShader(VertexShaderOutput input) : COLOR0
 {
-	return texCUBE(SkyboxSampler, normalize(input.Reflection));
+	//return texCUBE(SkyboxSampler, normalize(input.Reflection));
 
-	/*float4 reflectedColor = texCUBE(SkyboxSampler, input.Reflection);
-	float4 decalColor = tex2D(tsampler1, input.texCoord);
-	return lerp(decalColor, reflectedColor, 0.5);*/
+	float4 reflectedColor = texCUBE(SkyboxSampler, input.Reflection);
+	float4 decalColor = tex2D(tsampler1, input.TextureCoordinate);
+	return lerp(decalColor, reflectedColor, 0.5);
 }
 
 technique Reflection
