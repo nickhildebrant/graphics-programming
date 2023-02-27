@@ -32,3 +32,9 @@
 /processorParam:TextureFormat=Compressed
 /build:bunnyUV.FBX
 
+#begin SimpleShading.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:SimpleShading.fx
+

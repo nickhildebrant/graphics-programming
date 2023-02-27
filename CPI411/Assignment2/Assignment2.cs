@@ -40,13 +40,13 @@ namespace Assignment2
         public Assignment2()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
 
             base.Initialize();
         }
@@ -57,7 +57,7 @@ namespace Assignment2
 
             //font = Content.Load<SpriteFont>("font");
 
-            //effect = Content.Load<Effect>("SimpleShading");
+            effect = Content.Load<Effect>("SimpleShading");
             model = Content.Load<Model>("bunnyUV");
         }
 
@@ -118,7 +118,44 @@ namespace Assignment2
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = new DepthStencilState();
+
+            effect.CurrentTechnique = effect.Techniques[0]; // 0 per vertex, 1 per pixel
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            {
+                foreach (ModelMesh mesh in model.Meshes)
+                {
+                    foreach (ModelMeshPart part in mesh.MeshParts)
+                    {
+                        effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
+                        effect.Parameters["View"].SetValue(view);
+                        effect.Parameters["Projection"].SetValue(projection);
+
+                        effect.Parameters["AmbientColor"].SetValue(ambient);
+                        effect.Parameters["AmbientIntensity"].SetValue(ambientIntensity);
+                        effect.Parameters["DiffuseColor"].SetValue(diffuseColor);
+                        effect.Parameters["DiffuseIntensity"].SetValue(diffuseIntensity);
+                        effect.Parameters["DiffuseLightDirection"].SetValue(diffuseLightDirection);
+
+                        effect.Parameters["SpecularColor"].SetValue(specularColor);
+                        effect.Parameters["SpecularIntensity"].SetValue(specularIntensity);
+                        effect.Parameters["Shininess"].SetValue(shininess);
+
+                        effect.Parameters["LightPosition"].SetValue(lightDirection);
+                        effect.Parameters["CameraPosition"].SetValue(cameraPosition);
+
+                        Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
+                        effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
+                        pass.Apply();
+
+                        GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
+                        GraphicsDevice.Indices = part.IndexBuffer;
+
+                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+                    }
+                }
+            }
 
             base.Draw(gameTime);
         }
