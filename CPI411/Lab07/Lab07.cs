@@ -107,12 +107,12 @@ namespace Lab07
                         effect.Parameters["LightPosition"].SetValue(lightPosition);
 
                         effect.Parameters["AmbientColor"].SetValue(new Vector4(1, 1, 1, 1));
-                        effect.Parameters["AmbientIntensity"].SetValue(cameraPosition);
-                        effect.Parameters["DiffuseColor"].SetValue(cameraPosition);
-                        effect.Parameters["DiffuseIntensity"].SetValue(cameraPosition);
-                        effect.Parameters["SpecularColor"].SetValue(cameraPosition);
-                        effect.Parameters["SpecularIntensity"].SetValue(cameraPosition);
-                        effect.Parameters["Shininess"].SetValue(cameraPosition);
+                        effect.Parameters["AmbientIntensity"].SetValue(0);
+                        effect.Parameters["DiffuseColor"].SetValue(new Vector4(1, 1, 1, 1));
+                        effect.Parameters["DiffuseIntensity"].SetValue(1f);
+                        effect.Parameters["SpecularColor"].SetValue(new Vector4(1, 1, 1, 1));
+                        //effect.Parameters["SpecularIntensity"].SetValue(cameraPosition);
+                        effect.Parameters["Shininess"].SetValue(20f);
 
                         effect.Parameters["normalMap"].SetValue(texture);
 

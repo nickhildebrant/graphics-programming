@@ -1,3 +1,3 @@
 ﻿
-using var game = new Lab07.Game1();
+using var game = new Lab07.Lab07();
 game.Run();
