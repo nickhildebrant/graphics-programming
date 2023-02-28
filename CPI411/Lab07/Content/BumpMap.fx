@@ -71,7 +71,16 @@ float4 BumpMapPixelShader(VertexShaderOutput input) : COLOR0
 	float3 H = normalize(L + V);
 
 	float3 normalTexture = (tex2D(tsampler1, input.TextureCoordinate).xyz - float3(0.5, 0.5, 0.5)) * 2.0;
-	float3 bumpNormal = N + normalTexture.x * T + normalTexture.y * B;
+
+	// ** Lab 07
+	//float3 bumpNormal = N + normalTexture.x * T + normalTexture.y * B;
+
+	// ** Assignment3 Version
+	float3x3 TangentToWorld;
+	TangentToWorld[0] = T;
+	TangentToWorld[1] = B;
+	TangentToWorld[2] = N;
+	float bumpNormal = mul(normalTexture, TangentToWorld);
 
 	float4 ambient = AmbientColor * AmbientIntensity;
 	float4 diffuse = DiffuseIntensity * DiffuseColor * max(0, dot(bumpNormal, L));
