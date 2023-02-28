@@ -12,6 +12,15 @@ sampler TextureSampler: register(s0) = sampler_state {
 	AddressV = Clamp;
 };
 
+sampler TextureSampler: register(s0) = sampler_state {
+	texture = <modelTexture>;
+	magfilter = LINEAR; // None, POINT, LINEAR, Anisotropic 
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = Clamp; // Clamp, Mirror, MirrorOnce, Wrap, Border 
+	AddressV = Clamp;
+};
+
 struct VS_OUTPUT {
 	float4 Position: POSITION;
 	float2 UV0 : TEXCOORD0;
@@ -32,6 +41,7 @@ float4 PostPixelShader(VS_OUTPUT input) : COLOR
 {
 	float4 outputTexture = tex2D(TextureSampler, input.UV0);
 	// **** Main processing **** //
+	outputTexture.rgb = ceil(outputTexture.rgb * 8) / 8;
 
 	return outputTexture;
 }
