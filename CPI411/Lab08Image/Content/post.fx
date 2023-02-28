@@ -1,5 +1,6 @@
 ﻿float4x4 MatrixTransform;
 texture2D modelTexture;
+texture2D filterTexture;
 float imageWidth;
 float imageHeight;
 
@@ -12,8 +13,8 @@ sampler TextureSampler: register(s0) = sampler_state {
 	AddressV = Clamp;
 };
 
-sampler TextureSampler: register(s0) = sampler_state {
-	texture = <modelTexture>;
+sampler FilterSampler: register(s1) = sampler_state {
+	texture = <filterTexture>;
 	magfilter = LINEAR; // None, POINT, LINEAR, Anisotropic 
 	minfilter = LINEAR;
 	mipfilter = LINEAR;
@@ -41,7 +42,15 @@ float4 PostPixelShader(VS_OUTPUT input) : COLOR
 {
 	float4 outputTexture = tex2D(TextureSampler, input.UV0);
 	// **** Main processing **** //
-	outputTexture.rgb = ceil(outputTexture.rgb * 8) / 8;
+	// outputTexture.rgb = ceil(outputTexture.rgb * 8) / 8;
+
+	/*float offset = 0;
+	outputTexture.r = tex2D(FilterSampler, float2(outputTexture.r + offset, 0)).r;
+	outputTexture.g = tex2D(FilterSampler, float2(outputTexture.g + offset, 0)).g;
+	outputTexture.b = tex2D(FilterSampler, float2(outputTexture.b + offset, 0)).b;*/
+
+	float ycbr = mul(RGBYCbCr, outputTexture.rgb);
+	outputTexture.rgb = ycbr.r;
 
 	return outputTexture;
 }
