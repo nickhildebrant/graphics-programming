@@ -16,6 +16,9 @@ namespace Lab08Image
         public Lab08Image()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferHeight = 600;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -31,7 +34,9 @@ namespace Lab08Image
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            texture = Content.Load<Texture2D>("Honolulu");
+            filter = Content.Load<Texture2D>("filter");
+            effect = Content.Load<Effect>("post");
         }
 
         protected override void Update(GameTime gameTime)
