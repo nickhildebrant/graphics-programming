@@ -37,6 +37,14 @@ namespace Lab08Image
             texture = Content.Load<Texture2D>("Honolulu");
             filter = Content.Load<Texture2D>("filter");
             effect = Content.Load<Effect>("post");
+
+            effect.Parameters["modelTexture"].SetValue(texture);
+            effect.Parameters["imageWidth"].SetValue((float)texture.Width);
+            effect.Parameters["imageHeight"].SetValue((float)texture.Height);
+
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, 800, 600, 0, 0, 1);
+            Matrix halfPixelOffset = Matrix.CreateTranslation(-0.5f, -0.5f, 0);
+            effect.Parameters["MatrixTransform"].SetValue(halfPixelOffset * projection);
         }
 
         protected override void Update(GameTime gameTime)
@@ -53,7 +61,9 @@ namespace Lab08Image
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin(0, null, null, null, null, effect);
+            _spriteBatch.Draw(texture, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
