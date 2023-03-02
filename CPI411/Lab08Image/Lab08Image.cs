@@ -39,7 +39,7 @@ namespace Lab08Image
             effect = Content.Load<Effect>("post");
 
             effect.Parameters["modelTexture"].SetValue(texture);
-            effect.Parameters["filterTexture"].SetValue(filter);
+            //effect.Parameters["filterTexture"].SetValue(filter);
             effect.Parameters["imageWidth"].SetValue((float)texture.Width);
             effect.Parameters["imageHeight"].SetValue((float)texture.Height);
 

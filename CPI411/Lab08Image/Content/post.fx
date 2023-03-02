@@ -60,12 +60,13 @@ float4 PostPixelShader(VS_OUTPUT input) : COLOR
 	//outputTexture.rgb = ycbr.r;
 
 	// Blur
-	float4 tex1 = tex2D(TextureSampler, input.UV0 + input.UV1.xy * 5);
-	float4 tex2 = tex2D(TextureSampler, input.UV0 - input.UV1.xy * 5);
-	float4 tex3 = tex2D(TextureSampler, input.UV0 + input.UV1.zw * 5);
-	float4 tex4 = tex2D(TextureSampler, input.UV0 - input.UV1.zw * 5);
-	//outputTexture = (outputTexture + tex1 + tex2 + tex3 + tex4) / 5;
-	outputTexture = outputTexture * 4 (tex1 + tex2 + tex3 + tex4);
+	float blurAffect = 1;
+	float4 tex1 = tex2D(TextureSampler, input.UV0 + input.UV1.xy * blurAffect);
+	float4 tex2 = tex2D(TextureSampler, input.UV0 - input.UV1.xy * blurAffect);
+	float4 tex3 = tex2D(TextureSampler, input.UV0 + input.UV1.zw * blurAffect);
+	float4 tex4 = tex2D(TextureSampler, input.UV0 - input.UV1.zw * blurAffect);
+	outputTexture = (outputTexture + tex1 + tex2 + tex3 + tex4) / 5;
+	//outputTexture = outputTexture * 4 * (tex1 + tex2 + tex3 + tex4);
 
 	return outputTexture;
 }
