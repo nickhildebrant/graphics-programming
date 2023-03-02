@@ -52,16 +52,18 @@ VertexShaderOutput VSFunction(VertexShaderInput input)
 
 float4 PSFunction(VertexShaderOutput input) : COLOR0
 {
-	float4 projTexCoord = ? ? ? Remember how to get the world position
-	projTexCoord = projTexCoord / projTexCoord.w;
-	projTexCoord.xy = ? ? ?
-		projTexCoord.y = 1.0 - projTexCoord.y;
-	float depth = 1.0 - projTexCoord.z;
-	float4 color = ? ? ?
+	float4 projTexCoord = ? ? ? ; // Remember how to get the world position, Step 1
+	projTexCoord = projTexCoord / projTexCoord.w;	// Step 2
+	projTexCoord.xy = ? ? ? ;						// Step 3
+	projTexCoord.y = 1.0 - projTexCoord.y;			// Step 4
+	float depth = 1.0 - projTexCoord.z;				// Step 5
+	float4 color = ? ? ? ;							// Step 6
 
+	// Step 7
 	if (color.x == 0 && color.y == 1 && color.z == 1)
 		color.xyz = float3(0, 0, 0);
 
+	// Step 8 - optional
 	float3 N = normalize(input.Normal);
 	float3 L = normalize(LightPosition - input.WorldPosition);
 	if (dot(L, N) < 0) color = 0;
