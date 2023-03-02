@@ -16,7 +16,7 @@ namespace Lab08
         Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 600f,0.1f, 100f);
 
         Vector3 cameraPosition, cameraTarget, lightPosition;
-        Matrix lightView;
+        Matrix lightView, lightProjection;
 
         float angle = 0;
         float angle2 = 0;
@@ -48,7 +48,7 @@ namespace Lab08
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             font = Content.Load<SpriteFont>("font");
-            model = Content.Load<Model>("torus");
+            model = Content.Load<Model>("plane");
             effect = Content.Load<Effect>("ProjectiveTexture");
             texture = Content.Load<Texture2D>("nvlobby_new_negz");
         }
@@ -88,8 +88,10 @@ namespace Lab08
 
             cameraPosition = Vector3.Transform(new Vector3(0, 0, distance), Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle) * Matrix.CreateTranslation(cameraTarget));
             view = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle)));
+
             lightPosition = Vector3.Transform(new Vector3(0, 0, 10), Matrix.CreateRotationX(angleL2) * Matrix.CreateRotationY(angleL));
-            lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.UnitY);
+            lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero,Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(angleL2) * Matrix.CreateRotationY(angleL)));
+            lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
 
             base.Update(gameTime);
         }
