@@ -52,12 +52,12 @@ VertexShaderOutput VSFunction(VertexShaderInput input)
 
 float4 PSFunction(VertexShaderOutput input) : COLOR0
 {
-	float4 projTexCoord = ? ? ? ; // Remember how to get the world position, Step 1
-	projTexCoord = projTexCoord / projTexCoord.w;	// Step 2
-	projTexCoord.xy = ? ? ? ;						// Step 3
-	projTexCoord.y = 1.0 - projTexCoord.y;			// Step 4
-	float depth = 1.0 - projTexCoord.z;				// Step 5
-	float4 color = ? ? ? ;							// Step 6
+	float4 projTexCoord = mul(mul(World, LightViewMatrix), LightProjectionMatrix); // Remember how to get the world position, Step 1
+	projTexCoord = projTexCoord / projTexCoord.w;					// Step 2
+	projTexCoord.xy = 0.5 * projectTexCoord + (float2)(0.5, 0.5);	// Step 3
+	projTexCoord.y = 1.0 - projTexCoord.y;							// Step 4
+	float depth = 1.0 - projTexCoord.z;								// Step 5
+	float4 color = tex2D(ProjectiveSampler, projTexCoord);			// Step 6
 
 	// Step 7
 	if (color.x == 0 && color.y == 1 && color.z == 1)
