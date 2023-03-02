@@ -31,6 +31,7 @@ namespace Lab08
         public Lab08()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -46,7 +47,7 @@ namespace Lab08
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            font = Content.Load<SpriteFont>("");
+            font = Content.Load<SpriteFont>("font");
             model = Content.Load<Model>("torus");
             effect = Content.Load<Effect>("ProjectiveTexture");
             texture = Content.Load<Texture2D>("nvlobby_new_negz");
@@ -114,6 +115,8 @@ namespace Lab08
                         effect.Parameters["Projection"].SetValue(projection);
                         Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
                         effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
+
+                        //effect.Parameters["ProjectiveTexture"].SetValue(texture);
 
                         pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
