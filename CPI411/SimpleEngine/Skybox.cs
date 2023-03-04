@@ -12,13 +12,13 @@ namespace CPI411.SimpleEngine
         private float size = 50f;
 
         // Constructor
-        public Skybox(string[] skyboxTextures, ContentManager Content, GraphicsDevice g)
+        public Skybox(string[] skyboxTextures, int size, ContentManager Content, GraphicsDevice g)
         {
             skyBox = Content.Load<Model>("skybox/cube");            // Lab05's Content Folder
             skyBoxEffect = Content.Load<Effect>("skybox/Skybox");   // Look at Skybox.fx
 
-            skyBoxTexture = new TextureCube(g, 512, false, SurfaceFormat.Color);
-            byte[] data = new byte[512 * 512 * 4];
+            skyBoxTexture = new TextureCube(g, size, false, SurfaceFormat.Color);
+            byte[] data = new byte[size * size * 4];
             Texture2D tempTexture = Content.Load<Texture2D>(skyboxTextures[0]);
             tempTexture.GetData<byte>(data);
             skyBoxTexture.SetData<byte>(CubeMapFace.NegativeX, data);

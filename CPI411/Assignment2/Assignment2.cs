@@ -90,18 +90,9 @@ namespace Assignment2
                 "Test/debug_posy", "Test/debug_negy",
                 "Test/debug_posz", "Test/debug_negz",
             };
-            //testSkybox = new Skybox(testSkyboxTextures, Content, GraphicsDevice);
+            testSkybox = new Skybox(testSkyboxTextures, 256, Content, GraphicsDevice);
 
-            //currentSkybox = testSkybox;
-
-            string[] skyboxTextures =
-            {
-                "skybox/SunsetPNG2", "skybox/SunsetPNG1",
-                "skybox/SunsetPNG4", "skybox/SunsetPNG3",
-                "skybox/SunsetPNG6", "skybox/SunsetPNG5",
-            };
-
-            currentSkybox = new Skybox(skyboxTextures, Content, GraphicsDevice);
+            currentSkybox = testSkybox;
         }
 
         protected override void Update(GameTime gameTime)
