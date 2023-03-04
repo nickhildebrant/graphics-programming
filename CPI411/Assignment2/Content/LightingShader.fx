@@ -11,7 +11,7 @@ float AmbientIntensity;
 float4 DiffuseColor;
 float DiffuseIntensity;
 
-float EtaRatio;
+float EtaRatio = 0.68f;
 float Reflectivity;
 float Shininess;
 float4 SpecularColor;
@@ -60,6 +60,16 @@ struct VertexShaderOutput
 	float3 Reflection: TEXCOORD1;
 };
 
+struct FresnelVertexShaderOutput
+{
+	float4 Position: POSITION0;
+	float reflectionFactor : COLOR;
+	float3 Reflection: TEXCOORD0;
+	float3 Red: TEXCOORD1;
+	float3 Green: TEXCOORD2;
+	float3 Blue: TEXCOORD3;
+};
+
 VertexShaderOutput ReflectionVertexShader(VertexShaderInput input)
 {
 	VertexShaderOutput output;
@@ -72,7 +82,7 @@ VertexShaderOutput ReflectionVertexShader(VertexShaderInput input)
 	float3 N = normalize(mul(input.normal, WorldInverseTranspose).xyz);
 	float3 I = normalize(worldPosition.xyz - CameraPosition);
 	output.Reflection = reflect(I, N);
-	output.TextureCoordinate = input.TextureCoordinate;
+	//output.TextureCoordinate = input.TextureCoordinate;
 
 	return output;
 }
@@ -95,8 +105,8 @@ VertexShaderOutput RefractionVertexShader(VertexShaderInput input)
 
 	float3 N = normalize(mul(input.normal, WorldInverseTranspose).xyz);
 	float3 I = normalize(worldPosition.xyz - CameraPosition);
-	output.Reflection = refract(I, N, 0.68f);
-	output.TextureCoordinate = input.TextureCoordinate;
+	output.Reflection = refract(I, N, EtaRatio);
+	//output.TextureCoordinate = input.TextureCoordinate;
 
 	return output;
 }
@@ -108,29 +118,19 @@ float4 RefractionPixelShader(VertexShaderOutput input) : COLOR0
 	return lerp(decalColor, refractedColor, 0.5);
 }
 
-struct FresnelVertexShaderOutput
-{
-	float4 Position: POSITION0;
-	float reflectionFactor : COLOR;
-	float3 reflectionVector: TEXCOORD0;
-	float3 Red: TEXCOORD1;
-	float3 Green: TEXCOORD2;
-	float3 Blue: TEXCOORD3;
-};
-
-
 FresnelVertexShaderOutput DispersionVertexShader(VertexShaderInput input)
 {
 	FresnelVertexShaderOutput output;
 
 	float4 worldPosition = mul(input.Position, World);
 	float4 viewPosition = mul(worldPosition, View);
-	float4 projPosition = mul(viewPosition, Projection);
-	output.Position = projPosition;
+	float4 projectionPosition = mul(viewPosition, Projection);
+	output.Position = projectionPosition;
 
 	float3 N = normalize(mul(input.normal, WorldInverseTranspose).xyz);
 	float3 I = normalize(worldPosition.xyz - CameraPosition);
-	output.reflectionVector = 0;
+
+	output.Reflection = 0;
 	output.Red = refract(I, N, FresnelEtaRatio.x);
 	output.Green = refract(I, N, FresnelEtaRatio.y);
 	output.Blue = refract(I, N, FresnelEtaRatio.z);
@@ -152,16 +152,16 @@ float4 DispersionPixelShader(FresnelVertexShaderOutput input) : COLOR0
 
 FresnelVertexShaderOutput FresnelVertexShader(VertexShaderInput input)
 {
-	FresnelVertexShaderOutput output;
-
 	float4 worldPosition = mul(input.Position, World);
 	float4 viewPosition = mul(worldPosition, View);
 	float4 projectionPosition = mul(viewPosition, Projection);
+
+	FresnelVertexShaderOutput output;
 	output.Position = projectionPosition;
 
 	float3 N = normalize(mul(input.normal, WorldInverseTranspose).xyz);
 	float3 I = normalize(worldPosition.xyz - CameraPosition);
-	output.reflectionVector = reflect(I, N);
+	output.Reflection = reflect(I, N);
 
 	output.Red = refract(I, N, FresnelEtaRatio.x);
 	output.Green = refract(I, N, FresnelEtaRatio.y);
@@ -179,7 +179,7 @@ float4 FresnelPixelShader(FresnelVertexShaderOutput input) : COLOR0
 	refractedColor.b = texCUBE(SkyBoxSampler, input.Blue).b;
 	refractedColor.a = 1;
 
-	float4 reflectedColor = texCUBE(SkyBoxSampler, input.reflectionVector);
+	float4 reflectedColor = texCUBE(SkyBoxSampler, input.Reflection);
 
 	return lerp(refractedColor, reflectedColor, input.reflectionFactor);
 }
