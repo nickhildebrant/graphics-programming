@@ -57,7 +57,7 @@ struct VertexShaderOutput
 {
 	float4 Position: POSITION0;
 	float2 TextureCoordinate: TEXCOORD0;
-	float3 Reflection: TEXCOORD1; //Reflection Vector
+	float3 Reflection: TEXCOORD1;
 };
 
 VertexShaderOutput ReflectionVertexShader(VertexShaderInput input)

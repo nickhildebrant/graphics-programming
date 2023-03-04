@@ -123,6 +123,13 @@
 /processorParam:TextureFormat=Color
 /build:Daytime/grandcanyon_posz.jpg
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+
 #begin Helicopter.fbx
 /importer:FbxImporter
 /processor:ModelProcessor

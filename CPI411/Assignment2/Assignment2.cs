@@ -10,9 +10,15 @@ namespace Assignment2
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Model model;
+        Model currentModel;
+        Model box, bunny, sphere, teapot, torus, helicopter;
+        string modelName = "Helicopter";
+
         Effect effect;
         Texture2D texture;
+        SpriteFont font;
+
+        bool showInfo = true, showHelp = true;
 
         Matrix world, view, projection;
 
@@ -79,10 +85,15 @@ namespace Assignment2
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //font = Content.Load<SpriteFont>("font");
+            font = Content.Load<SpriteFont>("font");
 
             effect = Content.Load<Effect>("LightingShader");
-            model = Content.Load<Model>("Helicopter");
+            helicopter = Content.Load<Model>("Helicopter");
+            box = Content.Load<Model>("box");
+            bunny = Content.Load<Model>("bunnyUV");
+            sphere = Content.Load<Model>("sphere");
+            teapot = Content.Load<Model>("teapot");
+            torus = Content.Load<Model>("Torus");
             texture = Content.Load<Texture2D>("HelicopterTexture");
 
             // Loading Test Skybox
@@ -121,12 +132,20 @@ namespace Assignment2
             };
             selfSkybox = new Skybox(selfSkyboxTextures, Content, GraphicsDevice);
 
+            currentModel = helicopter;
             currentSkybox = testSkybox;
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { currentModel = box; modelName = "Box"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { currentModel = sphere; modelName = "Sphere"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { currentModel = torus; modelName = "Torus"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { currentModel = teapot; modelName = "Teapot"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { currentModel = bunny; modelName = "Bunny"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { currentModel = helicopter; modelName = "Helicopter"; }
 
             if (Keyboard.GetState().IsKeyDown(Keys.F7)) { shaderNumber = 0; shaderName = "Reflection Shader"; }
             if (Keyboard.GetState().IsKeyDown(Keys.F8)) { shaderNumber = 1; shaderName = "Refraction Shader"; }
@@ -137,6 +156,13 @@ namespace Assignment2
             if (Keyboard.GetState().IsKeyDown(Keys.D8)) { skyboxNumber = 1; skyboxName = "Office Room"; }
             if (Keyboard.GetState().IsKeyDown(Keys.D9)) { skyboxNumber = 2; skyboxName = "Daytime Sky - Grand Canyon"; }
             if (Keyboard.GetState().IsKeyDown(Keys.D0)) { skyboxNumber = 3; skyboxName = "Self Textures - Mountains"; }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus)) reflectionIntensity += 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus)) reflectionIntensity -= 0.01f;
+
+            // Info UI + Help UI
+            if (Keyboard.GetState().IsKeyDown(Keys.H) && previousKeyboardState.IsKeyUp(Keys.H)) { showInfo = !showInfo; }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && previousKeyboardState.IsKeyUp(Keys.OemQuestion)) { showHelp = !showHelp; }
 
             // Reset the camera
             if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 10; cameraTarget = Vector3.Zero; }
@@ -165,6 +191,11 @@ namespace Assignment2
 
             cameraPosition = Vector3.Transform(new Vector3(0, 0, distance), Matrix.CreateTranslation(cameraTarget) * Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX)));
             view = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX))));
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Up)) lightAngleX += 1.0f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Down)) lightAngleX -= 1.0f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Left)) lightAngleY += 1.0f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Right)) lightAngleY -= 1.0f;
 
             lightPosition = Vector3.Transform(new Vector3(0, 0, 10), Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX));
             lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX)));
@@ -211,6 +242,43 @@ namespace Assignment2
 
             DrawModelWithEffect();
 
+            _spriteBatch.Begin();
+            if (showInfo)
+            {
+                int i = 0;
+                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Light Angle: (" + lightAngleX.ToString("0.00") + ", " + lightAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Specular Intensity: " + specularIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Reflection Intensity: " + reflectionIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Light Color: (" + specularColor.X.ToString("0.00") + ", " + specularColor.Y.ToString("0.00") + ", " + specularColor.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Shininess: " + shininess.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+            }
+            if (showHelp)
+            {
+                int i = 0;
+                _spriteBatch.DrawString(font, "Press H to show/hide the Info Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Press ? to show/hide the Help Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Left Click + Drag Rotates the Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Arrow Keys Rotates the Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Hold Shift to Decrease the Below Values", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Q Key: Fresnel Power", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "W Key: Fresnel Scale", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "E Key: Fresnel Bias", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "R Key: ETA Red Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "G Key: ETA Green Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "B Key: ETA Blue Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "+/- : Reflectivity", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "1-2-3-4-5-6: Change Model", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "7-8-9-0: Change Skybox", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "F7-F8-F9-F10 Change Shader", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+            }
+            _spriteBatch.End();
+
             base.Draw(gameTime);
         }
 
@@ -219,7 +287,7 @@ namespace Assignment2
             effect.CurrentTechnique = effect.Techniques[shaderNumber];
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
-                foreach (ModelMesh mesh in model.Meshes)
+                foreach (ModelMesh mesh in currentModel.Meshes)
                 {
                     foreach (ModelMeshPart part in mesh.MeshParts)
                     {
