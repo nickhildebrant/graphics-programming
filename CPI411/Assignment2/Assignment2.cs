@@ -98,7 +98,15 @@ namespace Assignment2
                 "Office/nvlobby_new_posy", "Office/nvlobby_new_negy",
                 "Office/nvlobby_new_posz", "Office/nvlobby_new_negz"
             };
-            skybox = new Skybox(officeSkyboxTextures, 512, Content, GraphicsDevice);
+            officeSkybox = new Skybox(officeSkyboxTextures, Content, GraphicsDevice);
+
+            string[] daytimeSkyboxTextures =
+            {
+                "Daytime/grandcanyon_posx", "Daytime/grandcanyon_negx",
+                "Daytime/grandcanyon_posy", "Daytime/grandcanyon_negy",
+                "Daytime/grandcanyon_posz", "Daytime/grandcanyon_negz"
+            };
+            daytimeSkybox = new Skybox(daytimeSkyboxTextures, Content, GraphicsDevice);
 
             currentSkybox = testSkybox;
         }
