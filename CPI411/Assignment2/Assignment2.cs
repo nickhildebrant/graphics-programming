@@ -108,6 +108,14 @@ namespace Assignment2
             };
             daytimeSkybox = new Skybox(daytimeSkyboxTextures, Content, GraphicsDevice);
 
+            string[] selfSkyboxTextures =
+            {
+                "Self/hills_posx", "Self/hills_negx",
+                "Self/hills_posy", "Self/hills_negy",
+                "Self/hills_posz", "Self/hills_negz",
+            };
+            selfSkybox = new Skybox(selfSkyboxTextures, Content, GraphicsDevice);
+
             currentSkybox = testSkybox;
         }
 
