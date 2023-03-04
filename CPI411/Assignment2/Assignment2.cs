@@ -57,9 +57,9 @@ namespace Assignment2
         float fresnelScale = 10;
         float fresnelBias = 0.5f;
 
-        float redRatio = 1f;
-        float greenRatio = 1f;
-        float blueRatio = 1f;
+        float redRatio = 0.1f;
+        float greenRatio = 0.1f;
+        float blueRatio = 0.1f;
 
         bool showTexture = false;
 
@@ -159,6 +159,22 @@ namespace Assignment2
 
             if (Keyboard.GetState().IsKeyDown(Keys.OemPlus)) reflectionIntensity += 0.01f;
             if (Keyboard.GetState().IsKeyDown(Keys.OemMinus)) reflectionIntensity -= 0.01f;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio += 0.04f;
+            if (Keyboard.GetState().IsKeyDown(Keys.G) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio += 0.04f;
+            if (Keyboard.GetState().IsKeyDown(Keys.B) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio += 0.04f;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.R) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio -= 0.04f;
+            if (Keyboard.GetState().IsKeyDown(Keys.G) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio -= 0.04f;
+            if (Keyboard.GetState().IsKeyDown(Keys.B) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio -= 0.04f;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Q) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower += 0.2f;
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale += 1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.E) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias += 0.02f;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Q) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower -= 0.2f;
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale -= 1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.E) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias -= 0.02f;
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && previousKeyboardState.IsKeyUp(Keys.H)) { showInfo = !showInfo; }
@@ -310,8 +326,7 @@ namespace Assignment2
                         effect.Parameters["SpecularColor"].SetValue(specularColor);
                         effect.Parameters["SpecularIntensity"].SetValue(shininess);
 
-                        //effect.Parameters["EtaRatio"].SetValue(etaRatio);
-                        //effect.Parameters["FresnelEtaRatio"].SetValue(fresnelEtaRatio);
+                        effect.Parameters["FresnelEtaRatio"].SetValue(new Vector3(redRatio, greenRatio, blueRatio));
 
                         effect.Parameters["Reflectivity"].SetValue(reflectionIntensity);
 
@@ -319,7 +334,7 @@ namespace Assignment2
                         effect.Parameters["FresnelBias"].SetValue(fresnelBias);
                         effect.Parameters["FresnelScale"].SetValue(fresnelScale);
 
-                        if(showTexture) effect.Parameters["decalMap"].SetValue(texture);
+                        if (modelName == "Helicopter") { effect.Parameters["decalMap"].SetValue(texture); }
                         effect.Parameters["environmentMap"].SetValue(currentSkybox.skyBoxTexture);
 
                         pass.Apply();

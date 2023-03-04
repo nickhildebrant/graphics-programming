@@ -95,7 +95,7 @@ VertexShaderOutput RefractionVertexShader(VertexShaderInput input)
 
 	float3 N = normalize(mul(input.normal, WorldInverseTranspose).xyz);
 	float3 I = normalize(worldPosition.xyz - CameraPosition);
-	output.Reflection = refract(I, N, EtaRatio);
+	output.Reflection = refract(I, N, 0.68f);
 	output.TextureCoordinate = input.TextureCoordinate;
 
 	return output;
