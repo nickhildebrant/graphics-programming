@@ -16,6 +16,7 @@ namespace Assignment2
 
         Effect effect;
         Texture2D texture;
+        Texture2D noTexture;
         SpriteFont font;
 
         bool showInfo = true, showHelp = true;
@@ -118,7 +119,7 @@ namespace Assignment2
             string[] daytimeSkyboxTextures =
             {
                 "Daytime/grandcanyon_posx", "Daytime/grandcanyon_negx",
-                "Daytime/grandcanyon_posy", "Daytime/grandcanyon_negy",
+                "Daytime/grandcanyon_negy", "Daytime/grandcanyon_posy",
                 "Daytime/grandcanyon_posz", "Daytime/grandcanyon_negz"
             };
             daytimeSkybox = new Skybox(daytimeSkyboxTextures, Content, GraphicsDevice);
@@ -171,21 +172,21 @@ namespace Assignment2
             if (Keyboard.GetState().IsKeyDown(Keys.OemPlus)) reflectionIntensity += 0.01f;
             if (Keyboard.GetState().IsKeyDown(Keys.OemMinus)) reflectionIntensity -= 0.01f;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio += 0.04f;
-            if (Keyboard.GetState().IsKeyDown(Keys.G) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio += 0.04f;
-            if (Keyboard.GetState().IsKeyDown(Keys.B) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio += 0.04f;
+            if (Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio += 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.G) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio += 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.B) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio += 0.01f;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio -= 0.04f;
-            if (Keyboard.GetState().IsKeyDown(Keys.G) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio -= 0.04f;
-            if (Keyboard.GetState().IsKeyDown(Keys.B) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio -= 0.04f;
+            if (Keyboard.GetState().IsKeyDown(Keys.R) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio -= 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.G) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio -= 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.B) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio -= 0.01f;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Q) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower += 0.2f;
-            if (Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale += 1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Q) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower += 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale += 0.01f;
             if (Keyboard.GetState().IsKeyDown(Keys.E) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias += 0.02f;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Q) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower -= 0.2f;
-            if (Keyboard.GetState().IsKeyDown(Keys.W) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale -= 1f;
-            if (Keyboard.GetState().IsKeyDown(Keys.E) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias -= 0.02f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Q) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower -= 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale -= 0.01f;
+            if (Keyboard.GetState().IsKeyDown(Keys.E) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias -= 0.01f;
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && previousKeyboardState.IsKeyUp(Keys.H)) { showInfo = !showInfo; }
@@ -346,6 +347,7 @@ namespace Assignment2
                         effect.Parameters["FresnelScale"].SetValue(fresnelScale);
 
                         if (modelName == "Helicopter") { effect.Parameters["decalMap"].SetValue(texture); }
+                        else { effect.Parameters["decalMap"].SetValue(noTexture); }
                         effect.Parameters["environmentMap"].SetValue(currentSkybox.skyBoxTexture);
 
                         pass.Apply();
