@@ -141,12 +141,10 @@ namespace Assignment2
                 "skybox/SunsetPNG6",
                 "skybox/SunsetPNG5",
             };
-
-            currentSkybox = new Skybox(skyboxTextures, Content, GraphicsDevice);
-            skyboxNumber = 20;
+            //currentSkybox = new Skybox(skyboxTextures, Content, GraphicsDevice);
 
             currentModel = helicopter;
-            //currentSkybox = testSkybox;
+            currentSkybox = testSkybox;
         }
 
         protected override void Update(GameTime gameTime)
@@ -274,36 +272,37 @@ namespace Assignment2
             if (showInfo)
             {
                 int i = 0;
-                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Light Angle: (" + lightAngleX.ToString("0.00") + ", " + lightAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Specular Intensity: " + specularIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Reflection Intensity: " + reflectionIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Light Color: (" + specularColor.X.ToString("0.00") + ", " + specularColor.Y.ToString("0.00") + ", " + specularColor.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Shininess: " + shininess.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Light Angle: (" + lightAngleX.ToString("0.00") + ", " + lightAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Reflection Intensity: " + reflectionIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Fresnel Power: " + fresnelPower.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Fresnel Scale: " + fresnelScale.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Fresnel Bias: " + fresnelBias.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Fresnel ETA Ratio: (" + redRatio.ToString("0.00") + ", " + greenRatio.ToString("0.00") + ", " + blueRatio.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
                 int i = 0;
-                _spriteBatch.DrawString(font, "Press H to show/hide the Info Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Press ? to show/hide the Help Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Left Click + Drag Rotates the Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Arrow Keys Rotates the Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Hold Shift to Decrease the Below Values", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "Q Key: Fresnel Power", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "W Key: Fresnel Scale", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "E Key: Fresnel Bias", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "R Key: ETA Red Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "G Key: ETA Green Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "B Key: ETA Blue Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "+/- : Reflectivity", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "1-2-3-4-5-6: Change Model", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "7-8-9-0: Change Skybox", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
-                _spriteBatch.DrawString(font, "F7-F8-F9-F10 Change Shader", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Green);
+                _spriteBatch.DrawString(font, "Press H to show/hide the Info Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Press ? to show/hide the Help Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Left Click + Drag Rotates the Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Arrow Keys Rotates the Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Hold Shift to Decrease the Below Values", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Q Key: Fresnel Power", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "W Key: Fresnel Scale", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "E Key: Fresnel Bias", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "R Key: ETA Red Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "G Key: ETA Black Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "B Key: ETA Blue Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "+/- : Reflectivity", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "1-2-3-4-5-6: Change Model", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "7-8-9-0: Change Skybox", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "F7-F8-F9-F10 Change Shader", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 
