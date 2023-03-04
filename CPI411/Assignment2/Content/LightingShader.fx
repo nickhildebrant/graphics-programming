@@ -134,7 +134,7 @@ FresnelVertexShaderOutput DispersionVertexShader(VertexShaderInput input)
 	output.Red = refract(I, N, FresnelEtaRatio.x);
 	output.Green = refract(I, N, FresnelEtaRatio.y);
 	output.Blue = refract(I, N, FresnelEtaRatio.z);
-	output.reflectionFactor = 0;
+	output.reflectionFactor = Reflectivity;
 
 	return output;
 }

@@ -189,8 +189,8 @@ namespace Assignment2
             if (Keyboard.GetState().IsKeyDown(Keys.E) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias -= 0.01f;
 
             // Info UI + Help UI
-            if (Keyboard.GetState().IsKeyDown(Keys.H) && previousKeyboardState.IsKeyUp(Keys.H)) { showInfo = !showInfo; }
-            if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && previousKeyboardState.IsKeyUp(Keys.OemQuestion)) { showHelp = !showHelp; }
+            if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !previousKeyboardState.IsKeyDown(Keys.OemQuestion)) { showHelp = !showHelp; }
 
             // Reset the camera
             if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 10; cameraTarget = Vector3.Zero; }
@@ -229,6 +229,7 @@ namespace Assignment2
             lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX)));
 
             previousMouseState = Mouse.GetState();
+            previousKeyboardState = Keyboard.GetState();
 
             base.Update(gameTime);
         }
