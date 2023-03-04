@@ -127,9 +127,9 @@ namespace Assignment2
             // loading the self skybox
             string[] selfSkyboxTextures =
             {
-                "Space/frontImage", "Space/backImage",
                 "Space/rightImage", "Space/leftImage",
                 "Space/upImage", "Space/downImage",
+                "Space/frontImage", "Space/backImage",
             };
             selfSkybox = new Skybox(selfSkyboxTextures, 2048, Content, GraphicsDevice);
 
