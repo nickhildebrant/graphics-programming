@@ -82,7 +82,7 @@ VertexShaderOutput ReflectionVertexShader(VertexShaderInput input)
 	float3 N = normalize(mul(input.normal, WorldInverseTranspose).xyz);
 	float3 I = normalize(worldPosition.xyz - CameraPosition);
 	output.Reflection = reflect(I, N);
-	//output.TextureCoordinate = input.TextureCoordinate;
+	output.TextureCoordinate = input.TextureCoordinate;
 
 	return output;
 }
@@ -106,7 +106,7 @@ VertexShaderOutput RefractionVertexShader(VertexShaderInput input)
 	float3 N = normalize(mul(input.normal, WorldInverseTranspose).xyz);
 	float3 I = normalize(worldPosition.xyz - CameraPosition);
 	output.Reflection = refract(I, N, EtaRatio);
-	//output.TextureCoordinate = input.TextureCoordinate;
+	output.TextureCoordinate = input.TextureCoordinate;
 
 	return output;
 }
@@ -115,7 +115,7 @@ float4 RefractionPixelShader(VertexShaderOutput input) : COLOR0
 {
 	float4 refractedColor = texCUBE(SkyBoxSampler, input.Reflection);
 	float4 decalColor = tex2D(tsampler1, input.TextureCoordinate);
-	return lerp(decalColor, refractedColor, 0.5);
+	return lerp(decalColor, refractedColor, Reflectivity);
 }
 
 FresnelVertexShaderOutput DispersionVertexShader(VertexShaderInput input)

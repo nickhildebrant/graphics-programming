@@ -54,8 +54,8 @@ namespace Assignment2
 
         float reflectionIntensity = 0.5f;
 
-        float fresnelPower = 2;
-        float fresnelScale = 10;
+        float fresnelPower = 2f;
+        float fresnelScale = 1f;
         float fresnelBias = 0.5f;
 
         float redRatio = 0.1f;
@@ -127,11 +127,11 @@ namespace Assignment2
             // loading the self skybox
             string[] selfSkyboxTextures =
             {
-                "Self/hills_posx", "Self/hills_negx",
-                "Self/hills_posy", "Self/hills_negy",
-                "Self/hills_posz", "Self/hills_negz",
+                "Space/frontImage", "Space/backImage",
+                "Space/rightImage", "Space/leftImage",
+                "Space/upImage", "Space/downImage",
             };
-            selfSkybox = new Skybox(selfSkyboxTextures, Content, GraphicsDevice);
+            selfSkybox = new Skybox(selfSkyboxTextures, 2048, Content, GraphicsDevice);
 
             string[] skyboxTextures =
             {
