@@ -132,13 +132,14 @@ namespace Assignment2
                 distance += (Mouse.GetState().X - previousMouseState.X) / 100f;
             }
 
-            // Camera control
+            // Camera rotation control
             if (previousMouseState.LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 cameraAngleX += (previousMouseState.X - Mouse.GetState().X);
                 cameraAngleY += (previousMouseState.Y - Mouse.GetState().Y);
             }
 
+            // Camera translation control
             if (previousMouseState.MiddleButton == ButtonState.Pressed && Mouse.GetState().MiddleButton == ButtonState.Pressed)
             {
                 Vector3 ViewRight = Vector3.Transform(Vector3.UnitX, Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
