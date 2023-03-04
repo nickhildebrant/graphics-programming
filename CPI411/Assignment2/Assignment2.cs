@@ -132,8 +132,21 @@ namespace Assignment2
             };
             selfSkybox = new Skybox(selfSkyboxTextures, Content, GraphicsDevice);
 
+            string[] skyboxTextures =
+            {
+                "skybox/SunsetPNG2",
+                "skybox/SunsetPNG1",
+                "skybox/SunsetPNG4",
+                "skybox/SunsetPNG3",
+                "skybox/SunsetPNG6",
+                "skybox/SunsetPNG5",
+            };
+
+            currentSkybox = new Skybox(skyboxTextures, Content, GraphicsDevice);
+            skyboxNumber = 20;
+
             currentModel = helicopter;
-            currentSkybox = testSkybox;
+            //currentSkybox = testSkybox;
         }
 
         protected override void Update(GameTime gameTime)
@@ -245,7 +258,6 @@ namespace Assignment2
                     break;
 
                 default:
-                    currentSkybox = testSkybox;
                     break;
             }
 
