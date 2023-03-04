@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CPI411.SimpleEngine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,12 +12,12 @@ namespace Assignment2
 
         Model model;
         Effect effect;
+        Texture2D texture;
 
         Matrix world, view, projection;
 
         Vector3 cameraPosition;
-        Vector3 cameraLookat;
-        float cameraX = 0, cameraY = 0;
+        Vector3 cameraTarget;
 
         Vector4 ambient = new Vector4(0, 0, 0, 0);
         float ambientIntensity = 0.1f;
@@ -24,15 +25,35 @@ namespace Assignment2
         Vector3 diffuseLightDirection = new Vector3(1, 1, 1);
         float diffuseIntensity = 1.0f;
 
+        Vector3 lightPosition = new Vector3(0, 0, 1);
         Vector3 lightDirection = new Vector3(0.5f, 0.6f, 0.4f);
 
         Vector4 specularColor = new Vector4(1, 1, 1, 1);
         float specularIntensity = 1.0f;
         float shininess = 20f;
 
-        float cameraAngle1, cameraAngle2;
-        float lightAngle1, lightAngle2;
-        float distance = 1f;
+        float cameraAngleX, cameraAngleY;
+        float lightAngleX, lightAngleY;
+        float distance = 10f;
+
+        int skyboxNumber = 7;
+        string skyboxName = "Test Skybox";
+        Skybox currentSkybox, testSkybox, officeSkybox, daytimeSkybox, selfSkybox;
+
+        int shaderNumber = 0;
+        string shaderName = "Reflection Shader";
+
+        float reflectionIntensity = 0.5f;
+
+        float fresnelPower = 2;
+        float fresnelScale = 15;
+        float fresnelBias = 0.5f;
+
+        float redRatio = 1f;
+        float greenRatio = 1f;
+        float blueRatio = 1f;
+
+        bool showTexture = false;
 
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
@@ -47,6 +68,7 @@ namespace Assignment2
 
         protected override void Initialize()
         {
+            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 1000);
 
             base.Initialize();
         }
@@ -57,59 +79,68 @@ namespace Assignment2
 
             //font = Content.Load<SpriteFont>("font");
 
-            effect = Content.Load<Effect>("SimpleShading");
+            effect = Content.Load<Effect>("LightingShader");
             model = Content.Load<Model>("bunnyUV");
+            texture = Content.Load<Texture2D>("HelicopterTexture");
+
+            // Loading Test Skybox
+            string[] testSkyboxTextures =
+            {
+                "Test/debug_posx", "Test/debug_negx",
+                "Test/debug_posy", "Test/debug_negy",
+                "Test/debug_posz", "Test/debug_negz",
+            };
+            //testSkybox = new Skybox(testSkyboxTextures, Content, GraphicsDevice);
+
+            //currentSkybox = testSkybox;
+
+            string[] skyboxTextures =
+            {
+                "skybox/SunsetPNG2", "skybox/SunsetPNG1",
+                "skybox/SunsetPNG4", "skybox/SunsetPNG3",
+                "skybox/SunsetPNG6", "skybox/SunsetPNG5",
+            };
+
+            currentSkybox = new Skybox(skyboxTextures, Content, GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            // Resets Camera & Light
-            if (Keyboard.GetState().IsKeyDown(Keys.S) && previousKeyboardState.IsKeyUp(Keys.S))
+            // Reset the camera
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 30; cameraTarget = Vector3.Zero; }
+
+            // Distance control
+            if (previousMouseState.RightButton == ButtonState.Pressed && Mouse.GetState().RightButton == ButtonState.Pressed)
             {
-                cameraAngle1 = 0;
-                cameraAngle2 = 0;
-
-                cameraX = 0;
-                cameraY = 0;
-
-                distance = 1;
-
-                lightDirection = new Vector3(0.5f, 0.6f, 0.4f);
-
-                lightAngle1 = 0;
-                lightAngle2 = 0;
-
-                diffuseColor = new Vector4(1, 1, 1, 1);
-                specularColor = new Vector4(1, 1, 1, 1);
-                specularIntensity = 1f;
-                diffuseIntensity = 1f;
+                distance += (Mouse.GetState().X - previousMouseState.X) / 100f;
             }
 
-            // Camera rotation controller
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Pressed)
+            // Camera control
+            if (previousMouseState.LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                cameraAngle2 -= (previousMouseState.X - Mouse.GetState().X) / 100f;
-                cameraAngle1 -= (previousMouseState.Y - Mouse.GetState().Y) / 100f;
+                cameraAngleX += (previousMouseState.X - Mouse.GetState().X);
+                cameraAngleY += (previousMouseState.Y - Mouse.GetState().Y);
             }
 
-            // Camera distance controller
-            if (Mouse.GetState().RightButton == ButtonState.Pressed && previousMouseState.RightButton == ButtonState.Pressed)
+            if (previousMouseState.MiddleButton == ButtonState.Pressed && Mouse.GetState().MiddleButton == ButtonState.Pressed)
             {
-                distance += (float)gameTime.ElapsedGameTime.TotalSeconds * (Mouse.GetState().Y - previousMouseState.Y);
+                Vector3 ViewRight = Vector3.Transform(Vector3.UnitX, Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
+                Vector3 ViewUp = Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
+                cameraTarget -= ViewRight * (Mouse.GetState().X - previousMouseState.X) / 10f;
+                cameraTarget += ViewUp * (Mouse.GetState().Y - previousMouseState.Y) / 10f;
             }
 
-            // Camera translation controller
-            if (Mouse.GetState().MiddleButton == ButtonState.Pressed && previousMouseState.MiddleButton == ButtonState.Pressed)
-            {
-                cameraX += (Mouse.GetState().X - previousMouseState.X) / 100f;
-                cameraY += (Mouse.GetState().Y - previousMouseState.Y) / 100f;
-            }
 
-            cameraPosition = Vector3.Transform(new Vector3(cameraX, cameraY, 20), Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2));
-            view = Matrix.CreateLookAt(distance * cameraPosition, new Vector3(cameraX, cameraY, 0), Vector3.Transform(Vector3.Up, Matrix.CreateRotationX(cameraAngle1) * Matrix.CreateRotationY(cameraAngle2)));
-            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 1000);
+            cameraPosition = Vector3.Transform(new Vector3(0, 0, distance), Matrix.CreateTranslation(cameraTarget) * Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX)));
+            view = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX))));
+
+            lightPosition = Vector3.Transform(new Vector3(0, 0, 10), Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX));
+            //lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(angleL2) * Matrix.CreateRotationY(angleL)));
+            //lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
+
+            previousMouseState = Mouse.GetState();
 
             base.Update(gameTime);
         }
@@ -118,10 +149,21 @@ namespace Assignment2
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            GraphicsDevice.BlendState = BlendState.Opaque;
-            GraphicsDevice.DepthStencilState = new DepthStencilState();
+            RasterizerState originalRasterizerState = _graphics.GraphicsDevice.RasterizerState;
+            RasterizerState rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
+            _graphics.GraphicsDevice.RasterizerState = rasterizerState;
+            currentSkybox.Draw(view, projection, cameraPosition);
+            _graphics.GraphicsDevice.RasterizerState = originalRasterizerState;
 
-            effect.CurrentTechnique = effect.Techniques[0]; // 0 per vertex, 1 per pixel
+            DrawModelWithEffect();
+
+            base.Draw(gameTime);
+        }
+
+        void DrawModelWithEffect()
+        {
+            effect.CurrentTechnique = effect.Techniques[shaderNumber];
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 foreach (ModelMesh mesh in model.Meshes)
@@ -132,32 +174,40 @@ namespace Assignment2
                         effect.Parameters["View"].SetValue(view);
                         effect.Parameters["Projection"].SetValue(projection);
 
-                        effect.Parameters["AmbientColor"].SetValue(ambient);
-                        effect.Parameters["AmbientIntensity"].SetValue(ambientIntensity);
-                        effect.Parameters["DiffuseColor"].SetValue(diffuseColor);
-                        effect.Parameters["DiffuseIntensity"].SetValue(diffuseIntensity);
-                        effect.Parameters["DiffuseLightDirection"].SetValue(diffuseLightDirection);
+                        Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
+                        effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
 
-                        effect.Parameters["SpecularColor"].SetValue(specularColor);
-                        effect.Parameters["SpecularIntensity"].SetValue(specularIntensity);
-                        effect.Parameters["Shininess"].SetValue(shininess);
-
-                        effect.Parameters["LightPosition"].SetValue(lightDirection);
                         effect.Parameters["CameraPosition"].SetValue(cameraPosition);
 
-                        Matrix worldInverseTranspose = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
-                        effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTranspose);
-                        pass.Apply();
+                        effect.Parameters["AmbientColor"].SetValue(ambient);
+                        effect.Parameters["AmbientIntensity"].SetValue(ambientIntensity);
 
+                        effect.Parameters["DiffuseLightDirection"].SetValue(lightDirection);
+                        effect.Parameters["DiffuseColor"].SetValue(diffuseColor);
+                        effect.Parameters["DiffuseIntensity"].SetValue(diffuseIntensity);
+
+                        effect.Parameters["SpecularColor"].SetValue(specularColor);
+                        effect.Parameters["SpecularIntensity"].SetValue(shininess);
+
+                        //effect.Parameters["EtaRatio"].SetValue(etaRatio);
+                        //effect.Parameters["FresnelEtaRatio"].SetValue(fresnelEtaRatio);
+
+                        effect.Parameters["Reflectivity"].SetValue(reflectionIntensity);
+
+                        effect.Parameters["FresnelPower"].SetValue(fresnelPower);
+                        effect.Parameters["FresnelBias"].SetValue(fresnelBias);
+                        effect.Parameters["FresnelScale"].SetValue(fresnelScale);
+
+                        if(showTexture) effect.Parameters["decalMap"].SetValue(texture);
+                        effect.Parameters["environmentMap"].SetValue(currentSkybox.skyBoxTexture);
+
+                        pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
                         GraphicsDevice.Indices = part.IndexBuffer;
-
                         GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
                     }
                 }
             }
-
-            base.Draw(gameTime);
         }
     }
 }
