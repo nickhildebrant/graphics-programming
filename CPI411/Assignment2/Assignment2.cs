@@ -92,6 +92,14 @@ namespace Assignment2
             };
             testSkybox = new Skybox(testSkyboxTextures, 256, Content, GraphicsDevice);
 
+            string[] officeSkyboxTextures =
+            {
+                "Office/nvlobby_new_posx", "Office/nvlobby_new_negx",
+                "Office/nvlobby_new_posy", "Office/nvlobby_new_negy",
+                "Office/nvlobby_new_posz", "Office/nvlobby_new_negz"
+            };
+            skybox = new Skybox(officeSkyboxTextures, 512, Content, GraphicsDevice);
+
             currentSkybox = testSkybox;
         }
 

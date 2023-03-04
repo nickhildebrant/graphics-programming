@@ -11,6 +11,39 @@ namespace CPI411.SimpleEngine
         private Effect skyBoxEffect;
         private float size = 50f;
 
+        public Skybox(string[] skyboxTextures, ContentManager Content, GraphicsDevice g)
+        {
+            skyBox = Content.Load<Model>("skybox/cube");            // Lab05's Content Folder
+            skyBoxEffect = Content.Load<Effect>("skybox/Skybox");   // Look at Skybox.fx
+
+            skyBoxTexture = new TextureCube(g, 512, false, SurfaceFormat.Color);
+            byte[] data = new byte[512 * 512 * 4];
+            Texture2D tempTexture = Content.Load<Texture2D>(skyboxTextures[0]);
+            tempTexture.GetData<byte>(data);
+            skyBoxTexture.SetData<byte>(CubeMapFace.NegativeX, data);
+
+            tempTexture = Content.Load<Texture2D>(skyboxTextures[1]);
+            tempTexture.GetData<byte>(data);
+            skyBoxTexture.SetData<byte>(CubeMapFace.PositiveX, data);
+
+            // continue to the other faces. 
+            tempTexture = Content.Load<Texture2D>(skyboxTextures[2]);
+            tempTexture.GetData<byte>(data);
+            skyBoxTexture.SetData<byte>(CubeMapFace.NegativeY, data);
+
+            tempTexture = Content.Load<Texture2D>(skyboxTextures[3]);
+            tempTexture.GetData<byte>(data);
+            skyBoxTexture.SetData<byte>(CubeMapFace.PositiveY, data);
+
+            tempTexture = Content.Load<Texture2D>(skyboxTextures[4]);
+            tempTexture.GetData<byte>(data);
+            skyBoxTexture.SetData<byte>(CubeMapFace.NegativeZ, data);
+
+            tempTexture = Content.Load<Texture2D>(skyboxTextures[5]);
+            tempTexture.GetData<byte>(data);
+            skyBoxTexture.SetData<byte>(CubeMapFace.PositiveZ, data);
+        }
+
         // Constructor
         public Skybox(string[] skyboxTextures, int size, ContentManager Content, GraphicsDevice g)
         {
