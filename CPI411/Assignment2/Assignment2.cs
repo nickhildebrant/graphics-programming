@@ -110,7 +110,7 @@ namespace Assignment2
             string[] officeSkyboxTextures =
             {
                 "Office/nvlobby_new_posx", "Office/nvlobby_new_negx",
-                "Office/nvlobby_new_posy", "Office/nvlobby_new_negy",
+                "Office/nvlobby_new_negy", "Office/nvlobby_new_posy",
                 "Office/nvlobby_new_posz", "Office/nvlobby_new_negz"
             };
             officeSkybox = new Skybox(officeSkyboxTextures, Content, GraphicsDevice);
