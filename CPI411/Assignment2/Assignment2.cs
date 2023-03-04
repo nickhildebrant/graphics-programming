@@ -27,6 +27,8 @@ namespace Assignment2
 
         Vector3 lightPosition = new Vector3(0, 0, 1);
         Vector3 lightDirection = new Vector3(0.5f, 0.6f, 0.4f);
+        Matrix lightView;
+        Matrix lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
 
         Vector4 specularColor = new Vector4(1, 1, 1, 1);
         float specularIntensity = 1.0f;
@@ -34,9 +36,9 @@ namespace Assignment2
 
         float cameraAngleX, cameraAngleY;
         float lightAngleX, lightAngleY;
-        float distance = 10f;
+        float distance = 15f;
 
-        int skyboxNumber = 7;
+        int skyboxNumber = 0;
         string skyboxName = "Test Skybox";
         Skybox currentSkybox, testSkybox, officeSkybox, daytimeSkybox, selfSkybox;
 
@@ -46,7 +48,7 @@ namespace Assignment2
         float reflectionIntensity = 0.5f;
 
         float fresnelPower = 2;
-        float fresnelScale = 15;
+        float fresnelScale = 10;
         float fresnelBias = 0.5f;
 
         float redRatio = 1f;
@@ -80,7 +82,7 @@ namespace Assignment2
             //font = Content.Load<SpriteFont>("font");
 
             effect = Content.Load<Effect>("LightingShader");
-            model = Content.Load<Model>("bunnyUV");
+            model = Content.Load<Model>("Helicopter");
             texture = Content.Load<Texture2D>("HelicopterTexture");
 
             // Loading Test Skybox
@@ -92,6 +94,7 @@ namespace Assignment2
             };
             testSkybox = new Skybox(testSkyboxTextures, 256, Content, GraphicsDevice);
 
+            // Loading office skybox
             string[] officeSkyboxTextures =
             {
                 "Office/nvlobby_new_posx", "Office/nvlobby_new_negx",
@@ -100,6 +103,7 @@ namespace Assignment2
             };
             officeSkybox = new Skybox(officeSkyboxTextures, Content, GraphicsDevice);
 
+            // loading daytime skybox
             string[] daytimeSkyboxTextures =
             {
                 "Daytime/grandcanyon_posx", "Daytime/grandcanyon_negx",
@@ -108,6 +112,7 @@ namespace Assignment2
             };
             daytimeSkybox = new Skybox(daytimeSkyboxTextures, Content, GraphicsDevice);
 
+            // loading the self skybox
             string[] selfSkyboxTextures =
             {
                 "Self/hills_posx", "Self/hills_negx",
@@ -123,8 +128,18 @@ namespace Assignment2
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.F7)) { shaderNumber = 0; shaderName = "Reflection Shader"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F8)) { shaderNumber = 1; shaderName = "Refraction Shader"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F9)) { shaderNumber = 2; shaderName = "Refraction + Dispersion Shader"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F10)) { shaderNumber = 3; shaderName = "Fresnel Shader"; }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { skyboxNumber = 0; skyboxName = "Test Colors"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { skyboxNumber = 1; skyboxName = "Office Room"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { skyboxNumber = 2; skyboxName = "Daytime Sky - Grand Canyon"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D0)) { skyboxNumber = 3; skyboxName = "Self Textures - Mountains"; }
+
             // Reset the camera
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 30; cameraTarget = Vector3.Zero; }
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 10; cameraTarget = Vector3.Zero; }
 
             // Distance control
             if (previousMouseState.RightButton == ButtonState.Pressed && Mouse.GetState().RightButton == ButtonState.Pressed)
@@ -148,13 +163,11 @@ namespace Assignment2
                 cameraTarget += ViewUp * (Mouse.GetState().Y - previousMouseState.Y) / 10f;
             }
 
-
             cameraPosition = Vector3.Transform(new Vector3(0, 0, distance), Matrix.CreateTranslation(cameraTarget) * Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX)));
             view = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX))));
 
             lightPosition = Vector3.Transform(new Vector3(0, 0, 10), Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX));
-            //lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(angleL2) * Matrix.CreateRotationY(angleL)));
-            //lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
+            lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX)));
 
             previousMouseState = Mouse.GetState();
 
@@ -164,6 +177,30 @@ namespace Assignment2
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            // Picking the skybox
+            switch(skyboxNumber)
+            {
+                case 0:
+                    currentSkybox = testSkybox;
+                    break;
+
+                case 1:
+                    currentSkybox = officeSkybox;
+                    break;
+
+                case 2:
+                    currentSkybox = daytimeSkybox;
+                    break;
+
+                case 3:
+                    currentSkybox = selfSkybox;
+                    break;
+
+                default:
+                    currentSkybox = testSkybox;
+                    break;
+            }
 
             RasterizerState originalRasterizerState = _graphics.GraphicsDevice.RasterizerState;
             RasterizerState rasterizerState = new RasterizerState();
