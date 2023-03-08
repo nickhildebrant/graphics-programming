@@ -59,9 +59,8 @@ float4 PSFunction(VertexShaderOutput input) : COLOR0
 	float depth = 1.0 - projTexCoord.z;								// Step 5
 	float4 color = tex2D(TextureSampler, projTexCoord.xy);			// Step 6
 
-	//// Step 7
-	//if (color.x == 0 && color.y == 1 && color.z == 1)
-	//	color.xyz = float3(0, 0, 0);
+	// Step 7
+	if (color.x == 0 && color.y == 1 && color.z == 1) color.xyz = float3(0, 0, 0);
 
 	//// Step 8 - optional
 	//float3 N = normalize(input.Normal);

@@ -10,7 +10,7 @@ namespace Lab08
         private SpriteBatch _spriteBatch;
 
         SpriteFont font;
-        Effect effect;
+        Effect effect, projectionEffect, depthEffect;
         Matrix world = Matrix.Identity;
         Matrix view = Matrix.CreateLookAt(new Vector3(0, 0, 20), new Vector3(0, 0, 0), Vector3.UnitY);
         Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 600f,0.1f, 100f);
@@ -49,13 +49,20 @@ namespace Lab08
 
             font = Content.Load<SpriteFont>("font");
             model = Content.Load<Model>("plane");
-            effect = Content.Load<Effect>("ProjectiveTexture");
+            projectionEffect = Content.Load<Effect>("ProjectiveTexture");
+            depthEffect = Content.Load<Effect>("DepthEffect");
             texture = Content.Load<Texture2D>("nvlobby_new_negz");
+
+            effect = projectionEffect;
+            effect.Parameters["ProjectiveTexture"].SetValue(texture);
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.F1)) effect = projectionEffect;
+            if (Keyboard.GetState().IsKeyDown(Keys.F2)) effect = depthEffect;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Left)) angleL += 0.02f;
             if (Keyboard.GetState().IsKeyDown(Keys.Right)) angleL -= 0.02f;
@@ -122,8 +129,6 @@ namespace Lab08
                         effect.Parameters["LightProjectionMatrix"].SetValue(lightProjection);
                         effect.Parameters["CameraPosition"].SetValue(cameraPosition);
                         effect.Parameters["LightPosition"].SetValue(lightPosition);
-
-                        effect.Parameters["ProjectiveTexture"].SetValue(texture);
 
                         pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);

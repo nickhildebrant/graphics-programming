@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin DepthEffect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:DepthEffect.fx
+
 #begin font.spritefont
 /importer:FontDescriptionImporter
 /processor:LocalizedFontProcessor
