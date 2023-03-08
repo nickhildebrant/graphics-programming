@@ -9,13 +9,13 @@ float4x4 LightProjectionMatrix;
 float3 CameraPosition;
 float3 LightPosition;
 
-float AmbientColor;
+float AmbientColor = 0.8f;
 
 texture ProjectiveTexture;
 
 sampler TextureSampler = sampler_state
 {
-	Texture = < ProjectiveTexture >;
+	Texture = <ProjectiveTexture>;
 	MinFilter = none;
 	MagFilter = none;
 	MipFilter = none;
@@ -52,23 +52,23 @@ VertexShaderOutput VSFunction(VertexShaderInput input)
 
 float4 PSFunction(VertexShaderOutput input) : COLOR0
 {
-	float4 projTexCoord = mul(mul(World, LightViewMatrix), LightProjectionMatrix); // Remember how to get the world position, Step 1
+	float4 projTexCoord = mul(mul(float4(input.WorldPosition, 1), LightViewMatrix), LightProjectionMatrix); // Remember how to get the world position, Step 1
 	projTexCoord = projTexCoord / projTexCoord.w;					// Step 2
-	projTexCoord.xy = 0.5 * projectTexCoord + (float2)(0.5, 0.5);	// Step 3
+	projTexCoord.xy = 0.5 * projTexCoord + float2(0.5, 0.5);		// Step 3
 	projTexCoord.y = 1.0 - projTexCoord.y;							// Step 4
 	float depth = 1.0 - projTexCoord.z;								// Step 5
-	float4 color = tex2D(ProjectiveSampler, projTexCoord);			// Step 6
+	float4 color = tex2D(TextureSampler, projTexCoord.xy);			// Step 6
 
-	// Step 7
-	if (color.x == 0 && color.y == 1 && color.z == 1)
-		color.xyz = float3(0, 0, 0);
+	//// Step 7
+	//if (color.x == 0 && color.y == 1 && color.z == 1)
+	//	color.xyz = float3(0, 0, 0);
 
-	// Step 8 - optional
-	float3 N = normalize(input.Normal);
-	float3 L = normalize(LightPosition - input.WorldPosition);
-	if (dot(L, N) < 0) color = 0;
+	//// Step 8 - optional
+	//float3 N = normalize(input.Normal);
+	//float3 L = normalize(LightPosition - input.WorldPosition);
+	//if (dot(L, N) < 0) color = 0;
 
-	return float4(AmbientColor, AmbientColor, AmbientColor, 1.0);
+	return color;
 }
 
 technique Technique1

@@ -22,7 +22,7 @@ namespace Lab08
         float angle2 = 0;
         float angleL = 0;
         float angleL2 = 0;
-        float distance = 20;
+        float distance = 30;
 
         MouseState preMouse;
         Model model;
@@ -118,7 +118,12 @@ namespace Lab08
                         Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
                         effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
 
-                        //effect.Parameters["ProjectiveTexture"].SetValue(texture);
+                        effect.Parameters["LightViewMatrix"].SetValue(lightView);
+                        effect.Parameters["LightProjectionMatrix"].SetValue(lightProjection);
+                        effect.Parameters["CameraPosition"].SetValue(cameraPosition);
+                        effect.Parameters["LightPosition"].SetValue(lightPosition);
+
+                        effect.Parameters["ProjectiveTexture"].SetValue(texture);
 
                         pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
