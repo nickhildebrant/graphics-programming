@@ -50,7 +50,8 @@ namespace Lab08
             font = Content.Load<SpriteFont>("font");
             model = Content.Load<Model>("plane");
             torus = Content.Load<Model>("Torus");
-            projectionEffect = Content.Load<Effect>("ProjectiveTexture");
+            //projectionEffect = Content.Load<Effect>("ProjectiveTexture");
+            projectionEffect = Content.Load<Effect>("ShadowMap");
             depthEffect = Content.Load<Effect>("DepthEffect");
             texture = Content.Load<Texture2D>("nvlobby_new_negz");
 
