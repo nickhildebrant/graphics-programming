@@ -56,7 +56,7 @@ namespace Lab08
             texture = Content.Load<Texture2D>("nvlobby_new_negz");
 
             effect = projectionEffect;
-            effect.Parameters["ProjectiveTexture"].SetValue(texture);
+            //effect.Parameters["ProjectiveTexture"].SetValue(texture);
         }
 
         protected override void Update(GameTime gameTime)
