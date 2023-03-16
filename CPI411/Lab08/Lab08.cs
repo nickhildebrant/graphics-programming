@@ -25,7 +25,7 @@ namespace Lab08
         float distance = 30;
 
         MouseState preMouse;
-        Model model;
+        Model model, torus;
         Texture2D texture;
 
         public Lab08()
@@ -49,6 +49,7 @@ namespace Lab08
 
             font = Content.Load<SpriteFont>("font");
             model = Content.Load<Model>("plane");
+            torus = Content.Load<Model>("Torus");
             projectionEffect = Content.Load<Effect>("ProjectiveTexture");
             depthEffect = Content.Load<Effect>("DepthEffect");
             texture = Content.Load<Texture2D>("nvlobby_new_negz");
