@@ -14,15 +14,12 @@ float SpecularIntensity;
 float Shininess;
 float EtaRatio;
 
-
-float NormalMapRepeatU;  //repeat rate of U for normal map
-float NormalMapRepeatV;  //repeat rate of V for normal map
-int SelfShadow;  //0:nope 1:step2 2:step3
-float BumpHeight;  //how bumpy the bump mapping is [1~10]
-int NormalizeTangentFrame;  //0:nope 1:yes
+float NormalMapRepeatU;
+float NormalMapRepeatV;
+int SelfShadow;
+float BumpHeight;
+int NormalizeTangentFrame;
 int NormalizeNormalMap;
-//0:nope 1:for both diffuse and specular 2:for specular only
-//3:for specular only
 
 int MipMap;
 
@@ -80,7 +77,7 @@ struct StandardVertexOutput
 	float2 TexCoord : TEXCOORD0;
 };
 
-StandardVertexOutput StandardVS(in StandardVertexInput input)
+StandardVertexOutput VertexShaderFunction(in StandardVertexInput input)
 {
 	StandardVertexOutput output;
 	float4 worldpos = mul(input.Position, World);
@@ -393,7 +390,7 @@ technique NormalMapShader
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 NormalPS();
 	}
 };
@@ -402,7 +399,7 @@ technique WorldNormalShader
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 WorldNormalPS();
 	}
 };
@@ -411,7 +408,7 @@ technique TangentSpaceShader
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 BlinnMappedStandardPS();
 	}
 };
@@ -420,7 +417,7 @@ technique ReflectionShader
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 ReflectPS();
 	}
 };
@@ -429,7 +426,7 @@ technique RefractionShader
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 RefractPS();
 	}
 };
@@ -438,7 +435,7 @@ technique BlinnMappedNotNormalizeTangentFrame
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFramePS();
 	}
 };
@@ -447,7 +444,7 @@ technique BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS();
 	}
 };
@@ -456,7 +453,7 @@ technique BlinnMappedNormalizeTangentNoNormalizeSample
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNoNormalizeSamplePS();
 	}
 };
@@ -465,7 +462,7 @@ technique BlinnMappedNormalizeTangentNoNormalizeSample
 {
 	pass pass0
 	{
-		VertexShader = compile vs_4_0 StandardVS();
+		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNormalizeSamplePS();
 	}
 };
