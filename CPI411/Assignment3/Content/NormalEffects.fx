@@ -107,15 +107,6 @@ float4 NormalPS(in StandardVertexOutput input) : COLOR
 	return float4(normalTex, 1.0);
 }
 
-technique Normal
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 NormalPS();
-	}
-};
-
 float4 WorldNormalPS(in StandardVertexOutput input) : COLOR
 {
 	float3 normalTex;
@@ -138,15 +129,6 @@ float4 WorldNormalPS(in StandardVertexOutput input) : COLOR
 	float3 worldNormal = normalize(mul(normalize(normalTex), TBN));
 	return float4((worldNormal / 2.0) + 0.5, 1.0);
 }
-
-technique WorldNormal
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 WorldNormalPS();
-	}
-};
 
 float4 BlinnMappedStandardPS(in StandardVertexOutput input) : COLOR
 {
@@ -183,15 +165,6 @@ float4 BlinnMappedStandardPS(in StandardVertexOutput input) : COLOR
 	return saturate(col);
 }
 
-technique BlinnMappedStandard
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 BlinnMappedStandardPS();
-	}
-};
-
 float4 ReflectPS(in StandardVertexOutput input) : COLOR
 {
 	float3 normalTex;
@@ -221,15 +194,6 @@ float4 ReflectPS(in StandardVertexOutput input) : COLOR
 	return float4(col, 1.0);
 }
 
-technique Reflect
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 ReflectPS();
-	}
-};
-
 float4 RefractPS(in StandardVertexOutput input) : COLOR
 {
 	float3 normalTex;
@@ -258,15 +222,6 @@ float4 RefractPS(in StandardVertexOutput input) : COLOR
 
 	return float4(col, 1.0);
 }
-
-technique Refract
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 RefractPS();
-	}
-};
 
 float4 BlinnMappedNotNormalizeTangentFramePS(in StandardVertexOutput input) : COLOR
 {
@@ -305,15 +260,6 @@ float4 BlinnMappedNotNormalizeTangentFramePS(in StandardVertexOutput input) : CO
 	return saturate(col);
 }
 
-technique BlinnMappedNotNormalizeTangentFrame
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFramePS();
-	}
-};
-
 float4 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS(in StandardVertexOutput input) : COLOR
 {
 	float3 normalTex;
@@ -350,15 +296,6 @@ float4 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS(in StandardVertexO
 	return saturate(col);
 }
 
-technique BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS();
-	}
-};
-
 float4 BlinnMappedNormalizeTangentNoNormalizeSamplePS(in StandardVertexOutput input) : COLOR
 {
 	float3 normalTex;
@@ -393,15 +330,6 @@ float4 BlinnMappedNormalizeTangentNoNormalizeSamplePS(in StandardVertexOutput in
 
 	return saturate(col);
 }
-
-technique BlinnMappedNormalizeTangentNoNormalizeSample
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNoNormalizeSamplePS();
-	}
-};
 
 float4 BlinnMappedNormalizeTangentNormalizeSamplePS(in StandardVertexOutput input) : COLOR
 {
@@ -438,15 +366,6 @@ float4 BlinnMappedNormalizeTangentNormalizeSamplePS(in StandardVertexOutput inpu
 	return saturate(col);
 }
 
-technique BlinnMappedNormalizeTangentNoNormalizeSample
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0 StandardVS();
-		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNormalizeSamplePS();
-	}
-};
-
 struct FullscreenVertexOutput
 {
 	float4 Position : SV_POSITION;
@@ -468,6 +387,88 @@ float4 FullscreenPS(in FullscreenVertexOutput input) : COLOR
 	float3 normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord).rgb;
 	return float4(normalTex, 1.0);
 }
+
+// * * * * * Techniques Section * * * * * //
+technique NormalMapShader
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 NormalPS();
+	}
+};
+
+technique WorldNormalShader
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 WorldNormalPS();
+	}
+};
+
+technique TangentSpaceShader
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 BlinnMappedStandardPS();
+	}
+};
+
+technique ReflectionShader
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 ReflectPS();
+	}
+};
+
+technique RefractionShader
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 RefractPS();
+	}
+};
+
+technique BlinnMappedNotNormalizeTangentFrame
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFramePS();
+	}
+};
+
+technique BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS();
+	}
+};
+
+technique BlinnMappedNormalizeTangentNoNormalizeSample
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNoNormalizeSamplePS();
+	}
+};
+
+technique BlinnMappedNormalizeTangentNoNormalizeSample
+{
+	pass pass0
+	{
+		VertexShader = compile vs_4_0 StandardVS();
+		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNormalizeSamplePS();
+	}
+};
 
 technique Fullscreen
 {

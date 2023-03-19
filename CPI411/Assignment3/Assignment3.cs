@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Assignment3
 {
@@ -101,11 +102,16 @@ namespace Assignment3
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
             // Shaders
-            if (Keyboard.GetState().IsKeyDown(Keys.F1)) shaderTechnique = 0;
-            if (Keyboard.GetState().IsKeyDown(Keys.F2)) shaderTechnique = 1;
-            if (Keyboard.GetState().IsKeyDown(Keys.F3)) shaderTechnique = 2;
-            if (Keyboard.GetState().IsKeyDown(Keys.F4)) shaderTechnique = 3;
-            if (Keyboard.GetState().IsKeyDown(Keys.F5)) shaderTechnique = 4;
+            if (Keyboard.GetState().IsKeyDown(Keys.F1)) { shaderTechnique = 0; shaderName = "Normals"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F2)) { shaderTechnique = 1; shaderName = "RGB World Space Normals"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F3)) { shaderTechnique = 2; shaderName = "Tangent Space Normals"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F4)) { shaderTechnique = 3; shaderName = "Reflective Bump Map"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F5)) { shaderTechnique = 4; shaderName = "Refractive Bump Map"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F6)) { shaderTechnique = 5; shaderName = "Tangent Space Bump Map, with normal map"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F7)) { shaderTechnique = 6; shaderName = "Tangent Space Bump Map, without normal map"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F8)) { shaderTechnique = 7; shaderName = "Normalizing Tangent after Interpolation, without normal map"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F9)) { shaderTechnique = 8; shaderName = "Normalizing Tangent after Interpolation, with normal map"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F10)) { shaderTechnique = 9; shaderName = "Normal Map as an Image"; }
 
             // Normal maps
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) { normalMapNumber = 0; pictureName = "Art"; }
@@ -117,6 +123,17 @@ namespace Assignment3
             if (Keyboard.GetState().IsKeyDown(Keys.D7)) { normalMapNumber = 6; pictureName = "Science"; }
             if (Keyboard.GetState().IsKeyDown(Keys.D8)) { normalMapNumber = 7; pictureName = "Square"; }
             //if (Keyboard.GetState().IsKeyDown(Keys.D9)) { normalMapNumber = 8; pictureName = "NM"; }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.M) && !previousKeyboardState.IsKeyDown(Keys.M)) mipmap = !mipmap;
+
+            if(Keyboard.GetState().IsKeyDown(Keys.U) && !previousKeyboardState.IsKeyDown(Keys.LeftShift)) { uvScale.X += 0.01f; }
+            if(Keyboard.GetState().IsKeyDown(Keys.U) && previousKeyboardState.IsKeyDown(Keys.LeftShift)) { uvScale.X -= 0.01f; }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.V) && !previousKeyboardState.IsKeyDown(Keys.LeftShift)) { uvScale.Y += 0.01f; }
+            if(Keyboard.GetState().IsKeyDown(Keys.V) && previousKeyboardState.IsKeyDown(Keys.LeftShift)) { uvScale.Y -= 0.01f; }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && !previousKeyboardState.IsKeyDown(Keys.LeftShift)) { bumpHeight += 0.01f; }
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && previousKeyboardState.IsKeyDown(Keys.LeftShift)) { bumpHeight -= 0.01f; }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -150,10 +167,10 @@ namespace Assignment3
             cameraPosition = Vector3.Transform(new Vector3(0, 0, distance), Matrix.CreateTranslation(cameraTarget) * Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX)));
             view = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX))));
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up)) lightAngleX += 1.0f;
-            if (Keyboard.GetState().IsKeyDown(Keys.Down)) lightAngleX -= 1.0f;
-            if (Keyboard.GetState().IsKeyDown(Keys.Left)) lightAngleY += 1.0f;
-            if (Keyboard.GetState().IsKeyDown(Keys.Right)) lightAngleY -= 1.0f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Up)) lightAngleY += 0.1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Down)) lightAngleY -= 0.1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Left)) lightAngleX += 0.1f;
+            if (Keyboard.GetState().IsKeyDown(Keys.Right)) lightAngleX -= 0.1f;
 
             lightPosition = Vector3.Transform(new Vector3(0, 0, 10), Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX));
             lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX)));
@@ -181,32 +198,35 @@ namespace Assignment3
             if (showInfo)
             {
                 int i = 0;
-                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Light Angle: (" + lightAngleX.ToString("0.00") + ", " + lightAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Light Angle: (" + lightAngleX.ToString("0.00") + ", " + lightAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Normal Texture: " + pictureName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Texture Tile Scale: (" + uvScale.X.ToString("0.00") + ", " + uvScale.Y.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Bump Height: " + bumpHeight.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "MipMap: " + mipmap, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.White);
             }
             if (showHelp)
             {
                 int i = 0;
-                _spriteBatch.DrawString(font, "Press H to show/hide the Info Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Press ? to show/hide the Help Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Left Click + Drag Rotates the Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Arrow Keys Rotates the Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Hold Shift to Decrease the Below Values", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Q Key: Fresnel Power", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "W Key: Fresnel Scale", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "E Key: Fresnel Bias", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "R Key: ETA Red Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "G Key: ETA Black Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "B Key: ETA Blue Ratio", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "+/- : Reflectivity", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "1-2-3-4-5-6: Change Model", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "7-8-9-0: Change Skybox", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "F7-F8-F9-F10 Change Shader", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Press H to show/hide the Info Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Press ? to show/hide the Help Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Left Click + Drag Rotates the Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Arrow Keys Rotates the Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "Number Keys 1-8: Change Model Texture", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "M Key: Toggle MipMap", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "u/U: U-scale of tiling", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "v/V: V-scale of tiling", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "w/W: Change bump height", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F1: Visualize the Normals", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F2: Visualize the Normals in World Space as RGB", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F3: Tangent Space bump mapping using normal maps", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F4: Reflective bump mapping", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F5: Refractive bump mapping", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
             }
             _spriteBatch.End();
 
