@@ -130,12 +130,12 @@ namespace Assignment3
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) { normalMapNumber = 0; pictureName = "Art"; }
             if (Keyboard.GetState().IsKeyDown(Keys.D2)) { normalMapNumber = 1; pictureName = "BumpTest"; }
             if (Keyboard.GetState().IsKeyDown(Keys.D3)) { normalMapNumber = 2; pictureName = "CrossHatch"; }
-            //if (Keyboard.GetState().IsKeyDown(Keys.D4)) { normalMapNumber = 3; pictureName = "NM"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { normalMapNumber = 3; pictureName = "Monkey"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { normalMapNumber = 4; pictureName = "Round"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { normalMapNumber = 5; pictureName = "Saint"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { normalMapNumber = 6; pictureName = "Science"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { normalMapNumber = 7; pictureName = "Square"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { normalMapNumber = 3; pictureName = "Monkey"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { normalMapNumber = 4; pictureName = "Round"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { normalMapNumber = 5; pictureName = "Saint"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { normalMapNumber = 6; pictureName = "Science"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { normalMapNumber = 7; pictureName = "Square"; }
+            //if (Keyboard.GetState().IsKeyDown(Keys.D9)) { normalMapNumber = 8; pictureName = "NM"; }
 
             if (Keyboard.GetState().IsKeyDown(Keys.OemPlus)) reflectionIntensity += 0.01f;
             if (Keyboard.GetState().IsKeyDown(Keys.OemMinus)) reflectionIntensity -= 0.01f;
