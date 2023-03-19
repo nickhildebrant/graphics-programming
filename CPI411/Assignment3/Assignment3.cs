@@ -41,7 +41,7 @@ namespace Assignment3
         string shaderName = "Reflection Shader";
 
         Vector3 uvScale = new Vector3(1.0f, 1.0f, 1.0f);
-        float bumpHeight;
+        float bumpHeight = 1.0f;
         bool mipmap = true;
         float etaRatio = 0.658f;
 
@@ -131,8 +131,8 @@ namespace Assignment3
             if(Keyboard.GetState().IsKeyDown(Keys.V) && !previousKeyboardState.IsKeyDown(Keys.LeftShift)) { uvScale.Y += 0.01f; }
             if(Keyboard.GetState().IsKeyDown(Keys.V) && previousKeyboardState.IsKeyDown(Keys.LeftShift)) { uvScale.Y -= 0.01f; }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.W) && !previousKeyboardState.IsKeyDown(Keys.LeftShift)) { bumpHeight += 0.01f; }
-            if (Keyboard.GetState().IsKeyDown(Keys.W) && previousKeyboardState.IsKeyDown(Keys.LeftShift)) { bumpHeight -= 0.01f; }
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && !previousKeyboardState.IsKeyDown(Keys.LeftShift)) { bumpHeight += 0.01f; uvScale.Z += 0.01f; }
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && previousKeyboardState.IsKeyDown(Keys.LeftShift)) { bumpHeight -= 0.01f; uvScale.Z -= 0.01f; }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -262,7 +262,7 @@ namespace Assignment3
                         effect.Parameters["Shininess"].SetValue(20f);
 
                         effect.Parameters["NormalMap"].SetValue(normalMaps[normalMapNumber]);
-                        effect.Parameters["UvwScale"].SetValue(uvScale);
+                        effect.Parameters["UVScale"].SetValue(uvScale);
                         effect.Parameters["SkyboxTexture"].SetValue(skybox.skyBoxTexture);
 
                         effect.Parameters["BumpHeight"].SetValue(bumpHeight);
