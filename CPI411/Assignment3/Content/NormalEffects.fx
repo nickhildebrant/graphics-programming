@@ -126,19 +126,19 @@ float4 TangentSpacePixelShader(VertexOutput input) : COLOR
 	float3x3 TBN = float3x3(T, B, N);
 
 	float3 worldNormal = normalize(mul(normalize(normalTex), TBN));
-	float4 col = float4(0.0, 0.0, 0.0, 1.0);
-	float3 LD = LightPosition - input.WorldPosition;
-	float oodist2 = 1.0 / dot(LD, LD);
+	float4 color = float4(0.0, 0.0, 0.0, 1.0);
+	float3 lightDistance = LightPosition - input.WorldPosition;
+	float oodist2 = 1.0 / dot(lightDistance, lightDistance);
 
-	float3 L = normalize(LD);
+	float3 L = normalize(lightDistance);
 	float3 V = normalize(CameraPosition - input.WorldPosition);
 	float3 H = normalize(L + V);
 
-	col += AmbientIntensity * AmbientColor;
-	col += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
-	col += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += AmbientIntensity * AmbientColor;
+	color += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
 
-	return saturate(col);
+	return saturate(color);
 }
 
 float4 ReflectionPixelShader(VertexOutput input) : COLOR
@@ -159,9 +159,9 @@ float4 ReflectionPixelShader(VertexOutput input) : COLOR
 
 	float3 V = normalize(CameraPosition - input.WorldPosition);
 	float3 R = reflect(-V, worldNormal);
-	float3 col = texCUBE(SkyboxSampler, R).rgb;
+	float3 color = texCUBE(SkyboxSampler, R).rgb;
 
-	return float4(col, 1.0);
+	return float4(color, 1.0);
 }
 
 float4 RefractionPixelShader(VertexOutput input) : COLOR
@@ -182,9 +182,9 @@ float4 RefractionPixelShader(VertexOutput input) : COLOR
 
 	float3 V = normalize(CameraPosition - input.WorldPosition);
 	float3 R = refract(-V, worldNormal, EtaRatio);
-	float3 col = texCUBE(SkyboxSampler, R).rgb;
+	float3 color = texCUBE(SkyboxSampler, R).rgb;
 
-	return float4(col, 1.0);
+	return float4(color, 1.0);
 }
 
 float4 UTangentNormalizedPixelShader(VertexOutput input) : COLOR
@@ -203,20 +203,20 @@ float4 UTangentNormalizedPixelShader(VertexOutput input) : COLOR
 
 	float3 worldNormal = mul(normalize(normalTex), TBN);
 
-	float4 col = float4(0.0, 0.0, 0.0, 1.0);
+	float4 color = float4(0.0, 0.0, 0.0, 1.0);
 
-	float3 LD = LightPosition - input.WorldPosition;
-	float oodist2 = 1.0 / dot(LD, LD);
+	float3 lightDistance = LightPosition - input.WorldPosition;
+	float oodist2 = 1.0 / dot(lightDistance, lightDistance);
 
-	float3 L = normalize(LD);
+	float3 L = normalize(lightDistance);
 	float3 V = normalize(CameraPosition - input.WorldPosition);
 	float3 H = normalize(L + V);
 
-	col += AmbientIntensity * AmbientColor;
-	col += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
-	col += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += AmbientIntensity * AmbientColor;
+	color += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
 
-	return saturate(col);
+	return saturate(color);
 }
 
 float4 UTangentUnnormalPixelShader(VertexOutput input) : COLOR
@@ -234,19 +234,19 @@ float4 UTangentUnnormalPixelShader(VertexOutput input) : COLOR
 	float3x3 TBN = float3x3(T, B, N);
 
 	float3 worldNormal = mul(normalTex, TBN);
-	float4 col = float4(0.0, 0.0, 0.0, 1.0);
-	float3 LD = LightPosition - input.WorldPosition;
-	float oodist2 = 1.0 / dot(LD, LD);
+	float4 color = float4(0.0, 0.0, 0.0, 1.0);
+	float3 lightDistance = LightPosition - input.WorldPosition;
+	float oodist2 = 1.0 / dot(lightDistance, lightDistance);
 
-	float3 L = normalize(LD);
+	float3 L = normalize(lightDistance);
 	float3 V = normalize(CameraPosition - input.WorldPosition);
 	float3 H = normalize(L + V);
 
-	col += AmbientIntensity * AmbientColor;
-	col += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
-	col += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += AmbientIntensity * AmbientColor;
+	color += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
 
-	return saturate(col);
+	return saturate(color);
 }
 
 float4 NormalizedTangentUnnormalPixelShader(VertexOutput input) : COLOR
@@ -264,19 +264,19 @@ float4 NormalizedTangentUnnormalPixelShader(VertexOutput input) : COLOR
 	float3x3 TBN = float3x3(T, B, N);
 
 	float3 worldNormal = normalize(mul(normalTex, TBN));
-	float4 col = float4(0.0, 0.0, 0.0, 1.0);
-	float3 LD = LightPosition - input.WorldPosition;
-	float oodist2 = 1.0 / dot(LD, LD);
+	float4 color = float4(0.0, 0.0, 0.0, 1.0);
+	float3 lightDistance = LightPosition - input.WorldPosition;
+	float oodist2 = 1.0 / dot(lightDistance, lightDistance);
 
-	float3 L = normalize(LD);
+	float3 L = normalize(lightDistance);
 	float3 V = normalize(CameraPosition - input.WorldPosition);
 	float3 H = normalize(L + V);
 
-	col += AmbientIntensity * AmbientColor;
-	col += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
-	col += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += AmbientIntensity * AmbientColor;
+	color += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
 
-	return saturate(col);
+	return saturate(color);
 }
 
 float4 NormalizedTangentNormalizedPixelShader(VertexOutput input) : COLOR
@@ -294,19 +294,19 @@ float4 NormalizedTangentNormalizedPixelShader(VertexOutput input) : COLOR
 	float3x3 TBN = float3x3(T, B, N);
 
 	float3 worldNormal = normalize(mul(normalize(normalTex), TBN));
-	float4 col = float4(0.0, 0.0, 0.0, 1.0);
-	float3 LD = LightPosition - input.WorldPosition;
-	float oodist2 = 1.0 / dot(LD, LD);
+	float4 color = float4(0.0, 0.0, 0.0, 1.0);
+	float3 lightDistance = LightPosition - input.WorldPosition;
+	float oodist2 = 1.0 / dot(lightDistance, lightDistance);
 
-	float3 L = normalize(LD);
+	float3 L = normalize(lightDistance);
 	float3 V = normalize(CameraPosition - input.WorldPosition);
 	float3 H = normalize(L + V);
 
-	col += AmbientIntensity * AmbientColor;
-	col += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
-	col += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += AmbientIntensity * AmbientColor;
+	color += DiffuseIntensity * DiffuseColor * saturate(dot(L, worldNormal)) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
+	color += SpecularIntensity * pow(saturate(dot(H, worldNormal)), 4 * Shininess) * oodist2 * LightStrength * float4(SpecularColor, 1.0);
 
-	return saturate(col);
+	return saturate(color);
 }
 
 struct FullscreenVertexOutput

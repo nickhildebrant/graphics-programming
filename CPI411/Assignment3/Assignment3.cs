@@ -38,7 +38,7 @@ namespace Assignment3
         string pictureName = "Art";
 
         int shaderTechnique = 0;
-        string shaderName = "Reflection Shader";
+        string shaderName = "Normal Map Shader";
 
         Vector3 uvScale = new Vector3(1.0f, 1.0f, 1.0f);
         float bumpHeight = 1.0f;
@@ -184,7 +184,10 @@ namespace Assignment3
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             RasterizerState originalRasterizerState = _graphics.GraphicsDevice.RasterizerState;
+
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             _graphics.GraphicsDevice.RasterizerState = rasterizerState;
@@ -222,10 +225,15 @@ namespace Assignment3
                 _spriteBatch.DrawString(font, "v/V: V-scale of tiling", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
                 _spriteBatch.DrawString(font, "w/W: Change bump height", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
                 _spriteBatch.DrawString(font, "F1: Visualize the Normals", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
-                _spriteBatch.DrawString(font, "F2: Visualize the Normals in World Space as RGB", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
-                _spriteBatch.DrawString(font, "F3: Tangent Space bump mapping using normal maps", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F2: RGB World Space", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F3: Tangent Space with Normals", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
                 _spriteBatch.DrawString(font, "F4: Reflective bump mapping", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
                 _spriteBatch.DrawString(font, "F5: Refractive bump mapping", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F6: Normalized Normal", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F7: Un Normalized Tangent and Normal", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F8: Normalized Tangent", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F9: Normalized Tangent Normal", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
+                _spriteBatch.DrawString(font, "F10: View Normal Map", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.White);
             }
             _spriteBatch.End();
 
