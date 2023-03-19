@@ -16,10 +16,6 @@ float EtaRatio;
 
 float NormalMapRepeatU;
 float NormalMapRepeatV;
-int SelfShadow;
-float BumpHeight;
-int NormalizeTangentFrame;
-int NormalizeNormalMap;
 
 int MipMap;
 
@@ -76,12 +72,14 @@ struct VertexOutput {
 VertexOutput VertexShaderFunction(VertexInput input)
 {
 	VertexOutput output;
+
 	float4 worldpos = mul(input.Position, World);
 	output.Position = mul(mul(worldpos, View), Projection);
 	output.WorldPosition = worldpos.xyz;
 	output.Normal = normalize(mul(float4(input.Normal.xyz, 0), World).xyz);
 	output.Tangent = normalize(mul(float4(input.Tangent.xyz, 0), World).xyz);
 	output.TexCoord = input.TexCoord;
+
 	return output;
 }
 
@@ -113,7 +111,7 @@ float4 WorldSpacePixelShader(VertexOutput input) : COLOR
 	return float4((worldNormal / 2.0) + 0.5, 1.0);
 }
 
-float4 BlinnMappedStandardPS(VertexOutput input) : COLOR
+float4 TangentSpacePixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
 	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
@@ -189,7 +187,7 @@ float4 RefractionPixelShader(VertexOutput input) : COLOR
 	return float4(col, 1.0);
 }
 
-float4 BlinnMappedNotNormalizeTangentFramePS(VertexOutput input) : COLOR
+float4 UTangentNormalizedPixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
 	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
@@ -221,7 +219,7 @@ float4 BlinnMappedNotNormalizeTangentFramePS(VertexOutput input) : COLOR
 	return saturate(col);
 }
 
-float4 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS(VertexOutput input) : COLOR
+float4 UTangentUnnormalPixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
 	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
@@ -251,7 +249,7 @@ float4 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS(VertexOutput input
 	return saturate(col);
 }
 
-float4 BlinnMappedNormalizeTangentNoNormalizeSamplePS(VertexOutput input) : COLOR
+float4 NormalizedTangentUnnormalPixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
 	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
@@ -281,7 +279,7 @@ float4 BlinnMappedNormalizeTangentNoNormalizeSamplePS(VertexOutput input) : COLO
 	return saturate(col);
 }
 
-float4 BlinnMappedNormalizeTangentNormalizeSamplePS(VertexOutput input) : COLOR
+float4 NormalizedTangentNormalizedPixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
 	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
@@ -357,7 +355,7 @@ technique TangentSpaceShader
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 BlinnMappedStandardPS();
+		PixelShader = compile ps_4_0 TangentSpacePixelShader();
 	}
 };
 
@@ -366,7 +364,7 @@ technique ReflectionShader
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 ReflectPS();
+		PixelShader = compile ps_4_0 ReflectionPixelShader();
 	}
 };
 
@@ -375,49 +373,49 @@ technique RefractionShader
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 RefractPS();
+		PixelShader = compile ps_4_0 RefractionPixelShader();
 	}
 };
 
-technique BlinnMappedNotNormalizeTangentFrame
+technique UnnormalTangentNormalized
 {
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFramePS();
+		PixelShader = compile ps_4_0 UTangentNormalizedPixelShader();
 	}
 };
 
-technique BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS
+technique UnnormalTangentUnnormal
 {
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS();
+		PixelShader = compile ps_4_0 UTangentUnnormalPixelShader();
 	}
 };
 
-technique BlinnMappedNormalizeTangentNoNormalizeSample
+technique NormalizeTangentUnnormal
 {
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNoNormalizeSamplePS();
+		PixelShader = compile ps_4_0 NormalizedTangentUnnormalPixelShader();
 	}
 };
 
-technique BlinnMappedNormalizeTangentNoNormalizeSample
+technique NormalizeTangentNormalized
 {
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 BlinnMappedNormalizeTangentNormalizeSamplePS();
+		PixelShader = compile ps_4_0 NormalizedTangentNormalizedPixelShader();
 	}
 };
 
-technique Fullscreen
+technique ImageShader
 {
-	pass P0
+	pass pass0
 	{
 		VertexShader = compile vs_4_0 FullscreenVS();
 		PixelShader = compile ps_4_0 FullscreenPS();

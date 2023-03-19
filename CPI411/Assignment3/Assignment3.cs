@@ -139,7 +139,7 @@ namespace Assignment3
             if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !previousKeyboardState.IsKeyDown(Keys.OemQuestion)) { showHelp = !showHelp; }
 
             // Reset the camera
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 10; cameraTarget = Vector3.Zero; }
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 15; cameraTarget = Vector3.Zero; }
 
             // Distance control
             if (previousMouseState.RightButton == ButtonState.Pressed && Mouse.GetState().RightButton == ButtonState.Pressed)
@@ -264,8 +264,6 @@ namespace Assignment3
                         effect.Parameters["NormalMap"].SetValue(normalMaps[normalMapNumber]);
                         effect.Parameters["UVScale"].SetValue(uvScale);
                         effect.Parameters["SkyboxTexture"].SetValue(skybox.skyBoxTexture);
-
-                        effect.Parameters["BumpHeight"].SetValue(bumpHeight);
 
                         effect.Parameters["EtaRatio"].SetValue(etaRatio);
                         effect.Parameters["MipMap"].SetValue(mipmap ? 1 : 0);
