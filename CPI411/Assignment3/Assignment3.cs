@@ -23,12 +23,12 @@ namespace Assignment3
         Vector3 cameraPosition;
         Vector3 cameraTarget;
 
-        Vector3 lightPosition = new Vector3(0, 1, 0);
+        Vector3 lightPosition = new Vector3(0, 0, 1);
         Matrix lightView;
         Matrix lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
 
         float cameraAngleX, cameraAngleY;
-        float lightAngleX, lightAngleY;
+        float lightAngleX, lightAngleY = 30;
         float distance = 15f;
 
         Skybox skybox;
@@ -171,7 +171,7 @@ namespace Assignment3
             if (Keyboard.GetState().IsKeyDown(Keys.Left)) lightAngleX += 0.1f;
             if (Keyboard.GetState().IsKeyDown(Keys.Right)) lightAngleX -= 0.1f;
 
-            lightPosition = Vector3.Transform(new Vector3(0, 0, 10), Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX));
+            lightPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX));
             lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX)));
 
             previousMouseState = Mouse.GetState();
