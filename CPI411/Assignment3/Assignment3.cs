@@ -23,16 +23,9 @@ namespace Assignment3
         Vector3 cameraPosition;
         Vector3 cameraTarget;
 
-        Vector4 ambient = new Vector4(0, 0, 0, 0);
-        float ambientIntensity = 0.1f;
-        Vector4 diffuseColor = new Vector4(1, 1, 1, 1);
-        float diffuseIntensity = 1.0f;
-
         Vector3 lightPosition = new Vector3(0, 1, 0);
         Matrix lightView;
         Matrix lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
-
-        Vector4 specularColor = new Vector4(1, 1, 1, 1);
 
         float cameraAngleX, cameraAngleY;
         float lightAngleX, lightAngleY;
@@ -47,7 +40,9 @@ namespace Assignment3
         int shaderTechnique = 0;
         string shaderName = "Reflection Shader";
 
+        Vector3 uvScale = new Vector3(1.0f, 1.0f, 1.0f);
         float bumpHeight;
+        bool mipmap = true;
         float etaRatio = 0.658f;
 
         MouseState previousMouseState;
@@ -237,13 +232,25 @@ namespace Assignment3
                         effect.Parameters["CameraPosition"].SetValue(cameraPosition);
                         effect.Parameters["LightPosition"].SetValue(lightPosition);
 
+                        effect.Parameters["LightStrength"].SetValue(200);
+
+                        effect.Parameters["AmbientColor"].SetValue(new Vector4(0.1f, 0.1f, 0.1f, 0.1f));
+                        effect.Parameters["AmbientIntensity"].SetValue(0.25f);
                         effect.Parameters["DiffuseIntensity"].SetValue(1.0f);
                         effect.Parameters["DiffuseColor"].SetValue(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
                         effect.Parameters["SpecularIntensity"].SetValue(1.0f);
-                        effect.Parameters["SpecularColor"].SetValue(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-                        effect.Parameters["Shininess"].SetValue(100.0f);
+                        effect.Parameters["SpecularColor"].SetValue(new Vector3(1, 1, 1));
+                        effect.Parameters["Shininess"].SetValue(20f);
 
-                        effect.Parameters["normalMap"].SetValue(normalMaps[normalMapNumber]);
+                        effect.Parameters["NormalMap"].SetValue(normalMaps[normalMapNumber]);
+                        effect.Parameters["UvwScale"].SetValue(uvScale);
+                        effect.Parameters["SkyboxTexture"].SetValue(skybox.skyBoxTexture);
+
+                        effect.Parameters["BumpHeight"].SetValue(bumpHeight);
+
+                        effect.Parameters["EtaRatio"].SetValue(etaRatio);
+                        effect.Parameters["MipMap"].SetValue(mipmap ? 1 : 0);
+
 
                         pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
