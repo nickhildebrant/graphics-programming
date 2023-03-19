@@ -10,9 +10,7 @@ namespace Assignment3
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Model currentModel;
-        Model box, bunny, sphere, teapot, torus, helicopter;
-        string modelName = "Helicopter";
+        Model model;
 
         Effect effect;
         Texture2D texture;
@@ -47,7 +45,10 @@ namespace Assignment3
 
         int skyboxNumber = 0;
         string skyboxName = "Test Skybox";
-        Skybox currentSkybox, testSkybox, officeSkybox, daytimeSkybox, selfSkybox;
+        Skybox skybox;
+
+        Texture[] normalMaps;
+        int normalMapNumber = 0;
 
         int shaderNumber = 0;
         string shaderName = "Reflection Shader";
@@ -89,22 +90,21 @@ namespace Assignment3
             font = Content.Load<SpriteFont>("font");
 
             effect = Content.Load<Effect>("LightingShader");
-            helicopter = Content.Load<Model>("Helicopter");
-            box = Content.Load<Model>("box");
-            bunny = Content.Load<Model>("bunnyUV");
-            sphere = Content.Load<Model>("sphere");
-            teapot = Content.Load<Model>("teapot");
-            torus = Content.Load<Model>("Torus");
-            texture = Content.Load<Texture2D>("HelicopterTexture");
+            model = Content.Load<Model>("Torus");
 
-            // Loading Test Skybox
-            string[] testSkyboxTextures =
+            // Loading normal maps
+            normalMaps = new Texture[8]
             {
-                "Test/debug_posx", "Test/debug_negx",
-                "Test/debug_posy", "Test/debug_negy",
-                "Test/debug_posz", "Test/debug_negz",
+                Content.Load<Texture>("art"),
+                Content.Load<Texture>("BumpTest"),
+                Content.Load<Texture>("crossHatch"),
+                Content.Load<Texture>("monkey"),
+                Content.Load<Texture>("round"),
+                Content.Load<Texture>("saint"),
+                Content.Load<Texture>("science"),
+                Content.Load<Texture>("square"),
             };
-            testSkybox = new Skybox(testSkyboxTextures, 256, Content, GraphicsDevice);
+
 
             // Loading office skybox
             string[] officeSkyboxTextures =
@@ -113,51 +113,12 @@ namespace Assignment3
                 "Office/nvlobby_new_negy", "Office/nvlobby_new_posy",
                 "Office/nvlobby_new_posz", "Office/nvlobby_new_negz"
             };
-            officeSkybox = new Skybox(officeSkyboxTextures, Content, GraphicsDevice);
-
-            // loading daytime skybox
-            string[] daytimeSkyboxTextures =
-            {
-                "Daytime/grandcanyon_posx", "Daytime/grandcanyon_negx",
-                "Daytime/grandcanyon_negy", "Daytime/grandcanyon_posy",
-                "Daytime/grandcanyon_posz", "Daytime/grandcanyon_negz"
-            };
-            daytimeSkybox = new Skybox(daytimeSkyboxTextures, Content, GraphicsDevice);
-
-            // loading the self skybox
-            string[] selfSkyboxTextures =
-            {
-                "Space/rightImage", "Space/leftImage",
-                "Space/upImage", "Space/downImage",
-                "Space/frontImage", "Space/backImage",
-            };
-            selfSkybox = new Skybox(selfSkyboxTextures, 2048, Content, GraphicsDevice);
-
-            string[] skyboxTextures =
-            {
-                "skybox/SunsetPNG2",
-                "skybox/SunsetPNG1",
-                "skybox/SunsetPNG4",
-                "skybox/SunsetPNG3",
-                "skybox/SunsetPNG6",
-                "skybox/SunsetPNG5",
-            };
-            //currentSkybox = new Skybox(skyboxTextures, Content, GraphicsDevice);
-
-            currentModel = helicopter;
-            currentSkybox = testSkybox;
+            skybox = new Skybox(officeSkyboxTextures, Content, GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { currentModel = box; modelName = "Box"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { currentModel = sphere; modelName = "Sphere"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { currentModel = torus; modelName = "Torus"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { currentModel = teapot; modelName = "Teapot"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { currentModel = bunny; modelName = "Bunny"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { currentModel = helicopter; modelName = "Helicopter"; }
 
             if (Keyboard.GetState().IsKeyDown(Keys.F7)) { shaderNumber = 0; shaderName = "Reflection Shader"; }
             if (Keyboard.GetState().IsKeyDown(Keys.F8)) { shaderNumber = 1; shaderName = "Refraction Shader"; }
@@ -238,34 +199,11 @@ namespace Assignment3
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // Picking the skybox
-            switch (skyboxNumber)
-            {
-                case 0:
-                    currentSkybox = testSkybox;
-                    break;
-
-                case 1:
-                    currentSkybox = officeSkybox;
-                    break;
-
-                case 2:
-                    currentSkybox = daytimeSkybox;
-                    break;
-
-                case 3:
-                    currentSkybox = selfSkybox;
-                    break;
-
-                default:
-                    break;
-            }
-
             RasterizerState originalRasterizerState = _graphics.GraphicsDevice.RasterizerState;
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             _graphics.GraphicsDevice.RasterizerState = rasterizerState;
-            currentSkybox.Draw(view, projection, cameraPosition);
+            skybox.Draw(view, projection, cameraPosition);
             _graphics.GraphicsDevice.RasterizerState = originalRasterizerState;
 
             DrawModelWithEffect();
@@ -316,7 +254,7 @@ namespace Assignment3
             effect.CurrentTechnique = effect.Techniques[shaderNumber];
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
-                foreach (ModelMesh mesh in currentModel.Meshes)
+                foreach (ModelMesh mesh in model.Meshes)
                 {
                     foreach (ModelMeshPart part in mesh.MeshParts)
                     {
@@ -347,9 +285,7 @@ namespace Assignment3
                         effect.Parameters["FresnelBias"].SetValue(fresnelBias);
                         effect.Parameters["FresnelScale"].SetValue(fresnelScale);
 
-                        if (modelName == "Helicopter") { effect.Parameters["decalMap"].SetValue(texture); }
-                        else { effect.Parameters["decalMap"].SetValue(noTexture); }
-                        effect.Parameters["environmentMap"].SetValue(currentSkybox.skyBoxTexture);
+                        effect.Parameters["environmentMap"].SetValue(skybox.skyBoxTexture);
 
                         pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
