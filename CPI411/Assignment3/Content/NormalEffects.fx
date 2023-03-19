@@ -85,32 +85,22 @@ VertexOutput VertexShaderFunction(VertexInput input)
 	return output;
 }
 
-float4 NormalPS(VertexOutput input) : COLOR
+float4 NormalMapPixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
+
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	return float4(normalTex, 1.0);
 }
 
-float4 WorldNormalPS(VertexOutput input) : COLOR
+float4 WorldSpacePixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;}
+
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
 
@@ -126,14 +116,9 @@ float4 WorldNormalPS(VertexOutput input) : COLOR
 float4 BlinnMappedStandardPS(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
+
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
 
@@ -158,17 +143,11 @@ float4 BlinnMappedStandardPS(VertexOutput input) : COLOR
 	return saturate(col);
 }
 
-float4 ReflectPS(VertexOutput input) : COLOR
+float4 ReflectionPixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
 
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
@@ -187,17 +166,11 @@ float4 ReflectPS(VertexOutput input) : COLOR
 	return float4(col, 1.0);
 }
 
-float4 RefractPS(VertexOutput input) : COLOR
+float4 RefractionPixelShader(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
 
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
@@ -219,14 +192,9 @@ float4 RefractPS(VertexOutput input) : COLOR
 float4 BlinnMappedNotNormalizeTangentFramePS(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
+
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
 
@@ -256,16 +224,10 @@ float4 BlinnMappedNotNormalizeTangentFramePS(VertexOutput input) : COLOR
 float4 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
-	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
 
+	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
 
 	float3 N = input.Normal;
@@ -292,14 +254,9 @@ float4 BlinnMappedNotNormalizeTangentFrameNoNormalizeSamplePS(VertexOutput input
 float4 BlinnMappedNormalizeTangentNoNormalizeSamplePS(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
+
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
 
@@ -327,14 +284,9 @@ float4 BlinnMappedNormalizeTangentNoNormalizeSamplePS(VertexOutput input) : COLO
 float4 BlinnMappedNormalizeTangentNormalizeSamplePS(VertexOutput input) : COLOR
 {
 	float3 normalTex;
-	if (MipMap)
-	{
-		normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb;
-	}
-	else
-	{
-		normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb;
-	}
+	if (MipMap) { normalTex = tex2D(NormalMapSamplerNone, input.TexCoord * UVScale.xy).rgb; }
+	else { normalTex = tex2D(NormalMapSamplerNormalLinear, input.TexCoord * UVScale.xy).rgb; }
+
 	normalTex = lerp(float3(0.5, 0.5, 1), normalTex, UVScale.z);
 	normalTex = (normalTex - 0.5) * 2.0;
 
@@ -387,7 +339,7 @@ technique NormalMapShader
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 NormalPS();
+		PixelShader = compile ps_4_0 NormalMapPixelShader();
 	}
 };
 
@@ -396,7 +348,7 @@ technique WorldNormalShader
 	pass pass0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
-		PixelShader = compile ps_4_0 WorldNormalPS();
+		PixelShader = compile ps_4_0 WorldSpacePixelShader();
 	}
 };
 
