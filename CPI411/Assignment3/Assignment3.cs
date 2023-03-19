@@ -13,13 +13,12 @@ namespace Assignment3
         Model model;
 
         Effect effect;
-        Texture2D texture;
-        Texture2D noTexture;
         SpriteFont font;
 
         bool showInfo = true, showHelp = true;
 
-        Matrix world, view, projection;
+        Matrix world = Matrix.Identity;
+        Matrix view, projection;
 
         Vector3 cameraPosition;
         Vector3 cameraTarget;
@@ -27,17 +26,13 @@ namespace Assignment3
         Vector4 ambient = new Vector4(0, 0, 0, 0);
         float ambientIntensity = 0.1f;
         Vector4 diffuseColor = new Vector4(1, 1, 1, 1);
-        Vector3 diffuseLightDirection = new Vector3(1, 1, 1);
         float diffuseIntensity = 1.0f;
 
-        Vector3 lightPosition = new Vector3(0, 0, 1);
-        Vector3 lightDirection = new Vector3(0.5f, 0.6f, 0.4f);
+        Vector3 lightPosition = new Vector3(0, 1, 0);
         Matrix lightView;
         Matrix lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
 
         Vector4 specularColor = new Vector4(1, 1, 1, 1);
-        float specularIntensity = 1.0f;
-        float shininess = 20f;
 
         float cameraAngleX, cameraAngleY;
         float lightAngleX, lightAngleY;
@@ -52,17 +47,8 @@ namespace Assignment3
         int shaderTechnique = 0;
         string shaderName = "Reflection Shader";
 
-        float reflectionIntensity = 0.5f;
-
-        float fresnelPower = 2f;
-        float fresnelScale = 1f;
-        float fresnelBias = 0.5f;
-
-        float redRatio = 0.1f;
-        float greenRatio = 0.1f;
-        float blueRatio = 0.1f;
-
-        bool showTexture = false;
+        float bumpHeight;
+        float etaRatio = 0.658f;
 
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
@@ -137,25 +123,6 @@ namespace Assignment3
             if (Keyboard.GetState().IsKeyDown(Keys.D8)) { normalMapNumber = 7; pictureName = "Square"; }
             //if (Keyboard.GetState().IsKeyDown(Keys.D9)) { normalMapNumber = 8; pictureName = "NM"; }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus)) reflectionIntensity += 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus)) reflectionIntensity -= 0.01f;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.R) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio += 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.G) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio += 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.B) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio += 0.01f;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.R) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) redRatio -= 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.G) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) greenRatio -= 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.B) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) blueRatio -= 0.01f;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Q) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower += 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale += 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.E) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias += 0.02f;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Q) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelPower -= 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.W) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelScale -= 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.E) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) fresnelBias -= 0.01f;
-
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
             if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !previousKeyboardState.IsKeyDown(Keys.OemQuestion)) { showHelp = !showHelp; }
@@ -223,11 +190,6 @@ namespace Assignment3
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Light Angle: (" + lightAngleX.ToString("0.00") + ", " + lightAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Shader Type: " + shaderName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Reflection Intensity: " + reflectionIntensity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Fresnel Power: " + fresnelPower.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Fresnel Scale: " + fresnelScale.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Fresnel Bias: " + fresnelBias.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Fresnel ETA Ratio: (" + redRatio.ToString("0.00") + ", " + greenRatio.ToString("0.00") + ", " + blueRatio.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
@@ -273,26 +235,15 @@ namespace Assignment3
                         effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
 
                         effect.Parameters["CameraPosition"].SetValue(cameraPosition);
+                        effect.Parameters["LightPosition"].SetValue(lightPosition);
 
-                        effect.Parameters["AmbientColor"].SetValue(ambient);
-                        effect.Parameters["AmbientIntensity"].SetValue(ambientIntensity);
+                        effect.Parameters["DiffuseIntensity"].SetValue(1.0f);
+                        effect.Parameters["DiffuseColor"].SetValue(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+                        effect.Parameters["SpecularIntensity"].SetValue(1.0f);
+                        effect.Parameters["SpecularColor"].SetValue(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+                        effect.Parameters["Shininess"].SetValue(100.0f);
 
-                        effect.Parameters["DiffuseLightDirection"].SetValue(lightDirection);
-                        effect.Parameters["DiffuseColor"].SetValue(diffuseColor);
-                        effect.Parameters["DiffuseIntensity"].SetValue(diffuseIntensity);
-
-                        effect.Parameters["SpecularColor"].SetValue(specularColor);
-                        effect.Parameters["SpecularIntensity"].SetValue(shininess);
-
-                        effect.Parameters["FresnelEtaRatio"].SetValue(new Vector3(redRatio, greenRatio, blueRatio));
-
-                        effect.Parameters["Reflectivity"].SetValue(reflectionIntensity);
-
-                        effect.Parameters["FresnelPower"].SetValue(fresnelPower);
-                        effect.Parameters["FresnelBias"].SetValue(fresnelBias);
-                        effect.Parameters["FresnelScale"].SetValue(fresnelScale);
-
-                        effect.Parameters["environmentMap"].SetValue(skybox.skyBoxTexture);
+                        effect.Parameters["normalMap"].SetValue(normalMaps[normalMapNumber]);
 
                         pass.Apply();
                         GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
