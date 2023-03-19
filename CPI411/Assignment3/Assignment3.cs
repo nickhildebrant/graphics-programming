@@ -43,14 +43,13 @@ namespace Assignment3
         float lightAngleX, lightAngleY;
         float distance = 15f;
 
-        int skyboxNumber = 0;
-        string skyboxName = "Test Skybox";
         Skybox skybox;
 
         Texture[] normalMaps;
         int normalMapNumber = 0;
+        string pictureName = "Art";
 
-        int shaderNumber = 0;
+        int shaderTechnique = 0;
         string shaderName = "Reflection Shader";
 
         float reflectionIntensity = 0.5f;
@@ -89,7 +88,7 @@ namespace Assignment3
 
             font = Content.Load<SpriteFont>("font");
 
-            effect = Content.Load<Effect>("LightingShader");
+            effect = Content.Load<Effect>("NormalEffects");
             model = Content.Load<Model>("Torus");
 
             // Loading normal maps
@@ -120,15 +119,23 @@ namespace Assignment3
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.F7)) { shaderNumber = 0; shaderName = "Reflection Shader"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.F8)) { shaderNumber = 1; shaderName = "Refraction Shader"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.F9)) { shaderNumber = 2; shaderName = "Refraction + Dispersion Shader"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.F10)) { shaderNumber = 3; shaderName = "Fresnel Shader"; }
+            // Shaders
+            if (Keyboard.GetState().IsKeyDown(Keys.F1)) shaderTechnique = 0;
+            if (Keyboard.GetState().IsKeyDown(Keys.F2)) shaderTechnique = 1;
+            if (Keyboard.GetState().IsKeyDown(Keys.F3)) shaderTechnique = 2;
+            if (Keyboard.GetState().IsKeyDown(Keys.F4)) shaderTechnique = 3;
+            if (Keyboard.GetState().IsKeyDown(Keys.F5)) shaderTechnique = 4;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { skyboxNumber = 0; skyboxName = "Test Colors"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { skyboxNumber = 1; skyboxName = "Office Room"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { skyboxNumber = 2; skyboxName = "Daytime Sky - Grand Canyon"; }
-            if (Keyboard.GetState().IsKeyDown(Keys.D0)) { skyboxNumber = 3; skyboxName = "Self Textures - Mountains"; }
+            // Normal maps
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { normalMapNumber = 0; pictureName = "Art"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { normalMapNumber = 1; pictureName = "BumpTest"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { normalMapNumber = 2; pictureName = "CrossHatch"; }
+            //if (Keyboard.GetState().IsKeyDown(Keys.D4)) { normalMapNumber = 3; pictureName = "NM"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D5)) { normalMapNumber = 3; pictureName = "Monkey"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D6)) { normalMapNumber = 4; pictureName = "Round"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D7)) { normalMapNumber = 5; pictureName = "Saint"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D8)) { normalMapNumber = 6; pictureName = "Science"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D9)) { normalMapNumber = 7; pictureName = "Square"; }
 
             if (Keyboard.GetState().IsKeyDown(Keys.OemPlus)) reflectionIntensity += 0.01f;
             if (Keyboard.GetState().IsKeyDown(Keys.OemMinus)) reflectionIntensity -= 0.01f;
@@ -251,7 +258,7 @@ namespace Assignment3
 
         void DrawModelWithEffect()
         {
-            effect.CurrentTechnique = effect.Techniques[shaderNumber];
+            effect.CurrentTechnique = effect.Techniques[shaderTechnique];
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 foreach (ModelMesh mesh in model.Meshes)
