@@ -27,6 +27,9 @@ namespace Lab09
         MouseState preMouse;
         Model[] models;
 
+        RenderTarget2D renderTarget;
+        Texture2D shadowMap;
+
         public Lab09()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -46,9 +49,13 @@ namespace Lab09
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            PresentationParameters pp = GraphicsDevice.PresentationParameters;
+            renderTarget = new RenderTarget2D(GraphicsDevice, 2048, 2048, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+
             //font = Content.Load<SpriteFont>("font");
-            models[0] = Content.Load<Model>("plane");
-            models[1] = Content.Load<Model>("Torus");
+            models = new Model[2];
+            models[0] = Content.Load<Model>("Plane");
+            models[1] = Content.Load<Model>("torus");
             effect = Content.Load<Effect>("ShadowShader");
         }
 
@@ -104,27 +111,49 @@ namespace Lab09
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = new DepthStencilState();
 
+            GraphicsDevice.SetRenderTarget(renderTarget);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
+
+            DrawShadowMap();
+
+            GraphicsDevice.SetRenderTarget(null);
+            shadowMap = (Texture2D)renderTarget;
+
+            // *** Lab 9 : Step5: Clear the render target
+            GraphicsDevice.Clear(ClearOptions.Target |
+            ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
+
+            // *** Lab 9 : Step6, Draw a scene
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
+            using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
+            {
+                sprite.Begin();
+                sprite.Draw(shadowMap, new Vector2(0, 0), null, Color.White, 0,
+                new Vector2(0, 0), 1f, SpriteEffects.None, 1);
+                sprite.End();
+            }
+
+            // *** Lab 9 : Step7, clear the shadow map
+            shadowMap = null;
+
+            base.Draw(gameTime);
+        }
+
+        private void DrawShadowMap()
+        {
             effect.CurrentTechnique = effect.Techniques[0];
 
-            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            foreach (Model model in models)
             {
-                foreach (Model model in models)
+                foreach (EffectPass pass in effect.CurrentTechnique.Passes)
                 {
                     foreach (ModelMesh mesh in model.Meshes)
                     {
                         foreach (ModelMeshPart part in mesh.MeshParts)
                         {
-
                             effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
-                            effect.Parameters["View"].SetValue(view);
-                            effect.Parameters["Projection"].SetValue(projection);
-                            Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
-                            effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
-
                             effect.Parameters["LightViewMatrix"].SetValue(lightView);
                             effect.Parameters["LightProjectionMatrix"].SetValue(lightProjection);
-                            effect.Parameters["CameraPosition"].SetValue(cameraPosition);
-                            effect.Parameters["LightPosition"].SetValue(lightPosition);
 
                             pass.Apply();
                             GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
@@ -134,8 +163,6 @@ namespace Lab09
                     }
                 }
             }
-
-            base.Draw(gameTime);
         }
     }
 }
