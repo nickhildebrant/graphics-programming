@@ -125,6 +125,9 @@ namespace Lab09
 
             // *** Lab 9 : Step6, Draw a scene
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
+
+            DrawShadowedScene();
+
             using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
             {
                 sprite.Begin();
@@ -141,7 +144,7 @@ namespace Lab09
 
         private void DrawShadowMap()
         {
-            effect.CurrentTechnique = effect.Techniques[0];
+            effect.CurrentTechnique = effect.Techniques["ShadowMapShader"];
 
             foreach (Model model in models)
             {
@@ -154,6 +157,36 @@ namespace Lab09
                             effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
                             effect.Parameters["LightViewMatrix"].SetValue(lightView);
                             effect.Parameters["LightProjectionMatrix"].SetValue(lightProjection);
+
+                            pass.Apply();
+                            GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
+                            GraphicsDevice.Indices = part.IndexBuffer;
+                            GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawShadowedScene()
+        {
+            effect.CurrentTechnique = effect.Techniques["ShadowedScene"];
+
+            foreach (Model model in models)
+            {
+                foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+                {
+                    foreach (ModelMesh mesh in model.Meshes)
+                    {
+                        foreach (ModelMeshPart part in mesh.MeshParts)
+                        {
+                            effect.Parameters["World"].SetValue();
+                            effect.Parameters["Projection"].SetValue();
+                            effect.Parameters["WorldInverseTranspose"].SetValue();
+                            effect.Parameters["LightViewMatrix"].SetValue();
+                            effect.Parameters["LightProjectionMatrix"].SetValue();
+                            effect.Parameters["LightPosition"].SetValue();
+                            effect.Parameters["ShadowMap"].SetValue(shadowMap);
 
                             pass.Apply();
                             GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
