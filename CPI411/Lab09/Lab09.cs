@@ -180,12 +180,17 @@ namespace Lab09
                     {
                         foreach (ModelMeshPart part in mesh.MeshParts)
                         {
-                            effect.Parameters["World"].SetValue();
-                            effect.Parameters["Projection"].SetValue();
-                            effect.Parameters["WorldInverseTranspose"].SetValue();
-                            effect.Parameters["LightViewMatrix"].SetValue();
-                            effect.Parameters["LightProjectionMatrix"].SetValue();
-                            effect.Parameters["LightPosition"].SetValue();
+                            effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
+                            effect.Parameters["View"].SetValue(view);
+                            effect.Parameters["Projection"].SetValue(projection);
+                            Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
+                            effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
+
+                            effect.Parameters["LightViewMatrix"].SetValue(lightView);
+                            effect.Parameters["LightProjectionMatrix"].SetValue(lightProjection);
+                            effect.Parameters["LightPosition"].SetValue(lightPosition);
+                            effect.Parameters["CameraPosition"].SetValue(cameraPosition);
+
                             effect.Parameters["ShadowMap"].SetValue(shadowMap);
 
                             pass.Apply();
