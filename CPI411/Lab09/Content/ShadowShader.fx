@@ -54,8 +54,7 @@ struct ShadowedSceneVertexShaderOutput {
 	float4 WorldPosition: TEXCOORD3;
 };
 
-ShadowedSceneVertexShaderOutput
-ShadowedSceneVertexShader(ShadowedSceneVertexShaderInput input)
+ShadowedSceneVertexShaderOutput ShadowedSceneVertexShader(ShadowedSceneVertexShaderInput input)
 {
 	ShadowedSceneVertexShaderOutput output;
 
@@ -84,7 +83,7 @@ float4 ShadowedScenePixelShader(ShadowedSceneVertexShaderOutput input) : COLOR0
 	{
 		float depthStoredInShadowMap = tex2D(ShadowMapSampler, projTexCoord.xy).r;
 
-		if ((realDistance - 1.0f) / 100.0f > depthStoredInShadowMap) // "1.0f/100.f" is bias
+		if ((realDistance + 1.0f) / 100.0f > depthStoredInShadowMap) // "1.0f/100.f" is bias
 		{
 			diffuseLightingFactor = max(0, dot(N,L)); //Gray
 		}
