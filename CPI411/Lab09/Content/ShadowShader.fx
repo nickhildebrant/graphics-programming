@@ -109,7 +109,7 @@ technique ShadowMapShader
 {
 	pass Pass0
 	{
-		VertexShader = compile vs_4_0 ShadowMapPixelShader();
+		VertexShader = compile vs_4_0 ShadowMapVertexShader();
 		PixelShader = compile ps_4_0 ShadowMapPixelShader();
 	}
 }
