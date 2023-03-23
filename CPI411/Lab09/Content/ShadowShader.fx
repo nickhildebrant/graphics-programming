@@ -11,6 +11,15 @@ float3 LightPosition;
 
 texture ShadowMap;
 
+sampler ShadowMapSampler = sampler_state {
+	Texture = <ShadowMap>;
+	MagFilter = LINEAR;
+	MinFilter = LINEAR;
+	MipFilter = LINEAR;
+	AddressU = clamp;
+	AddressV = clamp;
+};
+
 struct VertexShaderInput {
 	float4 Position : POSITION0;
 };
@@ -62,7 +71,7 @@ ShadowedSceneVertexShaderOutput ShadowedSceneVertexShader(ShadowedSceneVertexSha
 	output.Position = mul(mul(worldPosition, View), Projection);
 	output.Pos2DAsSeenByLight = mul(mul(worldPosition, LightViewMatrix), LightProjectionMatrix);
 	output.Normal = normalize(mul(input.Normal, WorldInverseTranspose));
-	output.WorldPosition = worldPosition.xyz;
+	output.WorldPosition = worldPosition;
 	output.TexCoords = input.TexCoords;
 
 	return output;
