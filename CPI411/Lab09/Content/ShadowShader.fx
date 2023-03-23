@@ -92,7 +92,7 @@ float4 ShadowedScenePixelShader(ShadowedSceneVertexShaderOutput input) : COLOR0
 	{
 		float depthStoredInShadowMap = tex2D(ShadowMapSampler, projTexCoord.xy).r;
 
-		if ((realDistance + 1.0f) / 100.0f > depthStoredInShadowMap) // "1.0f/100.f" is bias
+		if (realDistance + 1.0f / 100.0f > depthStoredInShadowMap) // "1.0f/100.f" is bias
 		{
 			diffuseLightingFactor = max(0, dot(N,L)); //Gray
 		}
@@ -104,7 +104,7 @@ float4 ShadowedScenePixelShader(ShadowedSceneVertexShaderOutput input) : COLOR0
 	return diffuseLightingFactor;
 }
 
-technique ShadowMap
+technique ShadowMapShader
 {
 	pass Pass0
 	{

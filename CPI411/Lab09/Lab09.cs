@@ -119,22 +119,17 @@ namespace Lab09
             GraphicsDevice.SetRenderTarget(null);
             shadowMap = (Texture2D)renderTarget;
 
-            // *** Lab 9 : Step5: Clear the render target
-            GraphicsDevice.Clear(ClearOptions.Target |
-            ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
-
             // *** Lab 9 : Step6, Draw a scene
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
 
             DrawShadowedScene();
 
-            using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
-            {
-                sprite.Begin();
-                sprite.Draw(shadowMap, new Vector2(0, 0), null, Color.White, 0,
-                new Vector2(0, 0), 1f, SpriteEffects.None, 1);
-                sprite.End();
-            }
+            //using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
+            //{
+            //    sprite.Begin();
+            //    sprite.Draw(shadowMap, new Vector2(0, 0), null, Color.White, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 1);
+            //    sprite.End();
+            //}
 
             // *** Lab 9 : Step7, clear the shadow map
             shadowMap = null;
@@ -155,8 +150,16 @@ namespace Lab09
                         foreach (ModelMeshPart part in mesh.MeshParts)
                         {
                             effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
+                            effect.Parameters["View"].SetValue(view);
+                            effect.Parameters["Projection"].SetValue(projection);
+
+                            Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
+                            effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
+
+                            effect.Parameters["LightPosition"].SetValue(lightPosition);
                             effect.Parameters["LightViewMatrix"].SetValue(lightView);
                             effect.Parameters["LightProjectionMatrix"].SetValue(lightProjection);
+                            effect.Parameters["CameraPosition"].SetValue(cameraPosition);
 
                             pass.Apply();
                             GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
