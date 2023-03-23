@@ -44,6 +44,7 @@ float4 ShadowMapPixelShader(VertexShaderOutput input) : COLOR0
 	projTexCoord.y = 1.0 - projTexCoord.y;
 	float depth = 1.0 - projTexCoord.z;
 	float4 color = (depth > 0) ? depth : 0;
+	color.a = 1;
 	return color;
 }
 
@@ -70,7 +71,7 @@ ShadowedSceneVertexShaderOutput ShadowedSceneVertexShader(ShadowedSceneVertexSha
 	float4 worldPosition = mul(input.Position, World);
 	output.Position = mul(mul(worldPosition, View), Projection);
 	output.Pos2DAsSeenByLight = mul(mul(worldPosition, LightViewMatrix), LightProjectionMatrix);
-	output.Normal = normalize(mul(input.Normal, WorldInverseTranspose));
+	output.Normal = normalize(mul(input.Normal, WorldInverseTranspose).xyz);
 	output.WorldPosition = worldPosition;
 	output.TexCoords = input.TexCoords;
 
@@ -92,7 +93,7 @@ float4 ShadowedScenePixelShader(ShadowedSceneVertexShaderOutput input) : COLOR0
 	{
 		float depthStoredInShadowMap = tex2D(ShadowMapSampler, projTexCoord.xy).r;
 
-		if (realDistance + 1.0f / 100.0f > depthStoredInShadowMap) // "1.0f/100.f" is bias
+		if (realDistance + (1.0f / 100.0f) > depthStoredInShadowMap) // "1.0f/100.f" is bias
 		{
 			diffuseLightingFactor = max(0, dot(N,L)); //Gray
 		}
