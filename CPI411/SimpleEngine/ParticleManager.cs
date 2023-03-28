@@ -77,6 +77,7 @@ namespace CPI411.SimpleEngine
             indexBuffer = new IndexBuffer(g, typeof(ushort), idx.Length, BufferUsage.WriteOnly);
             indexBuffer.SetData(idx);
         }
+
         int next()
         {
             for (int i = index; i < particleMax; i++)
@@ -85,7 +86,9 @@ namespace CPI411.SimpleEngine
                 if (particles[i].IsActive() == false) return index = i;
             return 0;
         }
+
         public Particle getNext() { return particles[next()]; }
+
         public void Update(float ElapsedGameTime)
         {
             activeMax = 0;
@@ -114,19 +117,15 @@ namespace CPI411.SimpleEngine
                 }
             }
         }
+
         public void Draw(GraphicsDevice g)
         {
             if (activeMax <= 0) return;
+
             vertexBuffer.SetData(vtx);
             g.SetVertexBuffer(vertexBuffer);
             g.Indices = indexBuffer;
-            g.DrawIndexedPrimitives(
-                PrimitiveType.TriangleList,
-                0,
-                //0, 
-                //activeMax * 4, 
-                0,
-                activeMax * 2);
+            g.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, activeMax * 2);
         }
     }
 }
