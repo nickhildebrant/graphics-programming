@@ -69,9 +69,9 @@ namespace Lab10
             {
                 Particle particle = particleManager.getNext();
                 particle.Position = particlePosition;
-                particle.Velocity = new Vector3(0, 0, 0);
-                particle.Acceleration = new Vector3(0, 0, 0);
-                particle.MaxAge = 1;
+                particle.Velocity = new Vector3(random.Next(-10, 10), random.Next(-10, 10), random.Next(-10, 10));
+                particle.Acceleration = new Vector3(random.Next(-10, 10), random.Next(-10, 10), random.Next(-10, 10));
+                particle.MaxAge = random.Next(5);
                 particle.Init();
             }
             particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
@@ -133,6 +133,8 @@ namespace Lab10
             effect.Parameters["Texture"].SetValue(texture);
 
             particleManager.Draw(GraphicsDevice);
+
+            model.Draw(world, view, projection);
 
             base.Draw(gameTime);
         }
