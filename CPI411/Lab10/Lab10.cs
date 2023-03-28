@@ -121,13 +121,14 @@ namespace Lab10
 
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = new DepthStencilState();
+            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             effect.CurrentTechnique = effect.Techniques[0];
             effect.CurrentTechnique.Passes[0].Apply();
             effect.Parameters["World"].SetValue(Matrix.Identity);
             effect.Parameters["View"].SetValue(view);
             effect.Parameters["Projection"].SetValue(projection);
-            effect.Parameters["InverseCamera"].SetValue(Matrix.Identity);
+            effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(angle2) * Matrix.CreateRotationY(angle));
 
             effect.Parameters["Texture"].SetValue(texture);
 
