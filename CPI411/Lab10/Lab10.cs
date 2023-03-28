@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using CPI411.SimpleEngine;
+using System;
+
 namespace Lab10
 {
     public class Lab10 : Game
@@ -21,11 +24,15 @@ namespace Lab10
         float angle2 = 0;
         float angleL = 0;
         float angleL2 = 0;
-        float distance = 30;
+        float distance = 10;
 
         MouseState preMouse;
 
         Model model;
+        Random random;
+        Texture2D texture;
+        ParticleManager particleManager;
+        Vector3 particlePosition;
 
         public Lab10()
         {
@@ -48,11 +55,26 @@ namespace Lab10
 
             model = Content.Load<Model>("torus");
             effect = Content.Load<Effect>("ParticleShader");
+            texture = Content.Load<Texture2D>("fire");
+            random = new System.Random();
+            particleManager = new ParticleManager(GraphicsDevice, 100);
+            particlePosition = new Vector3(0, 0, 0);
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
+            {
+                Particle particle = particleManager.getNext();
+                particle.Position = particlePosition;
+                particle.Velocity = new Vector3(0, 0, 0);
+                particle.Acceleration = new Vector3(0, 0, 0);
+                particle.MaxAge = 1;
+                particle.Init();
+            }
+            particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
 
             if (Keyboard.GetState().IsKeyDown(Keys.Left)) angleL += 0.02f;
             if (Keyboard.GetState().IsKeyDown(Keys.Right)) angleL -= 0.02f;
@@ -97,7 +119,19 @@ namespace Lab10
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            GraphicsDevice.BlendState = BlendState.AlphaBlend;
+            GraphicsDevice.DepthStencilState = new DepthStencilState();
+
+            effect.CurrentTechnique = effect.Techniques[0];
+            effect.CurrentTechnique.Passes[0].Apply();
+            effect.Parameters["World"].SetValue(Matrix.Identity);
+            effect.Parameters["View"].SetValue(view);
+            effect.Parameters["Projection"].SetValue(projection);
+            effect.Parameters["InverseCamera"].SetValue(Matrix.Identity);
+
+            effect.Parameters["Texture"].SetValue(texture);
+
+            particleManager.Draw(GraphicsDevice);
 
             base.Draw(gameTime);
         }
