@@ -121,6 +121,10 @@ namespace Lab10
 
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = new DepthStencilState();
+
+            model.Draw(world, view, projection);
+
+            GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             effect.CurrentTechnique = effect.Techniques[0];
@@ -134,7 +138,7 @@ namespace Lab10
 
             particleManager.Draw(GraphicsDevice);
 
-            model.Draw(world, view, projection);
+
 
             base.Draw(gameTime);
         }
