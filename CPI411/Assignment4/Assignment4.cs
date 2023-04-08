@@ -23,11 +23,8 @@ namespace Assignment4
         Vector3 cameraTarget;
 
         Vector3 lightPosition = new Vector3(0, 0, 1);
-        Matrix lightView;
-        Matrix lightProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 1f, 1f, 50f);
 
-        float cameraAngleX, cameraAngleY;
-        float lightAngleX, lightAngleY = 30;
+        float cameraAngleX = -30, cameraAngleY = -30;
         float distance = 15f;
 
         MouseState previousMouseState;
@@ -66,7 +63,7 @@ namespace Assignment4
             if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !previousKeyboardState.IsKeyDown(Keys.OemQuestion)) { showHelp = !showHelp; }
 
             // Reset the camera
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = lightAngleX = lightAngleY = 0; distance = 15; cameraTarget = Vector3.Zero; }
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = -30; distance = 15; cameraTarget = Vector3.Zero; }
 
             // Distance control
             if (previousMouseState.RightButton == ButtonState.Pressed && Mouse.GetState().RightButton == ButtonState.Pressed)
@@ -93,14 +90,6 @@ namespace Assignment4
             cameraPosition = Vector3.Transform(new Vector3(0, 0, distance), Matrix.CreateTranslation(cameraTarget) * Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX)));
             view = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX))));
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up)) lightAngleY += 0.1f;
-            if (Keyboard.GetState().IsKeyDown(Keys.Down)) lightAngleY -= 0.1f;
-            if (Keyboard.GetState().IsKeyDown(Keys.Left)) lightAngleX += 0.1f;
-            if (Keyboard.GetState().IsKeyDown(Keys.Right)) lightAngleX -= 0.1f;
-
-            lightPosition = Vector3.Transform(new Vector3(0, 0, 20), Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX));
-            lightView = Matrix.CreateLookAt(lightPosition, Vector3.Zero, Vector3.Transform(Vector3.UnitY, Matrix.CreateRotationX(lightAngleY) * Matrix.CreateRotationY(lightAngleX)));
-
             previousMouseState = Mouse.GetState();
             previousKeyboardState = Keyboard.GetState();
 
@@ -117,6 +106,29 @@ namespace Assignment4
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             model.Draw(world, view, projection);
+
+            _spriteBatch.Begin();
+            if (showInfo)
+            {
+                int i = 0;
+                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+            }
+            if (showHelp)
+            {
+                int i = 0;
+                _spriteBatch.DrawString(font, "Press H to show/hide the Info Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Press ? to show/hide the Help Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Left Click + Drag Rotates the Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "F1: Fountain Basic", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "F2: Fountain Medium", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "F3: Fountain Advanced", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "F4: Change Emitter Shapes", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+            }
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
