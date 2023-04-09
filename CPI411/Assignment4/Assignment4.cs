@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using CPI411.SimpleEngine;
+using System;
+
 namespace Assignment4
 {
     public class Assignment4 : Game
@@ -11,7 +14,7 @@ namespace Assignment4
 
         SpriteFont font;
         Model model;
-        Texture2D texture;
+        Texture2D[] textures;
         Effect effect;
 
         bool showInfo = true, showHelp = true;
@@ -30,6 +33,15 @@ namespace Assignment4
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
+        int particleTexture = 0;
+        string particleName = "Fire";
+        string emitterShape = "Cube";
+
+        Random random;
+        ParticleManager particleManager;
+        Vector3 particlePosition;
+        int maxParticles = 1000;
+
         public Assignment4()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -42,6 +54,8 @@ namespace Assignment4
         {
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 1000);
 
+            textures = new Texture2D[3];
+
             base.Initialize();
         }
 
@@ -51,13 +65,27 @@ namespace Assignment4
 
             font = Content.Load<SpriteFont>("font");
             model = Content.Load<Model>("Plane");
+            effect = Content.Load<Effect>("ParticleShader");
+            textures[0] = Content.Load<Texture2D>("fire");
+            textures[1] = Content.Load<Texture2D>("smoke");
+            textures[2] = Content.Load<Texture2D>("water");
+
+            random = new System.Random();
+
+            particleManager = new ParticleManager(GraphicsDevice, maxParticles);
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
+            GenerateParticles();
+            particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
 
+            if (Keyboard.GetState().IsKeyDown(Keys.D1)) { particleTexture = -1; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D2)) { particleTexture = 0; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D3)) { particleTexture = 1; }
+            if (Keyboard.GetState().IsKeyDown(Keys.D4)) { particleTexture = 2; }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -97,16 +125,42 @@ namespace Assignment4
             base.Update(gameTime);
         }
 
+        private void GenerateParticles()
+        {
+            Particle particle = particleManager.getNext();
+            particle.Position = particlePosition;
+            particle.Velocity = new Vector3(random.Next(-10, 10), random.Next(-10, 10), random.Next(-10, 10));
+            particle.Acceleration = new Vector3(random.Next(-10, 10), random.Next(-10, 10), random.Next(-10, 10));
+            particle.MaxAge = random.Next(5);
+            particle.Init();
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.DepthStencilState = new DepthStencilState();
+
+            model.Draw(world, view, projection);
 
             GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-            model.Draw(world, view, projection);
+            if (particleTexture > -1)
+            {
+                effect.CurrentTechnique = effect.Techniques[0];
+                effect.CurrentTechnique.Passes[0].Apply();
+                effect.Parameters["World"].SetValue(world);
+                effect.Parameters["View"].SetValue(view);
+                effect.Parameters["Projection"].SetValue(projection);
+                effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
+
+                effect.Parameters["Texture"].SetValue(textures[particleTexture]);
+            }
+
+
+            particleManager.Draw(GraphicsDevice);
 
             _spriteBatch.Begin();
             if (showInfo)

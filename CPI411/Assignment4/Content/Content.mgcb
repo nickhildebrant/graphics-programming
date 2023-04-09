@@ -32,6 +32,12 @@
 /processorParam:TextureFormat=Compressed
 /build:font.spritefont
 
+#begin ParticleShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:ParticleShader.fx
+
 #begin Plane.FBX
 /importer:FbxImporter
 /processor:ModelProcessor
