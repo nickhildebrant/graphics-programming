@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Input;
 
 using CPI411.SimpleEngine;
 using System;
-using System.Diagnostics;
 
 namespace Assignment4
 {
@@ -39,12 +38,18 @@ namespace Assignment4
         string emitterType = "Fountain Basic";
 
         Random random;
+        float randomness = 5f;
+
         ParticleManager particleManager;
-        Vector3 particlePosition = new Vector3(0, 0, 0);
+        Vector3 particlePosition = new Vector3(0, 4, 0);
+        Vector3 velocityOverride = Vector3.Zero;
+        int particleCount = 0;
         int particleNum = 10;
         int maxParticles = 10000;
         int maxAge = 4;
 
+        bool gravityAffected = false;
+        float gravity = -9f;
         float particleSpeed = 1.0f;
         float emissionSize = 1.0f;
 
@@ -145,26 +150,108 @@ namespace Assignment4
 
         private void GenerateParticles()
         {
-            Vector3 position = new Vector3();
-            float randomAngle = (float)(Math.PI * (random.NextDouble() * 2.0 - 1.0));
-            if(emitterShape == "Square") { position = new Vector3((float)(emissionSize * (random.NextDouble() - 0.5)), 0, (float)(emissionSize * (random.NextDouble() - 0.5))); }
-            if(emitterShape == "Curve") { position = new Vector3(randomAngle / 3.0f * emissionSize, 0, emissionSize * (float)Math.Sin(randomAngle)); }
-            if(emitterShape == "Ring") { position = new Vector3(emissionSize * (float)Math.Sin(randomAngle), 0, emissionSize * (float)Math.Cos(randomAngle)); }
-
-            Vector3 velocity = new Vector3();
-            if(emitterType == "Fountain Basic") { velocity = new Vector3(0, 2, 0); }
-            if(emitterType == "Fountain Medium") { velocity = new Vector3((float)random.NextDouble() * 2 - 1, (float)random.NextDouble() * 2 - 1, (float)random.NextDouble() * 2 - 1); }
-            if(emitterType == "Fountain Advanced") { velocity = new Vector3(0, 0, 0); }
-
-            for (int i = 0; i < particleNum; i++)
+            Particle particle = null;
+            if(emitterShape == "Square")
             {
-                float angle = (float)(Math.PI * (i * 6) / 180.0f);
-                Particle particle = particleManager.getNext();
-                particle.Position = position;
-                particle.Velocity = particleSpeed * velocity;
-                particle.Acceleration = (emitterType == "Fountain Basic") ? new Vector3(0, 0, 0) : new Vector3(0, -2f, 0);
+                for (int i = 0; i <= 0x1f; i++)
+                {
+                    for (int j = 0; j <= 0x1f; j++)
+                    {
+                        if (((i == 0) || ((i == 0x1f) || ((j == 0) && ((i > 0) && (i < 0x1f))))) || (((j == 0x1f) && (i > 0)) && (i < 0x1f)))
+                        {
+                            particle = particleManager.getNext();
+                            particle.Position = particlePosition;
+                            particle.MaxAge = maxAge;
+                            particle.Velocity = new Vector3((float)(i - 0x10), 0f, (float)(j - 0x10));
+                            if (emitterType == "Fountain Basic")
+                            {
+                                particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)1) : ((float)(-1)));
+                                particle.Acceleration = Vector3.Zero;
+                            }
+                            else if (emitterType == "Fountain Medium")
+                            {
+                                particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                                particle.Acceleration = Vector3.UnitY * gravity;
+                            }
+                            else if (emitterType == "Fountain Advanced")
+                            {
+                                particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                                particle.Acceleration = Vector3.UnitY * gravity;
+                            }
+                            if (gravityAffected)
+                            {
+                                particle.Velocity = this.velocityOverride;
+                            }
+                            particle.Init();
+                        }
+                    }
+                }
+            }
+            else if(emitterShape == "Curve")
+            {
+                particle = particleManager.getNext();
+                particle.Position = particlePosition;
                 particle.MaxAge = maxAge;
+                particle.Position += (Vector3.UnitX * 2f) * ((float)Math.Sin((double)MathHelper.ToRadians((float)(5 * particleCount))));
+                particle.Velocity = Vector3.Zero;
+                particleCount++;
+
+                if (emitterType == "Fountain Basic")
+                {
+                    particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)1) : ((float)(-1)));
+                    particle.Acceleration = Vector3.Zero;
+                }
+                else if (emitterType == "Fountain Medium")
+                {
+                    particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                    particle.Acceleration = Vector3.UnitY * gravity;
+                }
+                else if (emitterType == "Fountain Advanced")
+                {
+                    particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                    particle.Acceleration = Vector3.UnitY * gravity;
+                }
+                if (gravityAffected)
+                {
+                    particle.Velocity = velocityOverride;
+                }
                 particle.Init();
+            }
+            else
+            {
+                if(emitterShape == "Ring")
+                {
+                    for(int i = 0; i < 60; i++)
+                    {
+                        particle = particleManager.getNext();
+                        particle.Position = particlePosition;
+                        particle.MaxAge = maxAge;
+                        particle.Velocity = new Vector3(10 * ((float)Math.Sin((double)MathHelper.ToRadians((float)(i * 6)))), 0f, 10f * ((float)Math.Sin((double)MathHelper.ToRadians((float)(i * 6)))));
+
+                        if (emitterType == "Fountain Basic")
+                        {
+                            particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)1) : ((float)(-1)));
+                            particle.Acceleration = Vector3.Zero;
+                        }
+                        else if (emitterType == "Fountain Medium")
+                        {
+                            particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                            particle.Acceleration = Vector3.UnitY * gravity;
+                        }
+                        else if (emitterType == "Fountain Advanced")
+                        {
+                            particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                            particle.Acceleration = Vector3.UnitY * gravity;
+                        }
+
+                        if (gravityAffected)
+                        {
+                            particle.Velocity = velocityOverride;
+                        }
+
+                        particle.Init();
+                    }
+                }
             }
         }
 

@@ -44,5 +44,16 @@ namespace CPI411.SimpleEngine
         {
             Age = 0; Size = 1; SizeVelocity = SizeAcceleration = 0;
         }
+
+        public void Bounce(float groundY, float Resilience, float Friction)
+        {
+            if (Position.Y <= groundY)
+            {
+                Velocity = new Vector3(
+                    Velocity.X * 1f * Friction,
+                    Velocity.Y * -1f * Resilience,
+                    Velocity.Z * 1f * Friction);
+            }
+        }
     }
 }

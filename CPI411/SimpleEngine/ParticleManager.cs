@@ -127,5 +127,21 @@ namespace CPI411.SimpleEngine
             g.Indices = indexBuffer;
             g.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, activeMax * 2);
         }
+
+        public void Bounce(float groundY, float resilience, float friction)
+        {
+            for (int i = 0; i < particleMax; i++)
+            {
+                particles[i].Bounce(groundY, resilience, friction);
+            }
+        }
+
+        public void WindEffect(float particleWind, float particleWindDirection)
+        {
+            for (int i = 0; i < particleMax; i++)
+            {
+                particles[i].Position += particleWind * new Vector3((float)Math.Sin(particleWindDirection), 0, (float)Math.Cos(particleWindDirection));
+            }
+        }
     }
 }
