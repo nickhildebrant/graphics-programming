@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 using CPI411.SimpleEngine;
 using System;
+using System.Diagnostics;
 
 namespace Assignment4
 {
@@ -25,8 +26,6 @@ namespace Assignment4
         Vector3 cameraPosition;
         Vector3 cameraTarget;
 
-        Vector3 lightPosition = new Vector3(0, 0, 1);
-
         float cameraAngleX = -30, cameraAngleY = -30;
         float distance = 15f;
 
@@ -34,13 +33,20 @@ namespace Assignment4
         KeyboardState previousKeyboardState;
 
         int particleTexture = 0;
+        int emitterNum = 0;
         string particleName = "Fire";
-        string emitterShape = "Cube";
+        string emitterShape = "Square";
+        string emitterType = "Fountain Basic";
 
         Random random;
         ParticleManager particleManager;
-        Vector3 particlePosition;
-        int maxParticles = 1000;
+        Vector3 particlePosition = new Vector3(0, 0, 0);
+        int particleNum = 10;
+        int maxParticles = 10000;
+        int maxAge = 4;
+
+        float particleSpeed = 1.0f;
+        float emissionSize = 1.0f;
 
         public Assignment4()
         {
@@ -79,13 +85,25 @@ namespace Assignment4
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            GenerateParticles();
+            if (Keyboard.GetState().IsKeyDown(Keys.P)) { GenerateParticles(); }
+
             particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
 
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) { particleTexture = -1; }
             if (Keyboard.GetState().IsKeyDown(Keys.D2)) { particleTexture = 0; }
             if (Keyboard.GetState().IsKeyDown(Keys.D3)) { particleTexture = 1; }
             if (Keyboard.GetState().IsKeyDown(Keys.D4)) { particleTexture = 2; }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.F1)) { emitterType = "Fountain Basic"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F2)) { emitterType = "Fountain Medium"; }
+            if (Keyboard.GetState().IsKeyDown(Keys.F3)) { emitterType = "Fountain Advanced"; }
+
+            if(Keyboard.GetState().IsKeyDown(Keys.F4) && !previousKeyboardState.IsKeyDown(Keys.F4))
+            {
+                if(emitterShape.Equals("Square")) { emitterShape = "Curve"; }
+                else if(emitterShape.Equals("Curve")) { emitterShape = "Ring"; }
+                else if(emitterShape.Equals("Ring")) { emitterShape = "Square"; }
+            }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -127,12 +145,27 @@ namespace Assignment4
 
         private void GenerateParticles()
         {
-            Particle particle = particleManager.getNext();
-            particle.Position = particlePosition;
-            particle.Velocity = new Vector3(random.Next(-10, 10), random.Next(-10, 10), random.Next(-10, 10));
-            particle.Acceleration = new Vector3(random.Next(-10, 10), random.Next(-10, 10), random.Next(-10, 10));
-            particle.MaxAge = random.Next(5);
-            particle.Init();
+            Vector3 position = new Vector3();
+            float randomAngle = (float)(Math.PI * (random.NextDouble() * 2.0 - 1.0));
+            if(emitterShape == "Square") { position = new Vector3((float)(emissionSize * (random.NextDouble() - 0.5)), 0, (float)(emissionSize * (random.NextDouble() - 0.5))); }
+            if(emitterShape == "Curve") { position = new Vector3(randomAngle / 3.0f * emissionSize, 0, emissionSize * (float)Math.Sin(randomAngle)); }
+            if(emitterShape == "Ring") { position = new Vector3(emissionSize * (float)Math.Sin(randomAngle), 0, emissionSize * (float)Math.Cos(randomAngle)); }
+
+            Vector3 velocity = new Vector3();
+            if(emitterType == "Fountain Basic") { velocity = new Vector3(0, 2, 0); }
+            if(emitterType == "Fountain Medium") { velocity = new Vector3((float)random.NextDouble() * 2 - 1, (float)random.NextDouble() * 2 - 1, (float)random.NextDouble() * 2 - 1); }
+            if(emitterType == "Fountain Advanced") { velocity = new Vector3(0, 0, 0); }
+
+            for (int i = 0; i < particleNum; i++)
+            {
+                float angle = (float)(Math.PI * (i * 6) / 180.0f);
+                Particle particle = particleManager.getNext();
+                particle.Position = position;
+                particle.Velocity = particleSpeed * velocity;
+                particle.Acceleration = (emitterType == "Fountain Basic") ? new Vector3(0, 0, 0) : new Vector3(0, -2f, 0);
+                particle.MaxAge = maxAge;
+                particle.Init();
+            }
         }
 
         protected override void Draw(GameTime gameTime)
@@ -154,7 +187,7 @@ namespace Assignment4
                 effect.Parameters["World"].SetValue(world);
                 effect.Parameters["View"].SetValue(view);
                 effect.Parameters["Projection"].SetValue(projection);
-                effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
+                effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX) * Matrix.CreateTranslation(cameraTarget));
 
                 effect.Parameters["Texture"].SetValue(textures[particleTexture]);
             }
@@ -168,6 +201,8 @@ namespace Assignment4
                 int i = 0;
                 _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Emitter Type: " + emitterType, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Emitter Shape: " + emitterShape, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
