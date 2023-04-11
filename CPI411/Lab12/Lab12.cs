@@ -9,6 +9,11 @@ namespace Lab12
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        Effect effect;
+        Matrix world = Matrix.Identity;
+        Matrix view = Matrix.CreateLookAt(new Vector3(0, 0, 20), new Vector3(0, 0, 0), Vector3.UnitY);
+        Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 600f, 0.1f, 100f);
+
         public Lab12()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -27,7 +32,8 @@ namespace Lab12
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            PresentationParameters pp = GraphicsDevice.PresentationParameters;
+            renderTarget = new RenderTarget2D(GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
         }
 
         protected override void Update(GameTime gameTime)
@@ -43,9 +49,54 @@ namespace Lab12
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = new DepthStencilState();
+            GraphicsDevice.SetRenderTarget(renderTarget);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
+            DrawDepthAndNormalMap();
+
+            GraphicsDevice.SetRenderTarget(null);
+            depthAndNormalMap = (Texture2D)renderTarget;
+            /*** This block will be used later for Deferred Shading (SSAO)
+            GraphicsDevice.Clear(ClearOptions.Target |
+            ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
+            DrawSSAO();
+            ***/
+            using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
+            {
+                sprite.Begin();
+                sprite.Draw(depthAndNormalMap, new Vector2(0, 0), null,
+                Color.White, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+                sprite.End();
+            }
 
             base.Draw(gameTime);
+        }
+
+        private void DrawDepthAndNormalMap()
+        {
+            effect = Content.Load<Effect>("DepthAndNormalMap");
+            effect.CurrentTechnique = effect.Techniques[0];
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            {
+                foreach (ModelMesh mesh in model.Meshes)
+                {
+                    foreach (ModelMeshPart part in mesh.MeshParts)
+                    {
+                        effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
+                        effect.Parameters["View"].SetValue(view);
+                        effect.Parameters["Projection"].SetValue(projection);
+                        Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform));
+                        effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
+
+                        pass.Apply();
+                        GraphicsDevice.SetVertexBuffer(part.VertexBuffer);
+                        GraphicsDevice.Indices = part.IndexBuffer;
+                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+                        part.VertexOffset, part.StartIndex, part.PrimitiveCount);
+                    }
+                }
+            }
         }
     }
 }
