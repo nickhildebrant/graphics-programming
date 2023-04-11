@@ -94,6 +94,8 @@ namespace Assignment4
 
             particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
 
+            //UpdateParticles(gameTime);
+
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) { particleTexture = -1; }
             if (Keyboard.GetState().IsKeyDown(Keys.D2)) { particleTexture = 0; }
             if (Keyboard.GetState().IsKeyDown(Keys.D3)) { particleTexture = 1; }
@@ -165,7 +167,7 @@ namespace Assignment4
                             particle.Velocity = new Vector3((float)(i - 0x10), 0f, (float)(j - 0x10));
                             if (emitterType == "Fountain Basic")
                             {
-                                particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)1) : ((float)(-1)));
+                                particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)-1) : ((float)(1)));
                                 particle.Acceleration = Vector3.Zero;
                             }
                             else if (emitterType == "Fountain Medium")
@@ -178,10 +180,12 @@ namespace Assignment4
                                 particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
                                 particle.Acceleration = Vector3.UnitY * gravity;
                             }
+
                             if (gravityAffected)
                             {
-                                particle.Velocity = this.velocityOverride;
+                                //particle.Velocity = this.velocityOverride;
                             }
+
                             particle.Init();
                         }
                     }
@@ -198,7 +202,7 @@ namespace Assignment4
 
                 if (emitterType == "Fountain Basic")
                 {
-                    particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)1) : ((float)(-1)));
+                    particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)-1) : ((float)(1)));
                     particle.Acceleration = Vector3.Zero;
                 }
                 else if (emitterType == "Fountain Medium")
@@ -211,9 +215,10 @@ namespace Assignment4
                     particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
                     particle.Acceleration = Vector3.UnitY * gravity;
                 }
+
                 if (gravityAffected)
                 {
-                    particle.Velocity = velocityOverride;
+                    //particle.Velocity = velocityOverride;
                 }
                 particle.Init();
             }
@@ -226,11 +231,11 @@ namespace Assignment4
                         particle = particleManager.getNext();
                         particle.Position = particlePosition;
                         particle.MaxAge = maxAge;
-                        particle.Velocity = new Vector3(10 * ((float)Math.Sin((double)MathHelper.ToRadians((float)(i * 6)))), 0f, 10f * ((float)Math.Sin((double)MathHelper.ToRadians((float)(i * 6)))));
+                        particle.Velocity = new Vector3(10f * ((float)Math.Sin((double)MathHelper.ToRadians((float)(i * 6)))), 0f, 10f * ((float)Math.Cos((double)MathHelper.ToRadians((float)(i * 6)))));
 
                         if (emitterType == "Fountain Basic")
                         {
-                            particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)1) : ((float)(-1)));
+                            particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)-1) : ((float)(1)));
                             particle.Acceleration = Vector3.Zero;
                         }
                         else if (emitterType == "Fountain Medium")
@@ -246,7 +251,7 @@ namespace Assignment4
 
                         if (gravityAffected)
                         {
-                            particle.Velocity = velocityOverride;
+                            //particle.Velocity = velocityOverride;
                         }
 
                         particle.Init();
@@ -254,6 +259,64 @@ namespace Assignment4
                 }
             }
         }
+
+        /*private void UpdateParticles(GameTime gameTime)
+        {
+            particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
+            if (this.fountainType != 1)
+            {
+                if (this.fountainType == 2)
+                {
+                    particles = particleManager.particles;
+                    num4 = 0;
+                    while (true)
+                    {
+                        if (num4 >= particles.Length)
+                        {
+                            break;
+                        }
+                        particle2 = particles[num4];
+                        if (particle2.IsActive())
+                        {
+                            particle2.Acceleration = new Vector3(particle2.Acceleration.X, this.gravity, particle2.Acceleration.Z);
+                            if (particle2.Position.Y < 1.75f)
+                            {
+                                particle2.Position = new Vector3(particle2.Position.X, 1.75f, particle2.Position.Z);
+                                particle2.Velocity = new Vector3(particle2.Velocity.X, -particle2.Velocity.Y * this.bounciness, particle2.Velocity.Z);
+                            }
+                        }
+                        num4++;
+                    }
+                }
+            }
+            else
+            {
+                particles = this.particleManager.particles;
+                num4 = 0;
+                while (true)
+                {
+                    if (num4 >= particles.Length)
+                    {
+                        break;
+                    }
+                    particle2 = particles[num4];
+                    if (particle2.IsActive())
+                    {
+                        if (particle2.Position.Y < 1.75f)
+                        {
+                            particle2.Position = new Vector3(particle2.Position.X, 1.75f, particle2.Position.Z);
+                            particle2.Velocity = new Vector3(particle2.Velocity.X, 0f, particle2.Velocity.Z);
+                            particle2.Acceleration = new Vector3(particle2.Acceleration.X, 0f, particle2.Acceleration.Z);
+                        }
+                        if (particle2.Position.Y == 1.75f)
+                        {
+                            particle2.Velocity = new Vector3(particle2.Velocity.X * ((float)Math.Pow((double)(1f - this.friction), 0.03)), 0f, particle2.Velocity.Z * ((float)Math.Pow((double)(1f - this.friction), 0.03)));
+                        }
+                    }
+                    num4++;
+                }
+            }
+        }*/
 
         protected override void Draw(GameTime gameTime)
         {
