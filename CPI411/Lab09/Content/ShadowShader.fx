@@ -99,7 +99,7 @@ float4 ShadowedScenePixelShader(ShadowedSceneVertexShaderOutput input) : COLOR0
 		}
 		else
 		{
-			diffuseLightingFactor = float4(1, 0, 0, 1); //Red
+			diffuseLightingFactor = float4(0.1, 0.1, 0.1, 1); //Red
 		}
 	}
 	return diffuseLightingFactor;
