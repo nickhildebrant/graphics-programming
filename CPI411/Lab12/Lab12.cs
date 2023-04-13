@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Runtime.CompilerServices;
 
 namespace Lab12
 {
@@ -72,8 +73,8 @@ namespace Lab12
 
             if(Keyboard.GetState().IsKeyDown(Keys.R))
             {
-                if(Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift)) { SSAORad += 0.0005f; }
-                else { SSAORad -= 0.0005f; }
+                if(Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift)) { SSAORad += 0.00001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
+                else { SSAORad -= 0.00001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
             }
 
             // Reset the camera
@@ -125,7 +126,7 @@ namespace Lab12
             // This block will be used later for Deferred Shading (SSAO)
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
             DrawSSAO();
-            
+
             //using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
             //{
             //    sprite.Begin();
@@ -133,6 +134,10 @@ namespace Lab12
             //    Color.White, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
             //    sprite.End();
             //}
+
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(Content.Load<SpriteFont>("font"), "SSAO Radius: " + SSAORad.ToString("0.000"), new Vector2(10, 25), Color.Green);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
