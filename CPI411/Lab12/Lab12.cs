@@ -10,15 +10,25 @@ namespace Lab12
         private SpriteBatch _spriteBatch;
 
         RenderTarget2D renderTarget;
-
-        float SSAORAD = 0.01f;
+        Texture2D randomNormalMap, depthAndNormalMap;
+        float offset = 800f / 256f;
+        float SSAORad = 0.01f;
 
         Model model;
         Effect effect;
-        Texture2D depthAndNormalMap;
         Matrix world = Matrix.Identity;
         Matrix view = Matrix.CreateLookAt(new Vector3(0, 0, 20), new Vector3(0, 0, 0), Vector3.UnitY);
         Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 600f, 0.1f, 100f);
+
+        VertexPositionTexture[] vertices =
+        {
+            new VertexPositionTexture(new Vector3(1, 1, 0), new Vector2(1, 0)),
+            new VertexPositionTexture(new Vector3(1, -1, 0), new Vector2(1, 1)),
+            new VertexPositionTexture(new Vector3(-1, -1, 0), new Vector2(0, 1)),
+            new VertexPositionTexture(new Vector3(-1, 1, 0), new Vector2(0, 0)),
+            new VertexPositionTexture(new Vector3(1, 1, 0), new Vector2(1, 0)),
+            new VertexPositionTexture(new Vector3(-1, -1, 0), new Vector2(0, 1))
+        };
 
         Vector3 cameraPosition;
         Vector3 cameraTarget;
@@ -52,12 +62,19 @@ namespace Lab12
             renderTarget = new RenderTarget2D(GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
 
             model = Content.Load<Model>("objects");
-            depthAndNormalMap = Content.Load<Texture2D>("noise");
+            //depthAndNormalMap = Content.Load<Texture2D>("noise");
+            randomNormalMap = Content.Load<Texture2D>("noise");
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+
+            if(Keyboard.GetState().IsKeyDown(Keys.R))
+            {
+                if(Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift)) { SSAORad += 0.0005f; }
+                else { SSAORad -= 0.0005f; }
+            }
 
             // Reset the camera
             if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = -30; distance = 15; cameraTarget = Vector3.Zero; }
@@ -105,18 +122,17 @@ namespace Lab12
 
             GraphicsDevice.SetRenderTarget(null);
             depthAndNormalMap = (Texture2D)renderTarget;
-            /*** This block will be used later for Deferred Shading (SSAO)
-            GraphicsDevice.Clear(ClearOptions.Target |
-            ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
+            // This block will be used later for Deferred Shading (SSAO)
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
             DrawSSAO();
-            ***/
-            using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
-            {
-                sprite.Begin();
-                sprite.Draw(depthAndNormalMap, new Vector2(0, 0), null,
-                Color.White, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
-                sprite.End();
-            }
+            
+            //using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
+            //{
+            //    sprite.Begin();
+            //    sprite.Draw(depthAndNormalMap, new Vector2(0, 0), null,
+            //    Color.White, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
+            //    sprite.End();
+            //}
 
             base.Draw(gameTime);
         }
@@ -145,6 +161,20 @@ namespace Lab12
                     }
                 }
             }
+        }
+
+        private void DrawSSAO()
+        {
+            effect = Content.Load<Effect>("SSAO");
+
+            effect.CurrentTechnique = effect.Techniques[0];
+            effect.CurrentTechnique.Passes[0].Apply();
+            effect.Parameters["RandomNormalTexture"].SetValue(randomNormalMap);
+            effect.Parameters["DepthAndNormalTexture"].SetValue(depthAndNormalMap);
+            effect.Parameters["offset"].SetValue(offset);
+            effect.Parameters["rad"].SetValue(SSAORad);
+
+            GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
         }
     }
 }
