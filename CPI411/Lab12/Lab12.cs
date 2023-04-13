@@ -13,7 +13,7 @@ namespace Lab12
         RenderTarget2D renderTarget;
         Texture2D randomNormalMap, depthAndNormalMap;
         float offset = 800f / 256f;
-        float SSAORad = 0.01f;
+        float SSAORad = 0.001f;
 
         Model model;
         Effect effect;
@@ -73,8 +73,14 @@ namespace Lab12
 
             if(Keyboard.GetState().IsKeyDown(Keys.R))
             {
-                if(Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift)) { SSAORad += 0.00001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
-                else { SSAORad -= 0.00001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
+                if(Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift)) { SSAORad += 0.000001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
+                else { SSAORad -= 0.000001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.E))
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift)) { offset += 0.001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
+                else { offset -= 0.001f * (float)gameTime.ElapsedGameTime.TotalMilliseconds; }
             }
 
             // Reset the camera
@@ -127,16 +133,16 @@ namespace Lab12
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DarkSlateBlue, 1.0f, 0);
             DrawSSAO();
 
-            //using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
-            //{
-            //    sprite.Begin();
-            //    sprite.Draw(depthAndNormalMap, new Vector2(0, 0), null,
-            //    Color.White, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 0);
-            //    sprite.End();
-            //}
+            using (SpriteBatch sprite = new SpriteBatch(GraphicsDevice))
+            {
+                sprite.Begin();
+                sprite.Draw(depthAndNormalMap, new Vector2(0, 0), null, Color.White, 0, new Vector2(0, 0), 0.2f, SpriteEffects.None, 0);
+                sprite.End();
+            }
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(Content.Load<SpriteFont>("font"), "SSAO Radius: " + SSAORad.ToString("0.000"), new Vector2(10, 25), Color.Green);
+            _spriteBatch.DrawString(Content.Load<SpriteFont>("font"), "r/R - SSAO Radius: " + SSAORad.ToString("0.0000"), new Vector2(5, 100), Color.Green);
+            _spriteBatch.DrawString(Content.Load<SpriteFont>("font"), "e/E - Offset: " + offset.ToString("0.00"), new Vector2(5, 125), Color.Green);
             _spriteBatch.End();
 
             base.Draw(gameTime);
