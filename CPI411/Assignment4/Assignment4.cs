@@ -53,6 +53,9 @@ namespace Assignment4
         float particleSpeed = 1.0f;
         float emissionSize = 1.0f;
 
+        float bounciness = 1f;
+        float friction = 0.5f;
+
         public Assignment4()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -94,7 +97,7 @@ namespace Assignment4
 
             particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
 
-            //UpdateParticles(gameTime);
+            UpdateParticles(gameTime);
 
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) { particleTexture = -1; }
             if (Keyboard.GetState().IsKeyDown(Keys.D2)) { particleTexture = 0; }
@@ -155,16 +158,16 @@ namespace Assignment4
             Particle particle = null;
             if(emitterShape == "Square")
             {
-                for (int i = 0; i <= 0x1f; i++)
+                for (int i = 0; i < 32; i++)
                 {
-                    for (int j = 0; j <= 0x1f; j++)
+                    for (int j = 0; j < 32; j++)
                     {
-                        if (((i == 0) || ((i == 0x1f) || ((j == 0) && ((i > 0) && (i < 0x1f))))) || (((j == 0x1f) && (i > 0)) && (i < 0x1f)))
+                        if (((i == 0) || ((i == 31) || ((j == 0) && ((i > 0) && (i < 32))))) || (((j == 31) && (i > 0)) && (i < 32)))
                         {
                             particle = particleManager.getNext();
                             particle.Position = particlePosition;
                             particle.MaxAge = maxAge;
-                            particle.Velocity = new Vector3((float)(i - 0x10), 0f, (float)(j - 0x10));
+                            particle.Velocity = new Vector3((float)(i - 16), 0f, (float)(j - 16));
                             if (emitterType == "Fountain Basic")
                             {
                                 particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)-1) : ((float)(1)));
@@ -260,63 +263,54 @@ namespace Assignment4
             }
         }
 
-        /*private void UpdateParticles(GameTime gameTime)
+        private void UpdateParticles(GameTime gameTime)
         {
+            Particle[] particles;
+            Particle particle;
+
             particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
-            if (this.fountainType != 1)
+            if (emitterType != "Fountain Medium")
             {
-                if (this.fountainType == 2)
+                if (emitterType == "Advanced")
                 {
                     particles = particleManager.particles;
-                    num4 = 0;
-                    while (true)
+                    for (int i = 0; i < particles.Length; i++)
                     {
-                        if (num4 >= particles.Length)
+                        particle = particles[i];
+                        if (particle.IsActive())
                         {
-                            break;
-                        }
-                        particle2 = particles[num4];
-                        if (particle2.IsActive())
-                        {
-                            particle2.Acceleration = new Vector3(particle2.Acceleration.X, this.gravity, particle2.Acceleration.Z);
-                            if (particle2.Position.Y < 1.75f)
+                            particle.Acceleration = new Vector3(particle.Acceleration.X, this.gravity, particle.Acceleration.Z);
+                            if (particle.Position.Y < 1.75f)
                             {
-                                particle2.Position = new Vector3(particle2.Position.X, 1.75f, particle2.Position.Z);
-                                particle2.Velocity = new Vector3(particle2.Velocity.X, -particle2.Velocity.Y * this.bounciness, particle2.Velocity.Z);
+                                particle.Position = new Vector3(particle.Position.X, 1.75f, particle.Position.Z);
+                                particle.Velocity = new Vector3(particle.Velocity.X, -particle.Velocity.Y * this.bounciness, particle.Velocity.Z);
                             }
                         }
-                        num4++;
                     }
                 }
             }
             else
             {
-                particles = this.particleManager.particles;
-                num4 = 0;
-                while (true)
+                particles = particleManager.particles;
+                for (int i = 0; i < particles.Length; i++)
                 {
-                    if (num4 >= particles.Length)
+                    particle = particles[i];
+                    if (particle.IsActive())
                     {
-                        break;
-                    }
-                    particle2 = particles[num4];
-                    if (particle2.IsActive())
-                    {
-                        if (particle2.Position.Y < 1.75f)
+                        if (particle.Position.Y < 1.75f)
                         {
-                            particle2.Position = new Vector3(particle2.Position.X, 1.75f, particle2.Position.Z);
-                            particle2.Velocity = new Vector3(particle2.Velocity.X, 0f, particle2.Velocity.Z);
-                            particle2.Acceleration = new Vector3(particle2.Acceleration.X, 0f, particle2.Acceleration.Z);
+                            particle.Position = new Vector3(particle.Position.X, 1.75f, particle.Position.Z);
+                            particle.Velocity = new Vector3(particle.Velocity.X, 0f, particle.Velocity.Z);
+                            particle.Acceleration = new Vector3(particle.Acceleration.X, 0f, particle.Acceleration.Z);
                         }
-                        if (particle2.Position.Y == 1.75f)
+                        if (particle.Position.Y == 1.75f)
                         {
-                            particle2.Velocity = new Vector3(particle2.Velocity.X * ((float)Math.Pow((double)(1f - this.friction), 0.03)), 0f, particle2.Velocity.Z * ((float)Math.Pow((double)(1f - this.friction), 0.03)));
+                            particle.Velocity = new Vector3(particle.Velocity.X * ((float)Math.Pow((double)(1f - friction), 0.03)), 0f, particle.Velocity.Z * ((float)Math.Pow((double)(1f - friction), 0.03)));
                         }
                     }
-                    num4++;
                 }
             }
-        }*/
+        }
 
         protected override void Draw(GameTime gameTime)
         {
