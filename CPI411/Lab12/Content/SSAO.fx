@@ -1,6 +1,4 @@
 ﻿float4x4 World;
-Lab 12
-4
 float4x4 View;
 float4x4 Projection;
 float4x4 WorldInverseTranspose;
@@ -8,25 +6,26 @@ float offset;
 float rad = 0.01f;
 texture RandomNormalTexture;
 texture DepthAndNormalTexture;
-sampler randomMap = sampler_state
-{
+
+sampler randomMap = sampler_state {
 	Texture = <RandomNormalTexture>;
 	MipFilter = NONE;
 	MinFilter = POINT;
 	MagFilter = POINT;
 };
-sampler normalMap = sampler_state
-{
+
+sampler normalMap = sampler_state {
 	Texture = <DepthAndNormalTexture>;
 	MipFilter = NONE;
 	MinFilter = POINT;
 	MagFilter = POINT;
 };
-struct VS_OUTPUT
-{
+
+struct VS_OUTPUT {
 	float4 Position : POSITION;
 	float2 TexCoord : TEXCOORD0;
 };
+
 VS_OUTPUT RenderSceneVS(float4 vPos: POSITION, float2 TexCoord : TEXCOORD0)
 {
 	VS_OUTPUT Output;

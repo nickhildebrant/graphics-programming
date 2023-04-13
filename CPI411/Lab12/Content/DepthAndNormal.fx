@@ -35,3 +35,12 @@ float4 DepthMapPixelShader(VertexShaderOutput input) : COLOR0
 	color.a = (depth > 0) ? depth : 0; // culling
 	return color;
 }
+
+technique RenderScene0
+{
+	pass P0
+	{
+		VertexShader = compile vs_4_0 DepthMapVertexShader();
+		PixelShader = compile ps_4_0 DepthMapPixelShader();
+	}
+}

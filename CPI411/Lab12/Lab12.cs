@@ -9,7 +9,13 @@ namespace Lab12
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        RenderTarget2D renderTarget;
+
+        float SSAORAD = 0.01f;
+
+        Model model;
         Effect effect;
+        Texture2D depthAndNormalMap;
         Matrix world = Matrix.Identity;
         Matrix view = Matrix.CreateLookAt(new Vector3(0, 0, 20), new Vector3(0, 0, 0), Vector3.UnitY);
         Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 600f, 0.1f, 100f);
@@ -34,6 +40,10 @@ namespace Lab12
 
             PresentationParameters pp = GraphicsDevice.PresentationParameters;
             renderTarget = new RenderTarget2D(GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
+
+            model = Content.Load<Model>("objects");
+            depthAndNormalMap = Content.Load<Texture2D>("noise");
+            effect = Content.Load<Effect>("DepthAndNormal");
         }
 
         protected override void Update(GameTime gameTime)
