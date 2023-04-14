@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 using CPI411.SimpleEngine;
 using System;
+using System.Reflection.Metadata;
 
 namespace Assignment4
 {
@@ -50,7 +51,7 @@ namespace Assignment4
 
         bool usingUserVelocity = false;
         bool usingWind = false;
-        bool isRandom = false;
+        bool isRandom = true;
         bool gravityAffected = false;
         bool isGoingUp = true;
         int  particleTime = 0;
@@ -184,7 +185,7 @@ namespace Assignment4
                 if(!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { gravity = MathHelper.Clamp(gravity - 0.05f, -20f, 20f); }
                 else { gravity = MathHelper.Clamp(gravity + 0.05f, -20f, 20f); }
             }
-
+            
             // Randomness
             if (Keyboard.GetState().IsKeyDown(Keys.R))
             {
@@ -195,6 +196,7 @@ namespace Assignment4
             if (!(!Keyboard.GetState().IsKeyDown(Keys.V) || previousKeyboardState.IsKeyDown(Keys.V))) { usingUserVelocity = !usingUserVelocity; }
             if (!(!Keyboard.GetState().IsKeyDown(Keys.W) || previousKeyboardState.IsKeyDown(Keys.W))) { usingWind = !usingWind; }
             if (!(!Keyboard.GetState().IsKeyDown(Keys.U) || previousKeyboardState.IsKeyDown(Keys.U))) { isGoingUp = !isGoingUp; }
+            if (!(!Keyboard.GetState().IsKeyDown(Keys.T) || previousKeyboardState.IsKeyDown(Keys.T))) { isRandom = !isRandom; }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -236,6 +238,9 @@ namespace Assignment4
 
         private void GenerateParticles()
         {
+            var temp = randomness;
+            randomness = isRandom ? temp : 1;
+
             Particle particle = null;
             if(emitterShape == "Square")
             {
@@ -367,6 +372,8 @@ namespace Assignment4
                 }
                 particle.Init();
             }
+
+            randomness = temp;
         }
 
         private void UpdateParticles(GameTime gameTime)
@@ -468,17 +475,15 @@ namespace Assignment4
             {
                 effect.CurrentTechnique = effect.Techniques[0];
                 effect.CurrentTechnique.Passes[0].Apply();
-                effect.Parameters["World"].SetValue(world);
+                effect.Parameters["World"].SetValue(Matrix.Identity);
                 effect.Parameters["View"].SetValue(view);
                 effect.Parameters["Projection"].SetValue(projection);
-                effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX) * Matrix.CreateTranslation(cameraTarget));
+                effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
 
                 effect.Parameters["Texture"].SetValue(textures[particleTexture]);
             }
             else
             {
-
-
                 //effect.CurrentTechnique = effect.Techniques[1];
                 //effect.CurrentTechnique.Passes[0].Apply();
                 //effect.Parameters["World"].SetValue(world);
@@ -498,14 +503,16 @@ namespace Assignment4
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Emitter Type: " + emitterType, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Emitter Shape: " + emitterShape, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Emitter Shape: " + emitterShape, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Using Wind?: " + usingWind, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "(Z,X,C) - Wind Force: (" + windForce.X.ToString("0.00") + ", " + windForce.Y.ToString("0.00") + ", " + windForce.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Using Velocity?: " + usingUserVelocity, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "(A,S,D) - User Velocity: (" + velocityOverride.X.ToString("0.00") + ", " + velocityOverride.Y.ToString("0.00") + ", " + velocityOverride.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "g/G - Gravity: " + gravity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "b/B - Bounciness: " + bounciness.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "f/F - Friction: " + friction.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "r/R - Randomness: " + randomness.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Age of Particles: " + maxAge, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Using Randomness?: " + isRandom, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "a/A - Age of Particles: " + maxAge, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
@@ -524,8 +531,9 @@ namespace Assignment4
                 _spriteBatch.DrawString(font, "F2: Fountain Medium", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "F3: Fountain Advanced", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "F4: Change Emitter Shapes", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "W: Activate Wind (Advanced Only)", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "W: Toggle Wind (Advanced Only)", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "V: User Velocity (Advanced Only)", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "T: Toggle Randomness (Medium & Advanced)", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 
