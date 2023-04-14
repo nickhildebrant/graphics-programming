@@ -48,6 +48,8 @@ namespace Assignment4
         int maxParticles = 10000;
         int maxAge = 4;
 
+        bool usingWind = false;
+        bool isRandom = false;
         bool gravityAffected = false;
         float gravity = -9f;
         float particleSpeed = 1.0f;
@@ -55,6 +57,8 @@ namespace Assignment4
 
         float bounciness = 1f;
         float friction = 0.5f;
+
+        Vector3 windForce = new Vector3(1, 1, 1);
 
         public Assignment4()
         {
@@ -113,6 +117,19 @@ namespace Assignment4
                 if(emitterShape.Equals("Square")) { emitterShape = "Curve"; }
                 else if(emitterShape.Equals("Curve")) { emitterShape = "Ring"; }
                 else if(emitterShape.Equals("Ring")) { emitterShape = "Square"; }
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.X))
+            {
+                windForce.X = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(windForce.X - 0.005f), (float)-0.1f, (float)0.1f) : MathHelper.Clamp((float)(windForce.X + 0.005f), (float)-0.1f, (float)0.1f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Y))
+            {
+                windForce.Y = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(windForce.Y - 0.005f), (float)-0.1f, (float)0.1f) : MathHelper.Clamp((float)(windForce.Y + 0.005f), (float)-0.1f, (float)0.1f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Z))
+            {
+                windForce.Z = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(windForce.Z - 0.005f), (float)-0.1f, (float)0.1f) : MathHelper.Clamp((float)(windForce.Z + 0.005f), (float)-0.1f, (float)0.1f);
             }
 
             // Info UI + Help UI
@@ -310,6 +327,39 @@ namespace Assignment4
                     }
                 }
             }
+
+            // Using Wind and randomness
+            if (usingWind)
+            {
+                particles = this.particleManager.particles;
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    particle = particles[i];
+                    if (particle.IsActive())
+                    {
+                        if (isRandom && ((this.time % 60) == 0))
+                        {
+                            windForce = new Vector3(((((float)this.random.NextDouble()) - 0.5f) * 0.05f) * this.randomness, 0f, ((((float)this.random.NextDouble()) - 0.5f) * 0.05f) * this.randomness);
+                        }
+                        particle.Position += windForce;
+                    }
+                }
+            }
+
+            this.time++;
+            // Using Age
+            //if (this.usingAge)
+            //{
+            //    particles = particleManager.particles;
+            //    for (int i = 0; i < particles.Length; i++)
+            //    {
+            //        particle = particles[i];
+            //        if (particle.IsActive())
+            //        {
+            //            particle.Age = maxAge;
+            //        }
+            //    }
+            //}
         }
 
         protected override void Draw(GameTime gameTime)
@@ -347,6 +397,12 @@ namespace Assignment4
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Emitter Type: " + emitterType, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Emitter Shape: " + emitterShape, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Emitter Shape: " + emitterShape, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Wind Force: (" + windForce.X.ToString("0.00") + ", " + windForce.Y.ToString("0.00") + ", " + windForce.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "User Velocity: (" + windForce.X.ToString("0.00") + ", " + windForce.Y.ToString("0.00") + ", " + windForce.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Bounciness: " + bounciness, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Friction: " + friction, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Age of Particles: " + maxAge, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
@@ -365,6 +421,8 @@ namespace Assignment4
                 _spriteBatch.DrawString(font, "F2: Fountain Medium", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "F3: Fountain Advanced", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "F4: Change Emitter Shapes", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "W: Activate Wind (Advanced Only)", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "V: User Velocity (Advanced Only)", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 
