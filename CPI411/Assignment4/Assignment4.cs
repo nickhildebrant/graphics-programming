@@ -193,6 +193,13 @@ namespace Assignment4
                 else { randomness = MathHelper.Clamp(randomness + 0.05f, 0f, 50f); }
             }
 
+            // Control Age
+            if (Keyboard.GetState().IsKeyDown(Keys.A) && !previousKeyboardState.IsKeyDown(Keys.A))
+            {
+                if(!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { maxAge = MathHelper.Clamp(maxAge - 1, 1, 10); }
+                else { maxAge = MathHelper.Clamp(maxAge + 1, 1, 10); }
+            }
+
             if (!(!Keyboard.GetState().IsKeyDown(Keys.V) || previousKeyboardState.IsKeyDown(Keys.V))) { usingUserVelocity = !usingUserVelocity; }
             if (!(!Keyboard.GetState().IsKeyDown(Keys.W) || previousKeyboardState.IsKeyDown(Keys.W))) { usingWind = !usingWind; }
             if (!(!Keyboard.GetState().IsKeyDown(Keys.U) || previousKeyboardState.IsKeyDown(Keys.U))) { isGoingUp = !isGoingUp; }
@@ -381,7 +388,6 @@ namespace Assignment4
             Particle[] particles;
             Particle particle;
 
-            particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
             if (emitterType != "Fountain Medium")
             {
                 if (emitterType == "Fountain Advanced")
