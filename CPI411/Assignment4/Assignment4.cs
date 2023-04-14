@@ -48,9 +48,11 @@ namespace Assignment4
         int maxParticles = 10000;
         int maxAge = 4;
 
+        bool usingUserVelocity = false;
         bool usingWind = false;
         bool isRandom = false;
         bool gravityAffected = false;
+        int  particleTime = 0;
         float gravity = -9f;
         float particleSpeed = 1.0f;
         float emissionSize = 1.0f;
@@ -119,6 +121,7 @@ namespace Assignment4
                 else if(emitterShape.Equals("Ring")) { emitterShape = "Square"; }
             }
 
+            // Control the wind
             if (Keyboard.GetState().IsKeyDown(Keys.X))
             {
                 windForce.X = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(windForce.X - 0.005f), (float)-0.1f, (float)0.1f) : MathHelper.Clamp((float)(windForce.X + 0.005f), (float)-0.1f, (float)0.1f);
@@ -131,6 +134,27 @@ namespace Assignment4
             {
                 windForce.Z = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(windForce.Z - 0.005f), (float)-0.1f, (float)0.1f) : MathHelper.Clamp((float)(windForce.Z + 0.005f), (float)-0.1f, (float)0.1f);
             }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.F))
+            {
+                friction = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(friction - 0.005f), (float)0f, (float)1f) : MathHelper.Clamp((float)(friction + 0.005f), (float)0f, (float)1f);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.B))
+            {
+                bounciness = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(bounciness - 0.005f), (float)0f, (float)1f) : MathHelper.Clamp((float)(bounciness + 0.005f), (float)0f, (float)1f);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.G))
+            {
+                gravity = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(gravity - 0.05f), (float)-20f, (float)20f) : MathHelper.Clamp((float)(gravity + 0.05f), (float)-20f, (float)20f);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.R))
+            {
+                randomness = (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) ? MathHelper.Clamp((float)(randomness - 0.05f), (float)0f, (float)20f) : MathHelper.Clamp((float)(randomness + 0.05f), (float)0f, (float)20f);
+            }
+
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -201,9 +225,9 @@ namespace Assignment4
                                 particle.Acceleration = Vector3.UnitY * gravity;
                             }
 
-                            if (gravityAffected)
+                            if (usingUserVelocity)
                             {
-                                //particle.Velocity = this.velocityOverride;
+                                particle.Velocity = this.velocityOverride;
                             }
 
                             particle.Init();
@@ -236,9 +260,9 @@ namespace Assignment4
                     particle.Acceleration = Vector3.UnitY * gravity;
                 }
 
-                if (gravityAffected)
+                if (usingUserVelocity)
                 {
-                    //particle.Velocity = velocityOverride;
+                    particle.Velocity = velocityOverride;
                 }
                 particle.Init();
             }
@@ -269,9 +293,9 @@ namespace Assignment4
                             particle.Acceleration = Vector3.UnitY * gravity;
                         }
 
-                        if (gravityAffected)
+                        if (usingUserVelocity)
                         {
-                            //particle.Velocity = velocityOverride;
+                            particle.Velocity = velocityOverride;
                         }
 
                         particle.Init();
@@ -337,7 +361,7 @@ namespace Assignment4
                     particle = particles[i];
                     if (particle.IsActive())
                     {
-                        if (isRandom && ((this.time % 60) == 0))
+                        if (isRandom && ((particleTime % 60) == 0))
                         {
                             windForce = new Vector3(((((float)this.random.NextDouble()) - 0.5f) * 0.05f) * this.randomness, 0f, ((((float)this.random.NextDouble()) - 0.5f) * 0.05f) * this.randomness);
                         }
@@ -346,7 +370,7 @@ namespace Assignment4
                 }
             }
 
-            this.time++;
+            particleTime++;
             // Using Age
             //if (this.usingAge)
             //{
@@ -385,6 +409,10 @@ namespace Assignment4
 
                 effect.Parameters["Texture"].SetValue(textures[particleTexture]);
             }
+            else
+            {
+
+            }
 
 
             particleManager.Draw(GraphicsDevice);
@@ -400,8 +428,9 @@ namespace Assignment4
                 _spriteBatch.DrawString(font, "Emitter Shape: " + emitterShape, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Wind Force: (" + windForce.X.ToString("0.00") + ", " + windForce.Y.ToString("0.00") + ", " + windForce.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "User Velocity: (" + windForce.X.ToString("0.00") + ", " + windForce.Y.ToString("0.00") + ", " + windForce.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Bounciness: " + bounciness, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Friction: " + friction, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "b/B - Bounciness: " + bounciness, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "f/F - Friction: " + friction, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "r/R - Randomness: " + randomness, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Age of Particles: " + maxAge, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
