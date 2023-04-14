@@ -52,6 +52,7 @@ namespace Assignment4
         bool usingWind = false;
         bool isRandom = false;
         bool gravityAffected = false;
+        bool isGoingUp = true;
         int  particleTime = 0;
         float gravity = -9f;
         float particleSpeed = 1.0f;
@@ -193,6 +194,7 @@ namespace Assignment4
 
             if (!(!Keyboard.GetState().IsKeyDown(Keys.V) || previousKeyboardState.IsKeyDown(Keys.V))) { usingUserVelocity = !usingUserVelocity; }
             if (!(!Keyboard.GetState().IsKeyDown(Keys.W) || previousKeyboardState.IsKeyDown(Keys.W))) { usingWind = !usingWind; }
+            if (!(!Keyboard.GetState().IsKeyDown(Keys.U) || previousKeyboardState.IsKeyDown(Keys.U))) { isGoingUp = !isGoingUp; }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -249,7 +251,7 @@ namespace Assignment4
                             particle.Velocity = new Vector3((float)(i - 16), 0f, (float)(j - 16));
                             if (emitterType == "Fountain Basic")
                             {
-                                particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)-1) : ((float)(1)));
+                                particle.Velocity += (Vector3.UnitY * 5f) * (isGoingUp ? 1f : -1f);
                                 particle.Acceleration = Vector3.Zero;
                             }
                             else if (emitterType == "Fountain Medium")
@@ -284,7 +286,7 @@ namespace Assignment4
 
                 if (emitterType == "Fountain Basic")
                 {
-                    particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)-1) : ((float)(1)));
+                    particle.Velocity += (Vector3.UnitY * 5f) * (isGoingUp ? 1 : -1);
                     particle.Acceleration = Vector3.Zero;
                 }
                 else if (emitterType == "Fountain Medium")
@@ -317,7 +319,7 @@ namespace Assignment4
 
                         if (emitterType == "Fountain Basic")
                         {
-                            particle.Velocity += (Vector3.UnitY * 5f) * (gravityAffected ? ((float)-1) : ((float)(1)));
+                            particle.Velocity += (Vector3.UnitY * 5f) * (isGoingUp ? 1f : -1f);
                             particle.Acceleration = Vector3.Zero;
                         }
                         else if (emitterType == "Fountain Medium")
@@ -340,6 +342,31 @@ namespace Assignment4
                     }
                 }
             }
+
+            if (emitterShape == "Curve")
+            {
+                if (emitterType == "Fountain Basic")
+                {
+                    particle.Velocity += (Vector3.UnitY * 5f) * (isGoingUp ? 1f : -1f);
+                    particle.Acceleration = Vector3.Zero;
+                }
+                else if (emitterType == "Fountain Medium")
+                {
+                    particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                    particle.Acceleration = Vector3.UnitY * this.gravity;
+                }
+                else if (emitterType == "Fountain Advanced")
+                {
+                    particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                    particle.Acceleration = Vector3.UnitY * gravity;
+                }
+
+                if (usingUserVelocity)
+                {
+                    particle.Velocity = velocityOverride;
+                }
+                particle.Init();
+            }
         }
 
         private void UpdateParticles(GameTime gameTime)
@@ -350,7 +377,7 @@ namespace Assignment4
             particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
             if (emitterType != "Fountain Medium")
             {
-                if (emitterType == "Advanced")
+                if (emitterType == "Fountain Advanced")
                 {
                     particles = particleManager.particles;
                     for (int i = 0; i < particles.Length; i++)
@@ -382,6 +409,7 @@ namespace Assignment4
                             particle.Velocity = new Vector3(particle.Velocity.X, 0f, particle.Velocity.Z);
                             particle.Acceleration = new Vector3(particle.Acceleration.X, 0f, particle.Acceleration.Z);
                         }
+
                         if (particle.Position.Y == 1.75f)
                         {
                             particle.Velocity = new Vector3(particle.Velocity.X * ((float)Math.Pow((double)(1f - friction), 0.03)), 0f, particle.Velocity.Z * ((float)Math.Pow((double)(1f - friction), 0.03)));
@@ -450,6 +478,13 @@ namespace Assignment4
             else
             {
 
+
+                //effect.CurrentTechnique = effect.Techniques[1];
+                //effect.CurrentTechnique.Passes[0].Apply();
+                //effect.Parameters["World"].SetValue(world);
+                //effect.Parameters["View"].SetValue(view);
+                //effect.Parameters["Projection"].SetValue(projection);
+                //effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX) * Matrix.CreateTranslation(cameraTarget));
             }
 
 

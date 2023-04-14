@@ -4,6 +4,8 @@ float4x4 Projection;
 float4x4 InverseCamera; //Inverse Camera Matrix
 texture2D Texture;
 
+bool usingTexture;
+
 sampler ParticleSampler = sampler_state {
 	texture = <Texture>;
 };
