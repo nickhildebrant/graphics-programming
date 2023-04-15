@@ -33,7 +33,7 @@ namespace Assignment4
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
-        int particleTexture = 0;
+        int particleTexture = -1;
         int emitterNum = 0;
         string particleName = "Fire";
         string emitterShape = "Square";
@@ -446,19 +446,6 @@ namespace Assignment4
             }
 
             particleTime++;
-            // Using Age
-            //if (this.usingAge)
-            //{
-            //    particles = particleManager.particles;
-            //    for (int i = 0; i < particles.Length; i++)
-            //    {
-            //        particle = particles[i];
-            //        if (particle.IsActive())
-            //        {
-            //            particle.Age = maxAge;
-            //        }
-            //    }
-            //}
         }
 
         protected override void Draw(GameTime gameTime)
@@ -478,7 +465,7 @@ namespace Assignment4
             effect.Parameters["World"].SetValue(Matrix.Identity);
             effect.Parameters["View"].SetValue(view);
             effect.Parameters["Projection"].SetValue(projection);
-            effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
+            effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(MathHelper.ToRadians(cameraAngleY)) * Matrix.CreateRotationY(MathHelper.ToRadians(cameraAngleX)));
 
             if (particleTexture > -1)
             {

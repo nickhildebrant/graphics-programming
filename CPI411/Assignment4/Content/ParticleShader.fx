@@ -14,14 +14,14 @@ sampler ParticleSampler = sampler_state {
 };
 
 struct VertexShaderInput {
-	float4 Position: POSITION;
+	float4 Position: POSITION0;
 	float2 TexCoord: TEXCOORD0;
 	float4 ParticlePosition: POSITION1;
 	float4 ParticleParamater: POSITION2; // x: Scale x/y: Color
 };
 
 struct VertexShaderOutput {
-	float4 Position: POSITION;
+	float4 Position: POSITION0;
 	float2 TexCoord: TEXCOORD0;
 	float4 Color: COLOR0;
 };
@@ -32,7 +32,7 @@ VertexShaderOutput ParticleVertexShader(VertexShaderInput input)
 	{
 		VertexShaderOutput output;
 		float4 worldPosition = mul(input.Position, InverseCamera);
-		worldPosition.xyz = worldPosition.xyz * sqrt(input.ParticleParamater.x);
+		worldPosition.xyz = worldPosition.xyz * sqrt(input.ParticleParamater.x / input.ParticleParamater.y);
 		worldPosition += input.ParticlePosition;
 		output.Position = mul(mul(mul(worldPosition, World), View), Projection);
 		output.TexCoord = input.TexCoord;
@@ -40,6 +40,7 @@ VertexShaderOutput ParticleVertexShader(VertexShaderInput input)
 		return output;
 	}
 
+	// Phong shading
 	VertexShaderOutput output;
 	float4 worldPosition = mul(input.Position, InverseCamera);
 	worldPosition.xyz = worldPosition.xyz * sqrt(input.ParticleParamater.x);
@@ -47,8 +48,10 @@ VertexShaderOutput ParticleVertexShader(VertexShaderInput input)
 	float4 viewPos = mul(worldPosition, View);
 	output.Position = mul(viewPos, Projection);
 
-	//output.Color = saturate(float4(0.1, 0.1, 0.1, 1));
-	output.Color = 1 - input.ParticleParamater.x / input.ParticleParamater.y;
+	float4 normal = mul(input.Position, InverseCamera);
+	float lightIntensity = dot(normal, float3(0, 1, 0));
+	float4 diffuseColor = 1 - input.ParticleParamater.x / input.ParticleParamater.y;
+	output.Color = saturate(diffuseColor * lightIntensity);
 	return output;
 }
 
@@ -61,6 +64,7 @@ float4 ParticlePixelShader(VertexShaderOutput input) : COLOR
 		return color;
 	}
 
+	// Phong Shading
 	return float4(0.1, 0.1, 0.1, 1) * input.Color;
 }
 
