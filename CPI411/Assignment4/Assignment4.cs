@@ -45,6 +45,7 @@ namespace Assignment4
         ParticleManager particleManager;
         Vector3 particlePosition = new Vector3(0, 4, 0);
         Vector3 velocityOverride = Vector3.Zero;
+        Vector3 windForce = Vector3.Zero;
         int particleCount = 0;
         int particleNum = 10;
         int maxParticles = 10000;
@@ -62,8 +63,6 @@ namespace Assignment4
 
         float bounciness = 1f;
         float friction = 0.5f;
-
-        Vector3 windForce = new Vector3(1, 1, 1);
 
         public Assignment4()
         {
@@ -127,43 +126,43 @@ namespace Assignment4
             // Control the wind X
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
             {
-                if(!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { windForce.X = MathHelper.Clamp(windForce.X - 0.005f, -0.1f, 0.1f); }
-                else { windForce.X = MathHelper.Clamp(windForce.X + 0.005f, -0.1f, 0.1f); }
+                if(!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { windForce.X = MathHelper.Clamp(windForce.X - 0.005f, -0.5f, 0.5f); }
+                else { windForce.X = MathHelper.Clamp(windForce.X + 0.005f, -0.5f, 0.5f); }
             }
 
             // Control the wind Z
             if (Keyboard.GetState().IsKeyDown(Keys.X))
             {
-                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { windForce.Y = MathHelper.Clamp(windForce.Y - 0.005f, -0.1f, 0.1f); }
-                else { windForce.Y = MathHelper.Clamp(windForce.Y + 0.005f, -0.1f, 0.1f); }
+                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { windForce.Y = MathHelper.Clamp(windForce.Y - 0.005f, -0.5f, 0.5f); }
+                else { windForce.Y = MathHelper.Clamp(windForce.Y + 0.005f, -0.5f, 0.5f); }
             }
 
             // Control the wind Z
             if (Keyboard.GetState().IsKeyDown(Keys.C))
             {
-                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { windForce.Z = MathHelper.Clamp(windForce.Z - 0.005f, -0.1f, 0.1f); }
-                else { windForce.Z = MathHelper.Clamp(windForce.Z + 0.005f, -0.1f, 0.1f); }
+                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { windForce.Z = MathHelper.Clamp(windForce.Z - 0.005f, -0.5f, 0.5f); }
+                else { windForce.Z = MathHelper.Clamp(windForce.Z + 0.005f, -0.5f, 0.5f); }
             }
 
             // Control the velocity X
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            if (Keyboard.GetState().IsKeyDown(Keys.J))
             {
-                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { velocityOverride.X = MathHelper.Clamp(velocityOverride.X - 0.005f, -0.1f, 0.1f); }
-                else { velocityOverride.X = MathHelper.Clamp(velocityOverride.X + 0.005f, -0.1f, 0.1f); }
+                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { velocityOverride.X = MathHelper.Clamp(velocityOverride.X - 0.05f, -10f, 10f); }
+                else { velocityOverride.X = MathHelper.Clamp(velocityOverride.X + 0.05f, -10f, 10f); }
             }
 
             // Control the velocity Y
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            if (Keyboard.GetState().IsKeyDown(Keys.K))
             {
-                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { velocityOverride.Y = MathHelper.Clamp(velocityOverride.Y - 0.005f, -0.1f, 0.1f); }
-                else { velocityOverride.Y = MathHelper.Clamp(velocityOverride.Y + 0.005f, -0.1f, 0.1f); }
+                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { velocityOverride.Y = MathHelper.Clamp(velocityOverride.Y - 0.05f, -10f, 10f); }
+                else { velocityOverride.Y = MathHelper.Clamp(velocityOverride.Y + 0.05f, -10f, 10f); }
             }
 
             // Control the velocity Z
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            if (Keyboard.GetState().IsKeyDown(Keys.L))
             {
-                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { velocityOverride.Z = MathHelper.Clamp(velocityOverride.Z - 0.005f, -0.1f, 0.1f); }
-                else { velocityOverride.Z = MathHelper.Clamp(velocityOverride.Z + 0.005f, -0.1f, 0.1f); }
+                if (!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { velocityOverride.Z = MathHelper.Clamp(velocityOverride.Z - 0.05f, -10f, 10f); }
+                else { velocityOverride.Z = MathHelper.Clamp(velocityOverride.Z + 0.05f, -10f, 10f); }
             }
 
             // Control the friction
@@ -176,10 +175,8 @@ namespace Assignment4
             // Control Bounciness
             if (Keyboard.GetState().IsKeyDown(Keys.B))
             {
-                Debug.WriteLine("B Button Pressed");
-
-                if(!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { bounciness = MathHelper.Clamp(bounciness - 0.005f, 0f, 1f); }
-                else { bounciness = MathHelper.Clamp(bounciness + 0.005f, 0f, 1f); }
+                if(!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { bounciness = MathHelper.Clamp(bounciness - 0.005f, 0f, 5f); }
+                else { bounciness = MathHelper.Clamp(bounciness + 0.005f, 0f, 5f); }
             }
 
             // Control Gravity
@@ -204,7 +201,7 @@ namespace Assignment4
             }
 
             if (!(!Keyboard.GetState().IsKeyDown(Keys.V) || previousKeyboardState.IsKeyDown(Keys.V))) { usingUserVelocity = !usingUserVelocity; }
-            if (!(!Keyboard.GetState().IsKeyDown(Keys.W) || previousKeyboardState.IsKeyDown(Keys.W))) { usingWind = !usingWind; }
+            if (Keyboard.GetState().IsKeyDown(Keys.W)) { usingWind = true; } else { usingWind = false; }
             if (!(!Keyboard.GetState().IsKeyDown(Keys.U) || previousKeyboardState.IsKeyDown(Keys.U))) { isGoingUp = !isGoingUp; }
             if (!(!Keyboard.GetState().IsKeyDown(Keys.T) || previousKeyboardState.IsKeyDown(Keys.T))) { isRandom = !isRandom; }
 
@@ -271,12 +268,12 @@ namespace Assignment4
                             }
                             else if (emitterType == "Fountain Medium")
                             {
-                                particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                                particle.Velocity += new Vector3(((float)random.NextDouble() * 2f) * randomness, (((float)random.NextDouble()) * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness);
                                 particle.Acceleration = Vector3.UnitY * gravity;
                             }
                             else if (emitterType == "Fountain Advanced")
                             {
-                                particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                                particle.Velocity += new Vector3(((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness);
                                 particle.Acceleration = Vector3.UnitY * gravity;
                             }
 
@@ -306,12 +303,12 @@ namespace Assignment4
                 }
                 else if (emitterType == "Fountain Medium")
                 {
-                    particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                    particle.Velocity += new Vector3(((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness);
                     particle.Acceleration = Vector3.UnitY * gravity;
                 }
                 else if (emitterType == "Fountain Advanced")
                 {
-                    particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                    particle.Velocity += new Vector3(((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness);
                     particle.Acceleration = Vector3.UnitY * gravity;
                 }
 
@@ -339,12 +336,12 @@ namespace Assignment4
                         }
                         else if (emitterType == "Fountain Medium")
                         {
-                            particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                            particle.Velocity += new Vector3(((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness);
                             particle.Acceleration = Vector3.UnitY * gravity;
                         }
                         else if (emitterType == "Fountain Advanced")
                         {
-                            particle.Velocity += new Vector3(((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness, ((((float)random.NextDouble()) - 0.5f) * 2f) * randomness);
+                            particle.Velocity += new Vector3(((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness, ((float)random.NextDouble() * 2f) * randomness);
                             particle.Acceleration = Vector3.UnitY * gravity;
                         }
 
@@ -443,10 +440,6 @@ namespace Assignment4
                     particle = particles[i];
                     if (particle.IsActive())
                     {
-                        if (isRandom && ((particleTime % 60) == 0))
-                        {
-                            windForce = new Vector3(((((float)this.random.NextDouble()) - 0.5f) * 0.05f) * this.randomness, 0f, ((((float)this.random.NextDouble()) - 0.5f) * 0.05f) * this.randomness);
-                        }
                         particle.Position += windForce;
                     }
                 }
@@ -515,7 +508,7 @@ namespace Assignment4
                 _spriteBatch.DrawString(font, "Using Wind?: " + usingWind, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "(Z,X,C) - Wind Force: (" + windForce.X.ToString("0.00") + ", " + windForce.Y.ToString("0.00") + ", " + windForce.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Using Velocity?: " + usingUserVelocity, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "(A,S,D) - User Velocity: (" + velocityOverride.X.ToString("0.00") + ", " + velocityOverride.Y.ToString("0.00") + ", " + velocityOverride.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "(J,K,L) - User Velocity: (" + velocityOverride.X.ToString("0.00") + ", " + velocityOverride.Y.ToString("0.00") + ", " + velocityOverride.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "g/G - Gravity: " + gravity.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "b/B - Bounciness: " + bounciness.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "f/F - Friction: " + friction.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
