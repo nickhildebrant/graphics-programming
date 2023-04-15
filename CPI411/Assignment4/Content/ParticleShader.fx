@@ -8,6 +8,9 @@ bool usingTexture;
 
 sampler ParticleSampler = sampler_state {
 	texture = <Texture>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = LINEAR;
 };
 
 struct VertexShaderInput {
@@ -25,21 +28,40 @@ struct VertexShaderOutput {
 
 VertexShaderOutput ParticleVertexShader(VertexShaderInput input)
 {
+	if (usingTexture)
+	{
+		VertexShaderOutput output;
+		float4 worldPosition = mul(input.Position, InverseCamera);
+		worldPosition.xyz = worldPosition.xyz * sqrt(input.ParticleParamater.x);
+		worldPosition += input.ParticlePosition;
+		output.Position = mul(mul(mul(worldPosition, World), View), Projection);
+		output.TexCoord = input.TexCoord;
+		output.Color = 1 - input.ParticleParamater.x / input.ParticleParamater.y;
+		return output;
+	}
+
 	VertexShaderOutput output;
 	float4 worldPosition = mul(input.Position, InverseCamera);
 	worldPosition.xyz = worldPosition.xyz * sqrt(input.ParticleParamater.x);
 	worldPosition += input.ParticlePosition;
-	output.Position = mul(mul(mul(worldPosition, World), View), Projection);
-	output.TexCoord = input.TexCoord;
+	float4 viewPos = mul(worldPosition, View);
+	output.Position = mul(viewPos, Projection);
+
+	//output.Color = saturate(float4(0.1, 0.1, 0.1, 1));
 	output.Color = 1 - input.ParticleParamater.x / input.ParticleParamater.y;
 	return output;
 }
 
 float4 ParticlePixelShader(VertexShaderOutput input) : COLOR
 {
-	float4 color = tex2D(ParticleSampler, input.TexCoord);
-	color *= input.Color;
-	return color;
+	if (usingTexture)
+	{
+		float4 color = tex2D(ParticleSampler, input.TexCoord);
+		color *= input.Color;
+		return color;
+	}
+
+	return float4(0.1, 0.1, 0.1, 1) * input.Color;
 }
 
 technique ParticleShader {

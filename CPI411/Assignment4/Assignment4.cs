@@ -473,25 +473,21 @@ namespace Assignment4
             GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
+            effect.CurrentTechnique = effect.Techniques[0];
+            effect.CurrentTechnique.Passes[0].Apply();
+            effect.Parameters["World"].SetValue(Matrix.Identity);
+            effect.Parameters["View"].SetValue(view);
+            effect.Parameters["Projection"].SetValue(projection);
+            effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
+
             if (particleTexture > -1)
             {
-                effect.CurrentTechnique = effect.Techniques[0];
-                effect.CurrentTechnique.Passes[0].Apply();
-                effect.Parameters["World"].SetValue(Matrix.Identity);
-                effect.Parameters["View"].SetValue(view);
-                effect.Parameters["Projection"].SetValue(projection);
-                effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX));
-
+                effect.Parameters["usingTexture"].SetValue(true);
                 effect.Parameters["Texture"].SetValue(textures[particleTexture]);
             }
             else
             {
-                //effect.CurrentTechnique = effect.Techniques[1];
-                //effect.CurrentTechnique.Passes[0].Apply();
-                //effect.Parameters["World"].SetValue(world);
-                //effect.Parameters["View"].SetValue(view);
-                //effect.Parameters["Projection"].SetValue(projection);
-                //effect.Parameters["InverseCamera"].SetValue(Matrix.CreateRotationX(cameraAngleY) * Matrix.CreateRotationY(cameraAngleX) * Matrix.CreateTranslation(cameraTarget));
+                effect.Parameters["usingTexture"].SetValue(false);
             }
 
 
