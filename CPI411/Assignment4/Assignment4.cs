@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using CPI411.SimpleEngine;
 using System;
 using System.Reflection.Metadata;
+using System.Diagnostics;
 
 namespace Assignment4
 {
@@ -105,7 +106,7 @@ namespace Assignment4
 
             particleManager.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
 
-            UpdateParticles(gameTime);
+            UpdateParticles();
 
             if (Keyboard.GetState().IsKeyDown(Keys.D1)) { particleTexture = -1; }
             if (Keyboard.GetState().IsKeyDown(Keys.D2)) { particleTexture = 0; }
@@ -175,8 +176,10 @@ namespace Assignment4
             // Control Bounciness
             if (Keyboard.GetState().IsKeyDown(Keys.B))
             {
+                Debug.WriteLine("B Button Pressed");
+
                 if(!Keyboard.GetState().IsKeyDown(Keys.LeftShift) && !Keyboard.GetState().IsKeyDown(Keys.RightShift)) { bounciness = MathHelper.Clamp(bounciness - 0.005f, 0f, 1f); }
-                { bounciness = MathHelper.Clamp(bounciness + 0.005f, 0f, 1f); }
+                else { bounciness = MathHelper.Clamp(bounciness + 0.005f, 0f, 1f); }
             }
 
             // Control Gravity
@@ -383,7 +386,7 @@ namespace Assignment4
             randomness = temp;
         }
 
-        private void UpdateParticles(GameTime gameTime)
+        private void UpdateParticles()
         {
             Particle[] particles;
             Particle particle;
