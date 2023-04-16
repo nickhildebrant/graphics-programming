@@ -78,7 +78,7 @@ namespace Final
             // Subdivide the polygon
             if(Keyboard.GetState().IsKeyDown(Keys.D) && !previousKeyboardState.IsKeyDown(Keys.D))
             {
-
+                CatmullClarkSubdivision();
             }
 
             // Info UI + Help UI
@@ -157,6 +157,23 @@ namespace Final
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void CatmullClarkSubdivision()
+        {
+            Color vertexColor = triangleColor ? Color.Gray : Color.LightGray;
+
+            int originalSize = vertices.Count;
+            VertexPositionColor[] orignalVertexArray = vertices.ToArray();
+            for(int i = 1; i < originalSize; i++)
+            {
+                Vector3 vertex1 = orignalVertexArray[i - 1].Position;
+                Vector3 vertex2 = orignalVertexArray[i].Position;
+
+                Vector3 distance = vertex1 + vertex2;
+                vertices.Insert(i, new VertexPositionColor(distance / 2, vertexColor));
+                triangleColor = !triangleColor;
+            }
         }
     }
 }
