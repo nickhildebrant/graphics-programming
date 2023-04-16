@@ -28,11 +28,19 @@ namespace Final
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
-        VertexPositionTexture[] vertices =
+        //VertexPositionTexture[] vertices =
+        //{
+        //    new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(0.5f, 0)),
+        //    new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(1, 1)),
+        //    new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(0, 1))
+        //};
+
+        VertexPositionColor[] vertices =
         {
-            new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(0.5f, 0)),
-            new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(1, 1)),
-            new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(0, 1))
+            new VertexPositionColor(new Vector3(1, 0, 1), Color.Red),
+            new VertexPositionColor(new Vector3(1, 0, -1), Color.Green),
+            new VertexPositionColor(new Vector3(-1, 0, 1), Color.Blue),
+            new VertexPositionColor(new Vector3(-1, 0, -1), Color.Black)
         };
 
         public Final()
@@ -56,8 +64,7 @@ namespace Final
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            effect = Content.Load<Effect>("SimpleTexture");
-            effect.Parameters["MyTexture"].SetValue(Content.Load<Texture2D>("logo_mg"));
+            effect = Content.Load<Effect>("SubdivisionShader");
         }
 
         protected override void Update(GameTime gameTime)
@@ -69,7 +76,7 @@ namespace Final
             if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !previousKeyboardState.IsKeyDown(Keys.OemQuestion)) { showHelp = !showHelp; }
 
             // Reset the camera
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = -30; distance = 15; cameraTarget = Vector3.Zero; }
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = -30; distance = 5; cameraTarget = Vector3.Zero; }
 
             // Distance control
             if (previousMouseState.RightButton == ButtonState.Pressed && Mouse.GetState().RightButton == ButtonState.Pressed)
@@ -115,7 +122,8 @@ namespace Final
             foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+                //GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 4);
             }
 
             base.Draw(gameTime);
