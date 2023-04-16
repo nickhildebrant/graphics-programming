@@ -23,21 +23,31 @@ namespace Final
         Vector3 cameraTarget;
 
         float cameraAngleX = -30, cameraAngleY = -30;
-        float distance = 15f;
+        float distance = 5f;
 
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
+        VertexPositionTexture[] vertices =
+        {
+            new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(0.5f, 0)),
+            new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(1, 1)),
+            new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(0, 1))
+        };
+
         public Final()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            world = Matrix.Identity;
+            view = Matrix.CreateLookAt(cameraPosition, new Vector3(), new Vector3(0, 0, 0));
+            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
             base.Initialize();
         }
@@ -46,7 +56,8 @@ namespace Final
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            effect = Content.Load<Effect>("SimpleTexture");
+            effect.Parameters["MyTexture"].SetValue(Content.Load<Texture2D>("logo_mg"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -94,8 +105,18 @@ namespace Final
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.BlendState = BlendState.AlphaBlend;
+            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-            // TODO: Add your drawing code here
+            effect.Parameters["World"].SetValue(world);
+            effect.Parameters["View"].SetValue(view);
+            effect.Parameters["Projection"].SetValue(projection);
+
+            foreach (var pass in effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+            }
 
             base.Draw(gameTime);
         }
