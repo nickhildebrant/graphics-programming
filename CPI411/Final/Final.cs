@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Final
 {
@@ -28,15 +29,16 @@ namespace Final
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
+        bool triangleColor = false;
         VertexPositionColor[] vertices =
         {
-            new VertexPositionColor(new Vector3(-10, 0, 10), Color.Red),       // Top left
-            new VertexPositionColor(new Vector3(10, 0, 10), Color.Green),      // Top right
-            new VertexPositionColor(new Vector3(10, 0, -10), Color.Blue),      // Bottom right
+            new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
+            new VertexPositionColor(new Vector3(10, 0, 10), Color.Gray),      // Top right
+            new VertexPositionColor(new Vector3(10, 0, -10), Color.Gray),      // Bottom right
 
-            new VertexPositionColor(new Vector3(10, 0, -10), Color.Blue),     // Bottom right
-            new VertexPositionColor(new Vector3(-10, 0, -10), Color.Green),    // Bottom left
-            new VertexPositionColor(new Vector3(-10, 0, 10), Color.Red)      // Top left
+            new VertexPositionColor(new Vector3(10, 0, -10), Color.LightGray),     // Bottom right
+            new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray),    // Bottom left
+            new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)      // Top left
         };
 
         public Final()
@@ -67,6 +69,12 @@ namespace Final
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+
+            // Subdivide the polygon
+            if(Keyboard.GetState().IsKeyDown(Keys.D) && !previousKeyboardState.IsKeyDown(Keys.D))
+            {
+
+            }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -119,11 +127,28 @@ namespace Final
             foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                //GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
                 GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
             }
 
             _spriteBatch.Begin();
+            if (showInfo)
+            {
+                int i = 0;
+                _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Number of Vertices: " + vertices.Length, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Number of Triangles: " + vertices.Length / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+            }
+            if (showHelp)
+            {
+                int i = 0;
+                _spriteBatch.DrawString(font, "Press H to show/hide the Info Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Press ? to show/hide the Help Menu", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Left Click + Drag Rotates the Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
