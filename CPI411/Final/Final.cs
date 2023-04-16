@@ -23,24 +23,20 @@ namespace Final
         Vector3 cameraTarget;
 
         float cameraAngleX = -30, cameraAngleY = -30;
-        float distance = 5f;
+        float distance = 15;
 
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
-        //VertexPositionTexture[] vertices =
-        //{
-        //    new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(0.5f, 0)),
-        //    new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(1, 1)),
-        //    new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(0, 1))
-        //};
-
         VertexPositionColor[] vertices =
         {
-            new VertexPositionColor(new Vector3(1, 0, 1), Color.Red),
-            new VertexPositionColor(new Vector3(1, 0, -1), Color.Green),
-            new VertexPositionColor(new Vector3(-1, 0, 1), Color.Blue),
-            new VertexPositionColor(new Vector3(-1, 0, -1), Color.Black)
+            new VertexPositionColor(new Vector3(-10, 0, 10), Color.Red),       // Top left
+            new VertexPositionColor(new Vector3(10, 0, 10), Color.Green),      // Top right
+            new VertexPositionColor(new Vector3(10, 0, -10), Color.Blue),      // Bottom right
+
+            new VertexPositionColor(new Vector3(10, 0, -10), Color.Blue),     // Bottom right
+            new VertexPositionColor(new Vector3(-10, 0, -10), Color.Green),    // Bottom left
+            new VertexPositionColor(new Vector3(-10, 0, 10), Color.Red)      // Top left
         };
 
         public Final()
@@ -64,6 +60,7 @@ namespace Final
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            font = Content.Load<SpriteFont>("font");
             effect = Content.Load<Effect>("SubdivisionShader");
         }
 
@@ -76,7 +73,7 @@ namespace Final
             if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !previousKeyboardState.IsKeyDown(Keys.OemQuestion)) { showHelp = !showHelp; }
 
             // Reset the camera
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = -30; distance = 5; cameraTarget = Vector3.Zero; }
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = -30; distance = 15; cameraTarget = Vector3.Zero; }
 
             // Distance control
             if (previousMouseState.RightButton == ButtonState.Pressed && Mouse.GetState().RightButton == ButtonState.Pressed)
@@ -123,8 +120,11 @@ namespace Final
             {
                 pass.Apply();
                 //GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 4);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
             }
+
+            _spriteBatch.Begin();
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
