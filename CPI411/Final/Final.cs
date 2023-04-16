@@ -1,7 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+
 using System;
+using System.Collections.Generic;
 
 namespace Final
 {
@@ -30,7 +33,7 @@ namespace Final
         KeyboardState previousKeyboardState;
 
         bool triangleColor = false;
-        VertexPositionColor[] vertices =
+        List<VertexPositionColor> vertices = new List<VertexPositionColor>
         {
             new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
             new VertexPositionColor(new Vector3(10, 0, 10), Color.Gray),      // Top right
@@ -40,6 +43,8 @@ namespace Final
             new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray),    // Bottom left
             new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)      // Top left
         };
+
+        List<bool> vertexList = new List<bool>();
 
         public Final()
         {
@@ -127,7 +132,7 @@ namespace Final
             foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices, 0, vertices.Length / 3);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices.ToArray(), 0, vertices.Count / 3);
             }
 
             _spriteBatch.Begin();
@@ -136,8 +141,8 @@ namespace Final
                 int i = 0;
                 _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Number of Vertices: " + vertices.Length, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Number of Triangles: " + vertices.Length / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Number of Vertices: " + vertices.Count, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Number of Triangles: " + vertices.Count / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
