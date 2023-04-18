@@ -114,7 +114,24 @@ namespace Final
             if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !previousKeyboardState.IsKeyDown(Keys.OemQuestion)) { showHelp = !showHelp; }
 
             // Reset the camera
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) { cameraAngleX = cameraAngleY = -30; distance = 15; cameraTarget = Vector3.Zero; }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            { 
+                cameraAngleX = cameraAngleY = -30; 
+                distance = 15; 
+                cameraTarget = Vector3.Zero;
+                vertices = new List<VertexPositionColor>
+                {
+                    new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
+                    new VertexPositionColor(new Vector3(10, 0, 10), Color.Gray),        // Top right
+                    new VertexPositionColor(new Vector3(10, 0, -10), Color.Gray),       // Bottom right
+
+                    new VertexPositionColor(new Vector3(10, 0, -10), Color.LightGray),  // Bottom right
+                    new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray), // Bottom left
+                    new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)   // Top left
+                };
+
+                subdivisionIteration = 0;
+            }
 
             // Distance control
             if (previousMouseState.RightButton == ButtonState.Pressed && Mouse.GetState().RightButton == ButtonState.Pressed)
