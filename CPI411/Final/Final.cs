@@ -32,7 +32,7 @@ namespace Final
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
-        bool triangleColor = false;
+        bool triangleColor = false, areVerticesColorful = false;
         List<VertexPositionColor> vertices = new List<VertexPositionColor>
         {
             new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
@@ -43,8 +43,6 @@ namespace Final
             new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray),    // Bottom left
             new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)      // Top left
         };
-
-        List<bool> vertexList = new List<bool>();
 
         public Final()
         {
@@ -76,10 +74,10 @@ namespace Final
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
             // Subdivide the polygon
-            if(Keyboard.GetState().IsKeyDown(Keys.D) && !previousKeyboardState.IsKeyDown(Keys.D))
-            {
-                CatmullClarkSubdivision();
-            }
+            if(Keyboard.GetState().IsKeyDown(Keys.D) && !previousKeyboardState.IsKeyDown(Keys.D)) { CatmullClarkSubdivision(); }
+
+            // Toggle triangle visualization
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousKeyboardState.IsKeyDown(Keys.Space)) { VisualizeTriangles(); }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -153,12 +151,17 @@ namespace Final
                 _spriteBatch.DrawString(font, "Right Click + Drag Zooms In/Out", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Space: Toggle Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
+        /// <summary>
+        /// Main Subdivision algorithm that divides each triangle into 4 triangles.
+        /// TODO: Improve on subdivision and clamp amount of subdivisions allowed
+        /// </summary>
         private void CatmullClarkSubdivision()
         {
             Color vertexColor = triangleColor ? Color.Gray : Color.LightGray;
@@ -214,6 +217,100 @@ namespace Final
             }
 
             vertices = subdivisionVertices;
+        }
+
+        /// <summary>
+        /// This method will toggle between the color white and the colors being visualized by RBGW coloring
+        /// </summary>
+        private void VisualizeTriangles()
+        {
+            int colorNumber = 0; // 0 is red, 1 is green, 2 is blue, 3 is white
+            int j = 0;
+            for(int i = 0; i < vertices.Count; i++)
+            {
+                Vector3 vertexPosition = vertices[i].Position;
+                if (areVerticesColorful)
+                {
+                    switch (colorNumber)
+                    {
+                        case 0:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Red);
+                            break;
+
+                        case 1:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Green);
+                            break;
+
+                        case 2:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Blue);
+                            break;
+
+                        case 3:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Orange);
+                            break;
+
+                        case 4:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Purple);
+                            break;
+
+                        case 5:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Yellow);
+                            break;
+
+                        default:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.White);
+                            break;
+                    }
+                }
+                else
+                {
+                    switch(colorNumber)
+                    {
+                        case 0:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Gray);
+                            break;
+
+                        case 1:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.LightGray);
+                            break;
+
+                        case 2:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.LightSlateGray);
+                            break;
+
+                        case 3:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.WhiteSmoke);
+                            break;
+
+                        case 4:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.GhostWhite);
+                            break;
+
+                        case 5:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.DimGray);
+                            break;
+
+                        default:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.White);
+                            break;
+                    }
+                }
+
+                if(j == 2)
+                {
+                    if (colorNumber == 5) colorNumber = 0;
+                    else colorNumber++;
+
+                    j = 0;
+                }
+                else
+                {
+                    j++;
+                }
+
+            }
+
+            areVerticesColorful = !areVerticesColorful;
         }
     }
 }
