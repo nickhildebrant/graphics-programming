@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Final
 {
@@ -32,17 +33,21 @@ namespace Final
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
+        bool userPickedVertices = false;
         bool triangleColor = false, areVerticesColorful = false;
         List<VertexPositionColor> vertices = new List<VertexPositionColor>
         {
             new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
-            new VertexPositionColor(new Vector3(10, 0, 10), Color.Gray),      // Top right
-            new VertexPositionColor(new Vector3(10, 0, -10), Color.Gray),      // Bottom right
+            new VertexPositionColor(new Vector3(10, 0, 10), Color.Gray),        // Top right
+            new VertexPositionColor(new Vector3(10, 0, -10), Color.Gray),       // Bottom right
 
-            new VertexPositionColor(new Vector3(10, 0, -10), Color.LightGray),     // Bottom right
-            new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray),    // Bottom left
-            new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)      // Top left
+            new VertexPositionColor(new Vector3(10, 0, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray), // Bottom left
+            new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)   // Top left
         };
+
+        int subdivisionIteration = 0;
+        List<VertexPositionColor[]> previousSubdivisions = new List<VertexPositionColor[]>();
 
         public Final()
         {
@@ -78,6 +83,24 @@ namespace Final
 
             // Toggle triangle visualization
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousKeyboardState.IsKeyDown(Keys.Space)) { VisualizeTriangles(); }
+
+            // Control the current subdivision algorithm
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
+            {
+                if (subdivisionIteration < previousSubdivisions.Count - 1 && previousSubdivisions != null)
+                {
+                    subdivisionIteration++;
+                    userPickedVertices = true;
+                }
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down)) 
+            {
+                if (subdivisionIteration > 0 && previousSubdivisions.Count > 0)
+                {
+                    subdivisionIteration--;
+                    userPickedVertices = true;
+                }
+            }
 
             // Info UI + Help UI
             if (Keyboard.GetState().IsKeyDown(Keys.H) && !previousKeyboardState.IsKeyDown(Keys.H)) { showInfo = !showInfo; }
@@ -127,10 +150,14 @@ namespace Final
             effect.Parameters["View"].SetValue(view);
             effect.Parameters["Projection"].SetValue(projection);
 
+            VertexPositionColor[] vertexBuffer;
+            if (userPickedVertices) vertexBuffer = previousSubdivisions[subdivisionIteration];
+            else vertexBuffer = vertices.ToArray();
+
             foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertices.ToArray(), 0, vertices.Count / 3);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertexBuffer, 0, vertexBuffer.Length / 3);
             }
 
             _spriteBatch.Begin();
@@ -141,6 +168,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Number of Vertices: " + vertices.Count, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Number of Triangles: " + vertices.Count / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Subdivision Iteration: " + subdivisionIteration, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
@@ -164,6 +192,8 @@ namespace Final
         /// </summary>
         private void CatmullClarkSubdivision()
         {
+            userPickedVertices = false;
+
             Color vertexColor = triangleColor ? Color.Gray : Color.LightGray;
             Vector3 vertex0 = Vector3.Zero,
                     vertex1 = Vector3.Zero, 
@@ -216,6 +246,8 @@ namespace Final
                 }
             }
 
+            previousSubdivisions.Add(vertices.ToArray());
+            subdivisionIteration++;
             vertices = subdivisionVertices;
         }
 
