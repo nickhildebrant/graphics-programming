@@ -162,18 +162,58 @@ namespace Final
         private void CatmullClarkSubdivision()
         {
             Color vertexColor = triangleColor ? Color.Gray : Color.LightGray;
+            Vector3 vertex0 = Vector3.Zero,
+                    vertex1 = Vector3.Zero, 
+                    vertex2 = Vector3.Zero;
 
-            int originalSize = vertices.Count;
-            VertexPositionColor[] orignalVertexArray = vertices.ToArray();
-            for(int i = 1; i < originalSize; i++)
+            List<VertexPositionColor> subdivisionVertices = new List<VertexPositionColor>();
+            int j = 0;
+            for (int i = 0; i < vertices.Count; i++)
             {
-                Vector3 vertex1 = orignalVertexArray[i - 1].Position;
-                Vector3 vertex2 = orignalVertexArray[i].Position;
+                if (i % 3 == 0) { vertex0 = vertices[i].Position; j = 1; }
+                else if (i % 3 == 1) { vertex1 = vertices[i].Position; j = 2; }
+                else { vertex2 = vertices[i].Position; j = 3; }
 
-                Vector3 distance = vertex1 + vertex2;
-                vertices.Insert(i, new VertexPositionColor(distance / 2, vertexColor));
-                triangleColor = !triangleColor;
+                if(j == 3)
+                {
+                    // Keeping top edge
+                    vertexColor = Color.Red;
+                    subdivisionVertices.Add(new VertexPositionColor(vertex0, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
+                    triangleColor = !triangleColor;
+                    //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
+
+                    // Middle triangle
+                    vertexColor = Color.Green;
+                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex1 + vertex2) / 2, vertexColor));
+                    triangleColor = !triangleColor;
+                    //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
+
+                    // Hypotenuse bottom
+                    vertexColor = Color.Blue;
+                    subdivisionVertices.Add(new VertexPositionColor(vertex1, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex1 + vertex2) / 2, vertexColor));
+                    triangleColor = !triangleColor;
+                    //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
+
+                    // Hypotenuse top
+                    vertexColor = Color.White;
+                    subdivisionVertices.Add(new VertexPositionColor(vertex2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColor((vertex2 + vertex1) / 2, vertexColor));
+                    triangleColor = !triangleColor;
+                    //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
+
+                    vertex0 = vertex1 = vertex2 = Vector3.Zero;
+                    j = 0;
+                }
             }
+
+            vertices = subdivisionVertices;
         }
     }
 }
