@@ -19,6 +19,8 @@ namespace Final
         Texture2D[] textures;
         Effect effect;
 
+        Random random;
+
         bool showInfo = true, showHelp = true;
 
         Matrix world = Matrix.Identity;
@@ -63,6 +65,8 @@ namespace Final
             view = Matrix.CreateLookAt(cameraPosition, new Vector3(), new Vector3(0, 0, 0));
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
+            random = new Random();
+
             base.Initialize();
         }
 
@@ -83,6 +87,9 @@ namespace Final
 
             // Toggle triangle visualization
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousKeyboardState.IsKeyDown(Keys.Space)) { VisualizeTriangles(); }
+
+            // Make all triangles white
+            if (Keyboard.GetState().IsKeyDown(Keys.C) && !previousKeyboardState.IsKeyDown(Keys.C)) { ClearAllTriangles(); }
 
             // Control the current subdivision algorithm
             if (Keyboard.GetState().IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
@@ -168,7 +175,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Number of Vertices: " + vertices.Count, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Number of Triangles: " + vertices.Count / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Subdivision Iteration: " + subdivisionIteration, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "UP/DOWN - Subdivision Iteration: " + subdivisionIteration, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
@@ -180,6 +187,8 @@ namespace Final
                 _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Space: Toggle Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "D: Subdivide the Triangles", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "C: Clear Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 
@@ -210,7 +219,9 @@ namespace Final
                 if(j == 3)
                 {
                     // Keeping top edge
-                    vertexColor = Color.Red;
+                    vertexColor.R = (byte)random.Next(0, 255);
+                    vertexColor.G = (byte)random.Next(0, 255);
+                    vertexColor.B = (byte)random.Next(0, 255);
                     subdivisionVertices.Add(new VertexPositionColor(vertex0, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
@@ -218,7 +229,9 @@ namespace Final
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
                     // Middle triangle
-                    vertexColor = Color.Green;
+                    vertexColor.R = (byte)random.Next(0, 255);
+                    vertexColor.G = (byte)random.Next(0, 255);
+                    vertexColor.B = (byte)random.Next(0, 255);
                     subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex1 + vertex2) / 2, vertexColor));
@@ -226,7 +239,9 @@ namespace Final
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
                     // Hypotenuse bottom
-                    vertexColor = Color.Blue;
+                    vertexColor.R = (byte)random.Next(0, 255);
+                    vertexColor.G = (byte)random.Next(0, 255);
+                    vertexColor.B = (byte)random.Next(0, 255);
                     subdivisionVertices.Add(new VertexPositionColor(vertex1, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex1 + vertex2) / 2, vertexColor));
@@ -234,7 +249,9 @@ namespace Final
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
                     // Hypotenuse top
-                    vertexColor = Color.White;
+                    vertexColor.R = (byte)random.Next(0, 255);
+                    vertexColor.G = (byte)random.Next(0, 255);
+                    vertexColor.B = (byte)random.Next(0, 255);
                     subdivisionVertices.Add(new VertexPositionColor(vertex2, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
                     subdivisionVertices.Add(new VertexPositionColor((vertex2 + vertex1) / 2, vertexColor));
@@ -252,51 +269,31 @@ namespace Final
         }
 
         /// <summary>
+        /// This method makes all triangles white
+        /// </summary>
+        private void ClearAllTriangles()
+        {
+            for(int i = 0; i < vertices.Count; i++)
+            {
+                Vector3 vertexPosition = vertices[i].Position;
+                vertices[i] = new VertexPositionColor(vertexPosition, Color.White);
+            }
+        }
+
+        /// <summary>
         /// This method will toggle between the color white and the colors being visualized by RBGW coloring
         /// </summary>
         private void VisualizeTriangles()
         {
             int colorNumber = 0; // 0 is red, 1 is green, 2 is blue, 3 is white
             int j = 0;
-            for(int i = 0; i < vertices.Count; i++)
+            Color vertexColor = new Color(255, 255, 255);
+            for (int i = 0; i < vertices.Count; i++)
             {
                 Vector3 vertexPosition = vertices[i].Position;
-                if (areVerticesColorful)
+                if (!areVerticesColorful)
                 {
                     switch (colorNumber)
-                    {
-                        case 0:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Red);
-                            break;
-
-                        case 1:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Green);
-                            break;
-
-                        case 2:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Blue);
-                            break;
-
-                        case 3:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Orange);
-                            break;
-
-                        case 4:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Purple);
-                            break;
-
-                        case 5:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Yellow);
-                            break;
-
-                        default:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.White);
-                            break;
-                    }
-                }
-                else
-                {
-                    switch(colorNumber)
                     {
                         case 0:
                             vertices[i] = new VertexPositionColor(vertexPosition, Color.Gray);
@@ -322,15 +319,30 @@ namespace Final
                             vertices[i] = new VertexPositionColor(vertexPosition, Color.DimGray);
                             break;
 
+                        case 6:
+                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Black);
+                            break;
+
                         default:
                             vertices[i] = new VertexPositionColor(vertexPosition, Color.White);
                             break;
                     }
                 }
+                else
+                {
+                    if(j == 0)
+                    {
+                        vertexColor.R = (byte)random.Next(0, 255);
+                        vertexColor.G = (byte)random.Next(0, 255);
+                        vertexColor.B = (byte)random.Next(0, 255);
+                    }
+
+                    vertices[i] = new VertexPositionColor(vertexPosition, vertexColor);
+                }
 
                 if(j == 2)
                 {
-                    if (colorNumber == 5) colorNumber = 0;
+                    if (colorNumber == 6) colorNumber = 0;
                     else colorNumber++;
 
                     j = 0;
