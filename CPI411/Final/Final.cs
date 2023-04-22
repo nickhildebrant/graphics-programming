@@ -43,13 +43,58 @@ namespace Final
 
         List<VertexPositionColor> vertices = new List<VertexPositionColor>
         {
-            new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
-            new VertexPositionColor(new Vector3(10, 0, 10), Color.Gray),        // Top right
-            new VertexPositionColor(new Vector3(10, 0, -10), Color.Gray),       // Bottom right
+            new VertexPositionColor(new Vector3(-10, -10, 10), Color.Gray),       // Top left
+            new VertexPositionColor(new Vector3(10, -10, 10), Color.Gray),        // Top right
+            new VertexPositionColor(new Vector3(10, -10, -10), Color.Gray),       // Bottom right
 
-            new VertexPositionColor(new Vector3(10, 0, -10), Color.LightGray),  // Bottom right
-            new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray), // Bottom left
-            new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)   // Top left
+            new VertexPositionColor(new Vector3(10, -10, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColor(new Vector3(-10, -10, -10), Color.LightGray), // Bottom left
+            new VertexPositionColor(new Vector3(-10, -10, 10), Color.LightGray),   // Top left
+
+            /// TOP
+            new VertexPositionColor(new Vector3(-10, 10, 10), Color.Gray),       // Top left
+            new VertexPositionColor(new Vector3(10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColor(new Vector3(10, 10, -10), Color.Gray),       // Bottom right
+
+            new VertexPositionColor(new Vector3(10, 10, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColor(new Vector3(-10, 10, -10), Color.LightGray), // Bottom left
+            new VertexPositionColor(new Vector3(-10, 10, 10), Color.LightGray),   // Top left
+
+            /// Front
+            new VertexPositionColor(new Vector3(10, -10, 10), Color.Gray),       // Top left
+            new VertexPositionColor(new Vector3(10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColor(new Vector3(10, 10, -10), Color.Gray),       // Bottom right
+
+            new VertexPositionColor(new Vector3(10, 10, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColor(new Vector3(10, -10, -10), Color.LightGray), // Bottom left
+            new VertexPositionColor(new Vector3(10, -10, 10), Color.LightGray),   // Top left
+
+            /// Back
+            new VertexPositionColor(new Vector3(-10, -10, 10), Color.Gray),       // Top left
+            new VertexPositionColor(new Vector3(-10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColor(new Vector3(-10, 10, -10), Color.Gray),       // Bottom right
+
+            new VertexPositionColor(new Vector3(-10, 10, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColor(new Vector3(-10, -10, -10), Color.LightGray), // Bottom left
+            new VertexPositionColor(new Vector3(-10, -10, 10), Color.LightGray),   // Top left
+
+            // Left
+            new VertexPositionColor(new Vector3(10, 10, 10), Color.Gray),       // Top left
+            new VertexPositionColor(new Vector3(-10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColor(new Vector3(-10, -10, 10), Color.Gray),       // Bottom right
+
+            new VertexPositionColor(new Vector3(-10, -10, -10), Color.LightGray),       // Top left
+            new VertexPositionColor(new Vector3(10, -10, -10), Color.LightGray),        // Top right
+            new VertexPositionColor(new Vector3(10, 10, -10), Color.LightGray),       // Bottom right
+
+            // Right
+            new VertexPositionColor(new Vector3(10, 10, -10), Color.Gray),  // Bottom right
+            new VertexPositionColor(new Vector3(-10, -10, -10), Color.Gray), // Bottom left
+            new VertexPositionColor(new Vector3(-10, 10, -10), Color.Gray),   // Top left
+
+            new VertexPositionColor(new Vector3(-10, -10, 10), Color.LightGray),  // Bottom right
+            new VertexPositionColor(new Vector3(10, 10, 10), Color.LightGray), // Bottom left
+            new VertexPositionColor(new Vector3(10, -10, 10), Color.LightGray),   // Top left
         };
 
         int subdivisionIteration = 0;
@@ -136,7 +181,7 @@ namespace Final
 
                     new VertexPositionColor(new Vector3(10, 0, -10), Color.LightGray),  // Bottom right
                     new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray), // Bottom left
-                    new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray)   // Top left
+                    new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray),   // Top left
                 };
 
                 subdivisionIteration = 0;
@@ -176,6 +221,7 @@ namespace Final
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
