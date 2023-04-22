@@ -102,10 +102,13 @@ namespace Final
             // Control the current subdivision algorithm
             if (Keyboard.GetState().IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
             {
-                int power = (int)Math.Pow(2, (double)(1 + 2 * (subdivisionIteration+1)));
-                if (power > iterationsList[iterationsList.Count-1].Length / 3) CatmullClarkSubdivision();
+                if(subdivisionIteration < 12)
+                {
+                    int power = (int)Math.Pow(2, (double)(1 + 2 * (subdivisionIteration + 1)));
+                    if (power > iterationsList[iterationsList.Count - 1].Length / 3) CatmullClarkSubdivision();
 
-                if (subdivisionIteration < iterationsList.Count - 1 && iterationsList != null) { subdivisionIteration++; }
+                    if (subdivisionIteration < iterationsList.Count - 1 && iterationsList != null) { subdivisionIteration++; }
+                }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down)) 
             {
@@ -213,7 +216,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "Middle Mouse + Drag Translates Camera", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "S Key: Resets the Camera and Light", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Space: Toggle Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "D: Subdivide the Triangles", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "UP: Subdivide the Triangles", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "C: Clear Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
@@ -296,10 +299,10 @@ namespace Final
         /// </summary>
         private void ClearAllTriangles()
         {
-            for(int i = 0; i < vertices.Count; i++)
+            for(int i = 0; i < iterationsList[subdivisionIteration].Length; i++)
             {
-                Vector3 vertexPosition = vertices[i].Position;
-                vertices[i] = new VertexPositionColor(vertexPosition, Color.White);
+                Vector3 vertexPosition = iterationsList[subdivisionIteration][i].Position;
+                iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.White);
             }
         }
 
@@ -311,43 +314,43 @@ namespace Final
             int colorNumber = 0; // 0 is red, 1 is green, 2 is blue, 3 is white
             int j = 0;
             Color vertexColor = new Color(255, 255, 255);
-            for (int i = 0; i < vertices.Count; i++)
+            for (int i = 0; i < iterationsList[subdivisionIteration].Length; i++)
             {
-                Vector3 vertexPosition = vertices[i].Position;
+                Vector3 vertexPosition = iterationsList[subdivisionIteration][i].Position;
                 if (!areVerticesColorful)
                 {
                     switch (colorNumber)
                     {
                         case 0:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Gray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.Gray);
                             break;
 
                         case 1:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.LightGray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.LightGray);
                             break;
 
                         case 2:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.LightSlateGray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.LightSlateGray);
                             break;
 
                         case 3:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.WhiteSmoke);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.WhiteSmoke);
                             break;
 
                         case 4:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.GhostWhite);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.GhostWhite);
                             break;
 
                         case 5:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.DimGray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.DimGray);
                             break;
 
                         case 6:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.Black);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.Black);
                             break;
 
                         default:
-                            vertices[i] = new VertexPositionColor(vertexPosition, Color.White);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.White);
                             break;
                     }
                 }
@@ -360,7 +363,7 @@ namespace Final
                         vertexColor.B = (byte)random.Next(0, 255);
                     }
 
-                    vertices[i] = new VertexPositionColor(vertexPosition, vertexColor);
+                    iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, vertexColor);
                 }
 
                 if(j == 2)
