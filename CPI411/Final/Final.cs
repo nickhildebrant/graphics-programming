@@ -152,6 +152,8 @@ namespace Final
                     int power = (int)Math.Pow(2, (double)(1 + 2 * (subdivisionIteration + 1)));
                     if (power > iterationsList[iterationsList.Count - 1].Length / 3) CatmullClarkSubdivision();
 
+                    CatmullClarkSubdivision();
+
                     if (subdivisionIteration < iterationsList.Count - 1 && iterationsList != null) { subdivisionIteration++; }
                 }
             }
