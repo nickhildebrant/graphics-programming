@@ -34,8 +34,10 @@ namespace Final
         MouseState previousMouseState;
         KeyboardState previousKeyboardState;
 
-        bool userPickedVertices = false;
         bool triangleColor = false, areVerticesColorful = false;
+        float textureDisplacement = 0.1f;
+        float tesselation = 8;
+        float geometryGeneration = 5;
 
         VertexBuffer triangleBuffer;
 
@@ -51,7 +53,7 @@ namespace Final
         };
 
         int subdivisionIteration = 0;
-        List<VertexPositionColor[]> previousSubdivisions = new List<VertexPositionColor[]>();
+        List<VertexPositionColor[]> iterationsList = new List<VertexPositionColor[]>();
 
         public Final()
         {
@@ -68,6 +70,8 @@ namespace Final
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
 
             triangleBuffer = GenerateVertices();
+
+            iterationsList.Add(vertices.ToArray());
 
             random = new Random();
 
@@ -87,7 +91,7 @@ namespace Final
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
             // Subdivide the polygon
-            if(Keyboard.GetState().IsKeyDown(Keys.D) && !previousKeyboardState.IsKeyDown(Keys.D)) { CatmullClarkSubdivision(); }
+            //if(Keyboard.GetState().IsKeyDown(Keys.D) && !previousKeyboardState.IsKeyDown(Keys.D)) { CatmullClarkSubdivision(); }
 
             // Toggle triangle visualization
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousKeyboardState.IsKeyDown(Keys.Space)) { VisualizeTriangles(); }
@@ -98,18 +102,16 @@ namespace Final
             // Control the current subdivision algorithm
             if (Keyboard.GetState().IsKeyDown(Keys.Up) && !previousKeyboardState.IsKeyDown(Keys.Up))
             {
-                if (subdivisionIteration < previousSubdivisions.Count - 1 && previousSubdivisions != null)
-                {
-                    subdivisionIteration++;
-                    userPickedVertices = true;
-                }
+                int power = (int)Math.Pow(2, (double)(1 + 2 * (subdivisionIteration+1)));
+                if (power > iterationsList[iterationsList.Count-1].Length / 3) CatmullClarkSubdivision();
+
+                if (subdivisionIteration < iterationsList.Count - 1 && iterationsList != null) { subdivisionIteration++; }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down) && !previousKeyboardState.IsKeyDown(Keys.Down)) 
             {
-                if (subdivisionIteration > 0 && previousSubdivisions.Count > 0)
+                if (subdivisionIteration > 0 && iterationsList.Count > 0)
                 {
                     subdivisionIteration--;
-                    userPickedVertices = true;
                 }
             }
 
@@ -178,14 +180,16 @@ namespace Final
             effect.Parameters["View"].SetValue(view);
             effect.Parameters["Projection"].SetValue(projection);
 
-            VertexPositionColor[] vertexBuffer;
-            if (userPickedVertices) vertexBuffer = previousSubdivisions[subdivisionIteration];
-            else vertexBuffer = vertices.ToArray();
+            //effect.Parameters["Texture"].SetValue(Content.Load<Texture>("Texture"));
+
+            //effect.Parameters["TesselationFactor"].SetValue(tesselation);
+            //effect.Parameters["GeometryGeneration"].SetValue(geometryGeneration);
+            //effect.Parameters["TextureDisplacement"].SetValue(textureDisplacement);
 
             foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, vertexBuffer, 0, vertexBuffer.Length / 3);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, iterationsList[subdivisionIteration], 0, iterationsList[subdivisionIteration].Length / 3);
             }
 
             _spriteBatch.Begin();
@@ -194,8 +198,9 @@ namespace Final
                 int i = 0;
                 _spriteBatch.DrawString(font, "Camera Position: (" + cameraPosition.X.ToString("0.00") + ", " + cameraPosition.Y.ToString("0.00") + ", " + cameraPosition.Z.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Camera Angle: (" + cameraAngleX.ToString("0.00") + ", " + cameraAngleY.ToString("0.00") + ")", Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Number of Vertices: " + vertices.Count, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "Number of Triangles: " + vertices.Count / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Number of Vertices: " + iterationsList[subdivisionIteration].Length, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Number of Triangles: " + iterationsList[subdivisionIteration].Length / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Size of Iteration Buffer: " + iterationsList.Count, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "UP/DOWN - Subdivision Iteration: " + subdivisionIteration, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
@@ -222,8 +227,6 @@ namespace Final
         /// </summary>
         private void CatmullClarkSubdivision()
         {
-            userPickedVertices = false;
-
             Color vertexColor = triangleColor ? Color.Gray : Color.LightGray;
             Vector3 vertex0 = Vector3.Zero,
                     vertex1 = Vector3.Zero, 
@@ -284,8 +287,7 @@ namespace Final
                 }
             }
 
-            previousSubdivisions.Add(vertices.ToArray());
-            subdivisionIteration++;
+            iterationsList.Add(subdivisionVertices.ToArray());
             vertices = subdivisionVertices;
         }
 
