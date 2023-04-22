@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
 
 using System;
 using System.Collections.Generic;
@@ -37,6 +36,9 @@ namespace Final
 
         bool userPickedVertices = false;
         bool triangleColor = false, areVerticesColorful = false;
+
+        VertexBuffer triangleBuffer;
+
         List<VertexPositionColor> vertices = new List<VertexPositionColor>
         {
             new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
@@ -64,6 +66,8 @@ namespace Final
             world = Matrix.Identity;
             view = Matrix.CreateLookAt(cameraPosition, new Vector3(), new Vector3(0, 0, 0));
             projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90), GraphicsDevice.Viewport.AspectRatio, 0.1f, 100);
+
+            triangleBuffer = GenerateVertices();
 
             random = new Random();
 
@@ -372,6 +376,27 @@ namespace Final
             }
 
             areVerticesColorful = !areVerticesColorful;
+        }
+
+        // Creates the triange for rendering
+        private VertexBuffer GenerateVertices()
+        {
+            VertexPositionColor[] vertexArray = new VertexPositionColor[]
+            {
+                new VertexPositionColor(new Vector3(0, 10, 0), Color.Gray),       // Top left
+                new VertexPositionColor(new Vector3(1, 0, 0), Color.Gray),        // Top right
+                new VertexPositionColor(new Vector3(-1, 0, 0), Color.Gray),       // Bottom right
+            };
+
+            //var vertices = new VertexPositionTexture[] {
+            //    new VertexPositionTexture(new Vector3( 0, 1, 0), new Vector2(0, 0)),
+            //    new VertexPositionTexture(new Vector3( 1, 0, 0), new Vector2(0, 1)),
+            //    new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(1, 1)),
+            //};
+
+            var vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionTexture), vertexArray.Length, BufferUsage.WriteOnly);
+            vertexBuffer.SetData(vertexArray);
+            return vertexBuffer;
         }
     }
 }

@@ -2,6 +2,15 @@
 float4x4 View;
 float4x4 Projection;
 
+float SubdivisionIteration;
+float TesselationFactor;
+
+float TextureDisplacement;
+
+float GeometryGeneration;
+
+SamplerState TextureSampler;
+
 struct VertexShaderInput {
 	float4 Position : POSITION0;
 	float4 Color : COLOR0;
@@ -9,7 +18,17 @@ struct VertexShaderInput {
 
 struct VertexShaderOutput {
 	float4 Position : SV_POSITION;
+	float4 LocalUV : TEXCOORD0;
 	float4 Color : COLOR0;
+};
+
+struct HullShaderOutput {
+	float4 Position : BEZIERPOS;
+};
+
+struct TrianglePatchOutput {
+	float Edges[3] : SV_TessFactor;
+	float InsideFactor : SV_InsideTessFactor;
 };
 
 VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
@@ -28,12 +47,83 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR
 	return input.Color;
 }
 
+TrianglePatchOutput TrianglePatchFunction(InputPatch<VertexShaderOutput, 3> inputPatch, uint patchID : SV_PrimitiveID)
+{
+	TrianglePatchOutput output;
+	output.Edges[0] = TesselationFactor;
+	output.Edges[1] = TesselationFactor;
+	output.Edges[2] = TesselationFactor;
+	output.InsideFactor = TesselationFactor;
+
+	return output;
+}
+
+[domain("tri")]						// tri  quad  isoline
+[partitioning("fractional_even")]	// fractional_even  fractional_odd  pow2
+[outputtopology("triangle_cw")]		// triangle_cw  triangle_ccw  line
+[outputcontrolpoints(3)]
+[patchconstantfunc("PatchConstantFunc")]
+[maxtessfactor(50.0)]
+HullShaderOutput HullShaderFunction(InputPatch<VertexShaderOutput, 3> inputPatch, uint i : SV_OutputControlPointID, uint patchID : SV_PrimitiveID)
+{
+	HullShaderOutput output;
+	output.Position = inputPatch[i].localPosition;
+	return output;
+}
+
+[domain("tri")]
+VertexShaderOutput DomainShaderFunction(const OutputPatch<HullOut, 3> outputPatch, float3 barycentric : SV_DomainLocation, PatchConstantOut patchConst)
+{
+	VertexShaderOutput output;
+
+	float4 position = outputPatch[0].Position * barycentric.x + outputPatch[1].Position * barycentric.y + outputPatch[2].Position * barycentric.z;
+	float distance = length(position.xyz);
+
+	position.z = distance * distance;
+	position.z += TextureDisplacement * Texture.SampleLevel(TextureSampler, position.xy * 2, 0).x;
+
+	output.Position = mul(position, world * view * projection);
+	output.LocalUV = position;
+	return output;
+}
+
+[maxvertexcount(100)]
+void GeometryShaderFunction(triangle in VertexShaderOutput vertex[3], inout TriangleStream<VertexShaderOutput> triangleStream)
+{
+	float3 vertex0 = vertex[0].LocalPosition.xyz;
+	float3 vertex1 = vertex[1].LocalPosition.xyz;
+	float3 vertex2 = vertex[2].LocalPosition.xyz;
+
+	float size = 1 / GeometryGeneration;
+
+	// Calculate parametric functions for the model's smooth curves
+	for (float s = 0; s < 3; s += size)
+	{
+		float t = frac(s);
+		float3 origin = s < 1 ? lerp(vertex0, vertex1, t) : s < 2 ? lerp(vertex1, vertex2, t) : lerp(vertex2, vertex0, t);
+		origin.z += TextureDisplacement * Texture.SampleLevel(TextureSampler, origin.xy, 0).x;
+
+		vertex[0].Position = mul(float4(origin + v0 * size, 1), WorldViewProjection);
+		vertex[1].Position = mul(float4(origin + v1 * size, 1), WorldViewProjection);
+		vertex[2].Position = mul(float4(origin + v2 * size, 1), WorldViewProjection);
+
+		triStream.Append(vertex[0]);
+		triStream.Append(vertex[1]);
+		triStream.Append(vertex[2]);
+
+		triStream.RestartStrip();
+	}
+}
+
 technique SubdivisionShader
 {
 	pass P0
 	{
 		VertexShader = compile vs_4_0 VertexShaderFunction();
 		PixelShader = compile ps_4_0 PixelShaderFunction();
+		HullShader = compile hs_5_0 HullShaderFunction();
+		DomainShader = compile ds_5_0 DomainShaderFunction();
+		GeometryShader = compile gs_4_0 GeometryShaderFunction();
 	}
 };
 
