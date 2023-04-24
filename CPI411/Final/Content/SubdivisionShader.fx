@@ -1,26 +1,42 @@
 ﻿float4x4 World;
 float4x4 View;
 float4x4 Projection;
+float4x4 WorldInverseTranspose;
 
 float SubdivisionIteration;
 float TesselationFactor;
 
-Texture2D Texture;
-float TextureDisplacement;
+texture DisplacementTexture;
+float DisplacementHeight;
 
 float GeometryGeneration;
 
-SamplerState TextureSampler;
+SamplerState DisplacementSampler = sampler_state {
+	Texture = <DisplacementTexture>;
+	magfilter = LINEAR;
+	minfilter = LINEAR;
+	mipfilter = LINEAR;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
 
 struct VertexShaderInput {
 	float4 Position : POSITION0;
 	float4 Color : COLOR0;
+	float4 Normal : NORMAL0;
+	float2 TextureCoordinate : TEXCOORD0;
+	//float4 Tangent : TANGENT0;
+	//float4 Binormal : BINORMAL0;
 };
 
 struct VertexShaderOutput {
-	float4 Position : SV_POSITION;
-	float4 LocalUV : TEXCOORD0;
+	float4 Position : POSITION0;
 	float4 Color : COLOR0;
+	float2 TextureCoordinate : TEXCOORD0;
+	float3 Normal: TEXCOORD1;
+	float3 Tangent : TEXCOORD2;
+	float3 Binormal : TEXCOORD3;
+	float3 WorldPosition: TEXCCOORD4;
 };
 
 struct HullShaderOutput {
@@ -34,10 +50,29 @@ struct TrianglePatchOutput {
 
 VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
 {
-	VertexShaderOutput output = (VertexShaderOutput)0;
+	VertexShaderOutput output;
+
+	float3 normalTexture = tex2Dlod(DisplacementSampler, float4(input.TextureCoordinate.xy, 0, 0));
+	normalTexture = 2 * (normalTexture - float3(0.5, 0.5, 0.5));
+
+	float3x3 TangentToWorld;
+	float3x3 RotationMatrix = { 1, 0, 0, 0, cos(90), -sin(90), 0, sin(90), cos(90) };
+	TangentToWorld[0] = mul(input.Normal, RotationMatrix);
+	TangentToWorld[1] = cross(input.Normal, mul(input.Normal, RotationMatrix));
+	TangentToWorld[2] = input.Normal;
+	float3 displaceNormal = mul(normalTexture, TangentToWorld);
+
+	input.Position.xyz -= (DisplacementHeight * (displaceNormal.z - 1)) * input.Normal;
+
 	float4 worldPos = mul(input.Position, World);
 	float4 viewPos = mul(worldPos, View);
+	output.WorldPosition = worldPos;
 	output.Position = mul(viewPos, Projection);
+	output.TextureCoordinate = input.TextureCoordinate;
+	output.Normal = mul(TangentToWorld[0], WorldInverseTranspose).xyz;
+	output.Tangent = mul(TangentToWorld[1], WorldInverseTranspose).xyz;
+	output.Binormal = mul(TangentToWorld[2], WorldInverseTranspose).xyz;
+
 	output.Color = input.Color;
 
 	return output;
@@ -48,7 +83,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR
 	return input.Color;
 }
 
-TrianglePatchOutput TrianglePatchFunction(InputPatch<VertexShaderOutput, 3> inputPatch, uint patchID : SV_PrimitiveID)
+/*TrianglePatchOutput TrianglePatchFunction(InputPatch<VertexShaderOutput, 3> inputPatch, uint patchID : SV_PrimitiveID)
 {
 	TrianglePatchOutput output;
 	output.Edges[0] = TesselationFactor;
@@ -68,7 +103,7 @@ TrianglePatchOutput TrianglePatchFunction(InputPatch<VertexShaderOutput, 3> inpu
 HullShaderOutput HullShaderFunction(InputPatch<VertexShaderOutput, 3> inputPatch, uint i : SV_OutputControlPointID, uint patchID : SV_PrimitiveID)
 {
 	HullShaderOutput output;
-	output.Position = inputPatch[i].LocalUV;
+	output.Position = inputPatch[i].TextureCoordinate;
 	return output;
 }
 
@@ -84,16 +119,16 @@ VertexShaderOutput DomainShaderFunction(const OutputPatch<HullShaderOutput, 3> o
 	position.z += TextureDisplacement * Texture.SampleLevel(TextureSampler, position.xy * 2, 0).x;
 
 	output.Position = mul(position, World * View * Projection);
-	output.LocalUV = position;
+	output.TextureCoordinate = position;
 	return output;
 }
 
 [maxvertexcount(100)]
 void GeometryShaderFunction(triangle in VertexShaderOutput vertex[3], inout TriangleStream<VertexShaderOutput> triangleStream)
 {
-	float3 vertex0 = vertex[0].LocalUV.xyz;
-	float3 vertex1 = vertex[1].LocalUV.xyz;
-	float3 vertex2 = vertex[2].LocalUV.xyz;
+	float3 vertex0 = vertex[0].TextureCoordinate.xyz;
+	float3 vertex1 = vertex[1].TextureCoordinate.xyz;
+	float3 vertex2 = vertex[2].TextureCoordinate.xyz;
 
 	float size = 1 / GeometryGeneration;
 
@@ -114,7 +149,7 @@ void GeometryShaderFunction(triangle in VertexShaderOutput vertex[3], inout Tria
 
 		triangleStream.RestartStrip();
 	}
-}
+}*/
 
 technique SubdivisionShader
 {

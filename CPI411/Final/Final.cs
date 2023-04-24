@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Final
 {
@@ -41,64 +42,65 @@ namespace Final
 
         VertexBuffer triangleBuffer;
 
-        List<VertexPositionColor> vertices = new List<VertexPositionColor>
+        List<VertexPositionColorNormalTexture> vertices = new List<VertexPositionColorNormalTexture>
         {
-            new VertexPositionColor(new Vector3(-10, -10, 10), Color.Gray),       // Top left
-            new VertexPositionColor(new Vector3(10, -10, 10), Color.Gray),        // Top right
-            new VertexPositionColor(new Vector3(10, -10, -10), Color.Gray),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.Gray, Vector3.Up, new Vector2(-10, -10)),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.Gray, Vector3.Up, new Vector2(10, -10)),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.Gray, Vector3.Up, new Vector2(10, -10)),       // Bottom right
 
-            new VertexPositionColor(new Vector3(10, -10, -10), Color.LightGray),  // Bottom right
-            new VertexPositionColor(new Vector3(-10, -10, -10), Color.LightGray), // Bottom left
-            new VertexPositionColor(new Vector3(-10, -10, 10), Color.LightGray),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.LightGray, Vector3.Up, new Vector2(10, -10)),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.LightGray, Vector3.Up, new Vector2(-10, -10)), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.LightGray, Vector3.Up, new Vector2(-10, -10)),   // Top left
 
             /// TOP
-            new VertexPositionColor(new Vector3(-10, 10, 10), Color.Gray),       // Top left
-            new VertexPositionColor(new Vector3(10, 10, 10), Color.Gray),        // Top right
-            new VertexPositionColor(new Vector3(10, 10, -10), Color.Gray),       // Bottom right
+            /*new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray),       // Bottom right
 
-            new VertexPositionColor(new Vector3(10, 10, -10), Color.LightGray),  // Bottom right
-            new VertexPositionColor(new Vector3(-10, 10, -10), Color.LightGray), // Bottom left
-            new VertexPositionColor(new Vector3(-10, 10, 10), Color.LightGray),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.LightGray), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.LightGray),   // Top left
 
             /// Front
-            new VertexPositionColor(new Vector3(10, -10, 10), Color.Gray),       // Top left
-            new VertexPositionColor(new Vector3(10, 10, 10), Color.Gray),        // Top right
-            new VertexPositionColor(new Vector3(10, 10, -10), Color.Gray),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.Gray),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray),       // Bottom right
 
-            new VertexPositionColor(new Vector3(10, 10, -10), Color.LightGray),  // Bottom right
-            new VertexPositionColor(new Vector3(10, -10, -10), Color.LightGray), // Bottom left
-            new VertexPositionColor(new Vector3(10, -10, 10), Color.LightGray),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.LightGray), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.LightGray),   // Top left
 
             /// Back
-            new VertexPositionColor(new Vector3(-10, -10, 10), Color.Gray),       // Top left
-            new VertexPositionColor(new Vector3(-10, 10, 10), Color.Gray),        // Top right
-            new VertexPositionColor(new Vector3(-10, 10, -10), Color.Gray),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.Gray),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.Gray),       // Bottom right
 
-            new VertexPositionColor(new Vector3(-10, 10, -10), Color.LightGray),  // Bottom right
-            new VertexPositionColor(new Vector3(-10, -10, -10), Color.LightGray), // Bottom left
-            new VertexPositionColor(new Vector3(-10, -10, 10), Color.LightGray),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.LightGray),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.LightGray), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.LightGray),   // Top left
 
             // Left
-            new VertexPositionColor(new Vector3(10, 10, 10), Color.Gray),       // Top left
-            new VertexPositionColor(new Vector3(-10, 10, 10), Color.Gray),        // Top right
-            new VertexPositionColor(new Vector3(-10, -10, 10), Color.Gray),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.Gray),       // Bottom right
 
-            new VertexPositionColor(new Vector3(-10, -10, -10), Color.LightGray),       // Top left
-            new VertexPositionColor(new Vector3(10, -10, -10), Color.LightGray),        // Top right
-            new VertexPositionColor(new Vector3(10, 10, -10), Color.LightGray),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.LightGray),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.LightGray),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray),       // Bottom right
 
             // Right
-            new VertexPositionColor(new Vector3(10, 10, -10), Color.Gray),  // Bottom right
-            new VertexPositionColor(new Vector3(-10, -10, -10), Color.Gray), // Bottom left
-            new VertexPositionColor(new Vector3(-10, 10, -10), Color.Gray),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.Gray), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.Gray),   // Top left
 
-            new VertexPositionColor(new Vector3(-10, -10, 10), Color.LightGray),  // Bottom right
-            new VertexPositionColor(new Vector3(10, 10, 10), Color.LightGray), // Bottom left
-            new VertexPositionColor(new Vector3(10, -10, 10), Color.LightGray),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.LightGray),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.LightGray), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.LightGray),   // Top left
+            */
         };
 
         int subdivisionIteration = 0;
-        List<VertexPositionColor[]> iterationsList = new List<VertexPositionColor[]>();
+        List<VertexPositionColorNormalTexture[]> iterationsList = new List<VertexPositionColorNormalTexture[]>();
 
         public Final()
         {
@@ -175,15 +177,15 @@ namespace Final
                 cameraAngleX = cameraAngleY = -30; 
                 distance = 15; 
                 cameraTarget = Vector3.Zero;
-                vertices = new List<VertexPositionColor>
+                vertices = new List<VertexPositionColorNormalTexture>
                 {
-                    new VertexPositionColor(new Vector3(-10, 0, 10), Color.Gray),       // Top left
-                    new VertexPositionColor(new Vector3(10, 0, 10), Color.Gray),        // Top right
-                    new VertexPositionColor(new Vector3(10, 0, -10), Color.Gray),       // Bottom right
+                    new VertexPositionColorNormalTexture(new Vector3(-10, 0, 10), Color.Gray, Vector3.Up, new Vector2(-10, 0)),       // Top left
+                    new VertexPositionColorNormalTexture(new Vector3(10, 0, 10), Color.Gray, Vector3.Up, new Vector2(10, 0)),        // Top right
+                    new VertexPositionColorNormalTexture(new Vector3(10, 0, -10), Color.Gray, Vector3.Up, new Vector2(10, 0)),       // Bottom right
 
-                    new VertexPositionColor(new Vector3(10, 0, -10), Color.LightGray),  // Bottom right
-                    new VertexPositionColor(new Vector3(-10, 0, -10), Color.LightGray), // Bottom left
-                    new VertexPositionColor(new Vector3(-10, 0, 10), Color.LightGray),   // Top left
+                    new VertexPositionColorNormalTexture(new Vector3(10, 0, -10), Color.LightGray, Vector3.Up, new Vector2(10, 0)),  // Bottom right
+                    new VertexPositionColorNormalTexture(new Vector3(-10, 0, -10), Color.LightGray, Vector3.Up, new Vector2(-10, 0)), // Bottom left
+                    new VertexPositionColorNormalTexture(new Vector3(-10, 0, 10), Color.LightGray, Vector3.Up, new Vector2(-10, 0)),   // Top left
                 };
 
                 subdivisionIteration = 0;
@@ -230,8 +232,11 @@ namespace Final
             effect.Parameters["World"].SetValue(world);
             effect.Parameters["View"].SetValue(view);
             effect.Parameters["Projection"].SetValue(projection);
+            Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(world));
+            effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
 
-            //effect.Parameters["Texture"].SetValue(Content.Load<Texture>("Texture"));
+            effect.Parameters["DisplacementTexture"].SetValue(Content.Load<Texture>("Texture"));
+            effect.Parameters["DisplacementHeight"].SetValue(textureDisplacement);
 
             //effect.Parameters["TesselationFactor"].SetValue(tesselation);
             //effect.Parameters["GeometryGeneration"].SetValue(geometryGeneration);
@@ -240,7 +245,7 @@ namespace Final
             foreach (var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, iterationsList[subdivisionIteration], 0, iterationsList[subdivisionIteration].Length / 3);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColorNormalTexture>(PrimitiveType.TriangleList, iterationsList[subdivisionIteration], 0, iterationsList[subdivisionIteration].Length / 3);
             }
 
             _spriteBatch.Begin();
@@ -283,7 +288,7 @@ namespace Final
                     vertex1 = Vector3.Zero, 
                     vertex2 = Vector3.Zero;
 
-            List<VertexPositionColor> subdivisionVertices = new List<VertexPositionColor>();
+            List<VertexPositionColorNormalTexture> subdivisionVertices = new List<VertexPositionColorNormalTexture>();
             int j = 0;
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -297,9 +302,9 @@ namespace Final
                     vertexColor.R = (byte)random.Next(0, 255);
                     vertexColor.G = (byte)random.Next(0, 255);
                     vertexColor.B = (byte)random.Next(0, 255);
-                    subdivisionVertices.Add(new VertexPositionColor(vertex0, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture(vertex0, vertexColor, Vector3.Up, new Vector2(vertex0.X, vertex0.Y)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex1) / 2, vertexColor, Vector3.Up, new Vector2((vertex0.X + vertex1.X) / 2, (vertex0.Y + vertex1.Y) / 2)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((vertex0.X + vertex2.X) / 2, (vertex0.Y + vertex2.Y) / 2)));
                     triangleColor = !triangleColor;
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
@@ -307,9 +312,9 @@ namespace Final
                     vertexColor.R = (byte)random.Next(0, 255);
                     vertexColor.G = (byte)random.Next(0, 255);
                     vertexColor.B = (byte)random.Next(0, 255);
-                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex1 + vertex2) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex1) / 2, vertexColor, Vector3.Up, new Vector2((vertex0.X + vertex1.X) / 2, (vertex0.Y + vertex1.Y) / 2)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((vertex0.X + vertex2.X) / 2, (vertex0.Y + vertex2.Y) / 2)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex1 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((vertex0.X + vertex2.X) / 2, (vertex0.Y + vertex2.Y) / 2)));
                     triangleColor = !triangleColor;
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
@@ -317,9 +322,9 @@ namespace Final
                     vertexColor.R = (byte)random.Next(0, 255);
                     vertexColor.G = (byte)random.Next(0, 255);
                     vertexColor.B = (byte)random.Next(0, 255);
-                    subdivisionVertices.Add(new VertexPositionColor(vertex1, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex1) / 2, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex1 + vertex2) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture(vertex1, vertexColor, Vector3.Up, new Vector2(vertex1.X, vertex1.Y)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex1) / 2, vertexColor, Vector3.Up, new Vector2((vertex0.X + vertex1.X) / 2, (vertex0.Y + vertex1.Y) / 2)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex1 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((vertex1.X + vertex2.X) / 2, (vertex1.Y + vertex2.Y) / 2)));
                     triangleColor = !triangleColor;
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
@@ -327,9 +332,9 @@ namespace Final
                     vertexColor.R = (byte)random.Next(0, 255);
                     vertexColor.G = (byte)random.Next(0, 255);
                     vertexColor.B = (byte)random.Next(0, 255);
-                    subdivisionVertices.Add(new VertexPositionColor(vertex2, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex0 + vertex2) / 2, vertexColor));
-                    subdivisionVertices.Add(new VertexPositionColor((vertex2 + vertex1) / 2, vertexColor));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture(vertex2, vertexColor, Vector3.Up, new Vector2(vertex2.X, vertex2.Y)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((vertex0.X + vertex2.X) / 2, (vertex0.Y + vertex2.Y) / 2)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex2 + vertex1) / 2, vertexColor, Vector3.Up, new Vector2((vertex2.X + vertex1.X) / 2, (vertex2.Y + vertex1.Y) / 2)));
                     triangleColor = !triangleColor;
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
@@ -350,7 +355,8 @@ namespace Final
             for(int i = 0; i < iterationsList[subdivisionIteration].Length; i++)
             {
                 Vector3 vertexPosition = iterationsList[subdivisionIteration][i].Position;
-                iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.White);
+                Vector2 textureCoordinate = iterationsList[subdivisionIteration][i].TextureCoordinate;
+                iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.White, Vector3.Up, textureCoordinate);
             }
         }
 
@@ -365,40 +371,41 @@ namespace Final
             for (int i = 0; i < iterationsList[subdivisionIteration].Length; i++)
             {
                 Vector3 vertexPosition = iterationsList[subdivisionIteration][i].Position;
+                Vector2 textureCoordinate = iterationsList[subdivisionIteration][i].TextureCoordinate;
                 if (!areVerticesColorful)
                 {
                     switch (colorNumber)
                     {
                         case 0:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.Gray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.Gray, Vector3.Up, textureCoordinate);
                             break;
 
                         case 1:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.LightGray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.LightGray, Vector3.Up, textureCoordinate);
                             break;
 
                         case 2:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.LightSlateGray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.LightSlateGray, Vector3.Up, textureCoordinate);
                             break;
 
                         case 3:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.WhiteSmoke);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.WhiteSmoke, Vector3.Up, textureCoordinate);
                             break;
 
                         case 4:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.GhostWhite);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.GhostWhite, Vector3.Up, textureCoordinate);
                             break;
 
                         case 5:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.DimGray);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.DimGray, Vector3.Up, textureCoordinate);
                             break;
 
                         case 6:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.Black);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.Black, Vector3.Up, textureCoordinate);
                             break;
 
                         default:
-                            iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, Color.White);
+                            iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.White, Vector3.Up, textureCoordinate);
                             break;
                     }
                 }
@@ -411,7 +418,7 @@ namespace Final
                         vertexColor.B = (byte)random.Next(0, 255);
                     }
 
-                    iterationsList[subdivisionIteration][i] = new VertexPositionColor(vertexPosition, vertexColor);
+                    iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, vertexColor, Vector3.Up, textureCoordinate);
                 }
 
                 if(j == 2)
@@ -434,11 +441,11 @@ namespace Final
         // Creates the triange for rendering
         private VertexBuffer GenerateVertices()
         {
-            VertexPositionColor[] vertexArray = new VertexPositionColor[]
+            VertexPositionColorNormalTexture[] vertexArray = new VertexPositionColorNormalTexture[]
             {
-                new VertexPositionColor(new Vector3(0, 10, 0), Color.Gray),       // Top left
-                new VertexPositionColor(new Vector3(1, 0, 0), Color.Gray),        // Top right
-                new VertexPositionColor(new Vector3(-1, 0, 0), Color.Gray),       // Bottom right
+                new VertexPositionColorNormalTexture(new Vector3(0, 10, 0), Color.Gray, Vector3.Up, new Vector2(0, 10)),       // Top left
+                new VertexPositionColorNormalTexture(new Vector3(10, 0, 0), Color.Gray, Vector3.Up, new Vector2(10, 0)),        // Top right
+                new VertexPositionColorNormalTexture(new Vector3(-10, 0, 0), Color.Gray, Vector3.Up, new Vector2(-10, 0)),       // Bottom right
             };
 
             //var vertices = new VertexPositionTexture[] {
@@ -447,7 +454,7 @@ namespace Final
             //    new VertexPositionTexture(new Vector3(-1, 0, 0), new Vector2(1, 1)),
             //};
 
-            var vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionTexture), vertexArray.Length, BufferUsage.WriteOnly);
+            var vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColorNormalTexture), vertexArray.Length, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertexArray);
             return vertexBuffer;
         }
