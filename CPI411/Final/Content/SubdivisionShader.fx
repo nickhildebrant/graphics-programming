@@ -83,7 +83,7 @@ VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR
 {
-	return input.Color;
+	return tex2D(DisplacementSampler, input.TextureCoordinate);
 }
 
 /*TrianglePatchOutput TrianglePatchFunction(InputPatch<VertexShaderOutput, 3> inputPatch, uint patchID : SV_PrimitiveID)

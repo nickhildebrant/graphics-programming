@@ -47,13 +47,13 @@ namespace Final
         List<VertexPositionColorNormalTexture> vertices = new List<VertexPositionColorNormalTexture>
         {
             // Bottom
-            new VertexPositionColorNormalTexture(new Vector3(-10, 0, 10), Color.Red, Vector3.Up, new Vector2(0, 2048)),       // Top left
-            new VertexPositionColorNormalTexture(new Vector3(10, 0, 10), Color.Green, Vector3.Up, new Vector2(2048, 2048)),        // Top right
-            new VertexPositionColorNormalTexture(new Vector3(10, 0, -10), Color.Blue, Vector3.Up, new Vector2(2048, 0)),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, 0, 10), Color.Red, Vector3.Up, new Vector2(0, 1)),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 0, 10), Color.Green, Vector3.Up, new Vector2(1, 1)),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, 0, -10), Color.Blue, Vector3.Up, new Vector2(1, 0)),       // Bottom right
 
-            new VertexPositionColorNormalTexture(new Vector3(10, 0, -10), Color.Black, Vector3.Up, new Vector2(2048, 0)),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, 0, -10), Color.Black, Vector3.Up, new Vector2(1, 0)),  // Bottom right
             new VertexPositionColorNormalTexture(new Vector3(-10, 0, -10), Color.White, Vector3.Up, new Vector2(0, 0)), // Bottom left
-            new VertexPositionColorNormalTexture(new Vector3(-10, 0, 10), Color.Gray, Vector3.Up, new Vector2(0, 2048)),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 0, 10), Color.Gray, Vector3.Up, new Vector2(0, 1)),   // Top left
 
             /*
             /// TOP
