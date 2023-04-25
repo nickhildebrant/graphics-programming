@@ -40,8 +40,7 @@ namespace Final
         bool isSimulating = false;
         bool isLatest = true;
         float textureDisplacement = 1f;
-        float tesselation = 8;
-        float geometryGeneration = 5;
+        float simulationSpeed = 1f;
 
         VertexBuffer triangleBuffer;
 
@@ -150,14 +149,23 @@ namespace Final
             if(Keyboard.GetState().IsKeyDown(Keys.D3) && !previousKeyboardState.IsKeyDown(Keys.D3)) { pictureName = "city"; }
             if(Keyboard.GetState().IsKeyDown(Keys.D4) && !previousKeyboardState.IsKeyDown(Keys.D4)) { pictureName = "Texture"; }
             if(Keyboard.GetState().IsKeyDown(Keys.D5) && !previousKeyboardState.IsKeyDown(Keys.D5)) { pictureName = "logo_mg"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D6) && !previousKeyboardState.IsKeyDown(Keys.D6)) { pictureName = "wave1"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D7) && !previousKeyboardState.IsKeyDown(Keys.D7)) { pictureName = "wave2"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D8) && !previousKeyboardState.IsKeyDown(Keys.D8)) { pictureName = "wave3"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D9) && !previousKeyboardState.IsKeyDown(Keys.D9)) { pictureName = "wave4"; }
 
             // Simulate waves using W
             if (Keyboard.GetState().IsKeyDown(Keys.W) && !previousKeyboardState.IsKeyDown(Keys.W)) { isSimulating = !isSimulating; }
+            if (subdivisionIteration > 7) isSimulating = false; // Prevents the visualization from running out of memory
             if(isSimulating) { SimulateWaves(gameTime); }
 
+            // Change Simulation speed
+            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) { simulationSpeed += 0.1f; }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus) && Keyboard.GetState().IsKeyDown(Keys.LeftShift)) { simulationSpeed -= 0.1f; }
+
             // Increase the tesselation height
-            if(Keyboard.GetState().IsKeyDown(Keys.OemPlus)) { textureDisplacement += 0.01f; }
-            if(Keyboard.GetState().IsKeyDown(Keys.OemMinus)) { textureDisplacement -= 0.01f; }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) { textureDisplacement += 0.01f; }
+            if(Keyboard.GetState().IsKeyDown(Keys.OemMinus) && !Keyboard.GetState().IsKeyDown(Keys.LeftShift)) { textureDisplacement -= 0.01f; }
 
             // Toggle the heightmap colors
             if(Keyboard.GetState().IsKeyDown(Keys.E)) { toggleHeightColor = true; }
@@ -297,6 +305,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "Size of Iteration Buffer: " + iterationsList.Count, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "UP/DOWN - Subdivision Iteration: " + subdivisionIteration, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "-/+ - Change Displacement Height: " + textureDisplacement.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "SHIFT -/+ - Change Simulation Speed: " + simulationSpeed.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Showing Heightmap Colors: " + toggleHeightColor, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Showing the Texture Used: " + toggleTexture, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Name of Texture Used: " + pictureName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
@@ -315,6 +324,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "C: Clear Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "E: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "R: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "W: Toggle Wave Simulation", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "1-2-3-4-5: Change Displacement Texture", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
@@ -406,7 +416,9 @@ namespace Final
             {
                 Vector3 vertexPosition = iterationsList[subdivisionIteration][i].Position;
                 Vector2 textureCoordinate = iterationsList[subdivisionIteration][i].TextureCoordinate;
-                iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, Color.White, Vector3.Up, textureCoordinate);
+                Color randomBlue = new Color(0, random.Next(0, 125), random.Next(100, 255));
+                randomBlue.A = (byte)random.Next(50, 100);
+                iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, randomBlue, Vector3.Up, textureCoordinate);
             }
         }
 
@@ -495,8 +507,8 @@ namespace Final
                 Vector3 vertexPosition = iterationsList[subdivisionIteration][i].Position;
                 Color vertexColor = iterationsList[subdivisionIteration][i].Color;
                 Vector2 textureCoordinate = iterationsList[subdivisionIteration][i].TextureCoordinate;
-                textureCoordinate.X += (float)Math.Sin(gameTime.ElapsedGameTime.TotalSeconds) / 100;
-                textureCoordinate.Y += (float)Math.Cos(gameTime.ElapsedGameTime.TotalSeconds) / 10000;
+                textureCoordinate.X += simulationSpeed * (float)Math.Sin(gameTime.ElapsedGameTime.TotalSeconds) / 100;
+                textureCoordinate.Y += simulationSpeed * (float)Math.Cos(gameTime.ElapsedGameTime.TotalSeconds) / 10000;
                 iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, vertexColor, Vector3.Up, textureCoordinate);
             }
         }
