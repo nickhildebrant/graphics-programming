@@ -325,7 +325,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "E: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "R: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "W: Toggle Wave Simulation", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "1-2-3-4-5: Change Displacement Texture", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "1-9: Change Displacement Texture", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 
