@@ -37,6 +37,7 @@ namespace Final
 
         bool triangleColor = false, areVerticesColorful = false;
         bool toggleHeightColor = false, toggleTexture = false;
+        bool isSimulating = false;
         bool isLatest = true;
         float textureDisplacement = 1f;
         float tesselation = 8;
@@ -137,7 +138,6 @@ namespace Final
 
             font = Content.Load<SpriteFont>("font");
             effect = Content.Load<Effect>("SubdivisionShader");
-            Texture wave = Content.Load<Texture>("perlinNoise");
         }
 
         protected override void Update(GameTime gameTime)
@@ -151,11 +151,13 @@ namespace Final
             if(Keyboard.GetState().IsKeyDown(Keys.D4) && !previousKeyboardState.IsKeyDown(Keys.D4)) { pictureName = "Texture"; }
             if(Keyboard.GetState().IsKeyDown(Keys.D5) && !previousKeyboardState.IsKeyDown(Keys.D5)) { pictureName = "logo_mg"; }
 
+            // Simulate waves using W
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && !previousKeyboardState.IsKeyDown(Keys.W)) { isSimulating = !isSimulating; }
+            if(isSimulating) { SimulateWaves(gameTime); }
+
             // Increase the tesselation height
-            if(Keyboard.GetState().IsKeyDown(Keys.D))
-            { 
-                textureDisplacement += Keyboard.GetState().IsKeyDown(Keys.LeftShift) ? 0.01f : -0.01f; 
-            }
+            if(Keyboard.GetState().IsKeyDown(Keys.OemPlus)) { textureDisplacement += 0.01f; }
+            if(Keyboard.GetState().IsKeyDown(Keys.OemMinus)) { textureDisplacement -= 0.01f; }
 
             // Toggle the heightmap colors
             if(Keyboard.GetState().IsKeyDown(Keys.E)) { toggleHeightColor = true; }
@@ -294,7 +296,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "Number of Triangles: " + iterationsList[subdivisionIteration].Length / 3, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Size of Iteration Buffer: " + iterationsList.Count, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "UP/DOWN - Subdivision Iteration: " + subdivisionIteration, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
-                _spriteBatch.DrawString(font, "d/D - Change Displacement Height: " + textureDisplacement.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "-/+ - Change Displacement Height: " + textureDisplacement.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Showing Heightmap Colors: " + toggleHeightColor, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Showing the Texture Used: " + toggleTexture, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Name of Texture Used: " + pictureName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
@@ -484,6 +486,19 @@ namespace Final
             }
 
             areVerticesColorful = !areVerticesColorful;
+        }
+
+        private void SimulateWaves(GameTime gameTime)
+        {
+            for (int i = 0; i < iterationsList[subdivisionIteration].Length; i++)
+            {
+                Vector3 vertexPosition = iterationsList[subdivisionIteration][i].Position;
+                Color vertexColor = iterationsList[subdivisionIteration][i].Color;
+                Vector2 textureCoordinate = iterationsList[subdivisionIteration][i].TextureCoordinate;
+                textureCoordinate.X += (float)Math.Sin(gameTime.ElapsedGameTime.TotalSeconds) / 100;
+                textureCoordinate.Y += (float)Math.Cos(gameTime.ElapsedGameTime.TotalSeconds) / 10000;
+                iterationsList[subdivisionIteration][i] = new VertexPositionColorNormalTexture(vertexPosition, vertexColor, Vector3.Up, textureCoordinate);
+            }
         }
 
         // Creates the triange for rendering
