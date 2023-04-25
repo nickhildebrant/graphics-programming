@@ -11,6 +11,8 @@ float DisplacementHeight;
 
 float GeometryGeneration;
 
+bool HeightMapColors;
+
 SamplerState DisplacementSampler = sampler_state {
 	Texture = <DisplacementTexture>;
 	magfilter = LINEAR;
@@ -53,12 +55,13 @@ VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
 	VertexShaderOutput output;
 
 	float3 normalTexture = tex2Dlod(DisplacementSampler, float4(input.TextureCoordinate.xy, 0, 0));
+	float4 normalColor = float4(normalTexture, 1);
 	normalTexture = 2 * (normalTexture - float3(0.5, 0.5, 0.5));
 
 	float3x3 TangentToWorld;
 	float3x3 RotationMatrix = { 1, 0, 0, 0, cos(90), -sin(90), 0, sin(90), cos(90) };
 	TangentToWorld[0] = mul(input.Normal, RotationMatrix);
-	TangentToWorld[1] = cross(input.Normal, mul(input.Normal, RotationMatrix));
+	TangentToWorld[1] = cross(mul(input.Normal, RotationMatrix), input.Normal);
 	TangentToWorld[2] = input.Normal;
 	float3 displaceNormal = mul(normalTexture, TangentToWorld);
 
@@ -73,7 +76,7 @@ VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
 	output.Tangent = mul(TangentToWorld[1], WorldInverseTranspose).xyz;
 	output.Binormal = mul(TangentToWorld[2], WorldInverseTranspose).xyz;
 
-	output.Color = input.Color;
+	output.Color = HeightMapColors ? normalColor : input.Color;
 
 	return output;
 }
