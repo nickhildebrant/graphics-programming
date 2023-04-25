@@ -349,7 +349,7 @@ namespace Final
                     vertexColor.B = (byte)random.Next(0, 255);
                     subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex1) / 2, vertexColor, Vector3.Up, new Vector2((uv0.X + uv1.X) / 2, (uv0.Y + uv1.Y) / 2)));
                     subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex0 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((uv0.X + uv2.X) / 2, (uv0.Y + uv2.Y) / 2)));
-                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex1 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((uv0.X + uv2.X) / 2, (uv0.Y + uv2.Y) / 2)));
+                    subdivisionVertices.Add(new VertexPositionColorNormalTexture((vertex1 + vertex2) / 2, vertexColor, Vector3.Up, new Vector2((uv1.X + uv2.X) / 2, (uv1.Y + uv2.Y) / 2)));
                     triangleColor = !triangleColor;
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
@@ -374,6 +374,7 @@ namespace Final
                     //vertexColor = triangleColor ? Color.Gray : Color.LightGray;
 
                     vertex0 = vertex1 = vertex2 = Vector3.Zero;
+                    uv0 = uv1 = uv2 = Vector2.Zero;
                     j = 0;
                 }
             }
