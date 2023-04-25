@@ -137,6 +137,8 @@ namespace Final
 
             font = Content.Load<SpriteFont>("font");
             effect = Content.Load<Effect>("SubdivisionShader");
+
+            for (int i = 0; i < 4; i++) { CatmullClarkSubdivision(); subdivisionIteration = 4; }
         }
 
         protected override void Update(GameTime gameTime)
