@@ -44,6 +44,8 @@ namespace Final
 
         VertexBuffer triangleBuffer;
 
+        string pictureName = "perlinNoise";
+
         List<VertexPositionColorNormalTexture> vertices = new List<VertexPositionColorNormalTexture>
         {
             // Bottom
@@ -54,52 +56,52 @@ namespace Final
             new VertexPositionColorNormalTexture(new Vector3(10, 0, -10), Color.LightGray, Vector3.Up, new Vector2(1, 0)),  // Bottom right
             new VertexPositionColorNormalTexture(new Vector3(-10, 0, -10), Color.LightGray, Vector3.Up, new Vector2(0, 0)), // Bottom left
             new VertexPositionColorNormalTexture(new Vector3(-10, 0, 10), Color.LightGray, Vector3.Up, new Vector2(0, 1)),   // Top left
-
+            
             /*
             /// TOP
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray, Vector3.Up, new Vector2(-10, 10)),       // Top left
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray, Vector3.Up, new Vector2(10, 10)),        // Top right
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray, Vector3.Up, new Vector2(10, 10)),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray, Vector3.Up, new Vector2(0, 1)),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray, Vector3.Up, new Vector2(1, 1)),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray, Vector3.Up, new Vector2(1, 0)),       // Bottom right
 
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray, Vector3.Up, new Vector2(10, 10)),  // Bottom right
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.LightGray, Vector3.Up, new Vector2(-10, 10)), // Bottom left
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.LightGray, Vector3.Up, new Vector2(-10, 10)),   // Top left
-
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray, Vector3.Up, new Vector2(1, 0)),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.LightGray, Vector3.Up, new Vector2(0, 0)), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.LightGray, Vector3.Up, new Vector2(0, 1)),   // Top left
+            
             /// Front
-            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.Gray, Vector3.Forward, new Vector2(10, -10)),       // Top left
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray, Vector3.Forward, new Vector2(10, 10)),        // Top right
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray, Vector3.Forward, new Vector2(10, 10)),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.Gray, Vector3.Forward, new Vector2(0, 1)),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray, Vector3.Forward, new Vector2(1, 1)),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray, Vector3.Forward, new Vector2(1, 0)),       // Bottom right
 
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray, Vector3.Forward, new Vector2(10, 10)),  // Bottom right
-            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.LightGray, Vector3.Forward, new Vector2(10, -10)), // Bottom left
-            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.LightGray, Vector3.Forward, new Vector2(10, -10)),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray, Vector3.Forward, new Vector2(0, 1)),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.LightGray, Vector3.Forward, new Vector2(1, 1)), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.LightGray, Vector3.Forward, new Vector2(1, 0)),   // Top left
 
             /// Back
-            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.Gray, Vector3.Backward, new Vector2(-10, -10)),       // Top left
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray, Vector3.Backward, new Vector2(-10, 10)),        // Top right
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.Gray, Vector3.Backward, new Vector2(-10, 10)),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.Gray, Vector3.Backward, new Vector2(0, 1)),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray, Vector3.Backward, new Vector2(1, 1)),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.Gray, Vector3.Backward, new Vector2(1, 0)),       // Bottom right
 
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.LightGray, Vector3.Backward, new Vector2(-10, 10)),  // Bottom right
-            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.LightGray, Vector3.Backward, new Vector2(-10, -10)), // Bottom left
-            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.LightGray, Vector3.Backward, new Vector2(-10, -10)),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.LightGray, Vector3.Backward, new Vector2(0, 1)),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.LightGray, Vector3.Backward, new Vector2(1, 1)), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.LightGray, Vector3.Backward, new Vector2(1, 0)),   // Top left
 
             // Left
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray, Vector3.Left, new Vector2(10, 10)),       // Top left
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray, Vector3.Left, new Vector2(-10, 10)),        // Top right
-            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.Gray, Vector3.Left, new Vector2(-10, -10)),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.Gray, Vector3.Left, new Vector2(0, 1)),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, 10), Color.Gray, Vector3.Left, new Vector2(1, 1)),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.Gray, Vector3.Left, new Vector2(1, 0)),       // Bottom right
 
-            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.LightGray, Vector3.Left, new Vector2(-10, -10)),       // Top left
-            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.LightGray, Vector3.Left, new Vector2(10, -10)),        // Top right
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray, Vector3.Left, new Vector2(10, 10)),       // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.LightGray, Vector3.Left, new Vector2(0, 1)),       // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, -10), Color.LightGray, Vector3.Left, new Vector2(1, 1)),        // Top right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.LightGray, Vector3.Left, new Vector2(1, 0)),       // Bottom right
 
             // Right
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray, Vector3.Right, new Vector2(10, 10)),  // Bottom right
-            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.Gray, Vector3.Right, new Vector2(-10, -10)), // Bottom left
-            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.Gray, Vector3.Right, new Vector2(-10, 10)),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, -10), Color.Gray, Vector3.Right, new Vector2(0, 1)),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, -10), Color.Gray, Vector3.Right, new Vector2(1, 1)), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(-10, 10, -10), Color.Gray, Vector3.Right, new Vector2(1, 0)),   // Top left
 
-            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.LightGray, Vector3.Right, new Vector2(-10, -10)),  // Bottom right
-            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.LightGray, Vector3.Right, new Vector2(10, 10)), // Bottom left
-            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.LightGray, Vector3.Right, new Vector2(10, -10)),   // Top left
+            new VertexPositionColorNormalTexture(new Vector3(-10, -10, 10), Color.LightGray, Vector3.Right, new Vector2(0, 1)),  // Bottom right
+            new VertexPositionColorNormalTexture(new Vector3(10, 10, 10), Color.LightGray, Vector3.Right, new Vector2(1, 1)), // Bottom left
+            new VertexPositionColorNormalTexture(new Vector3(10, -10, 10), Color.LightGray, Vector3.Right, new Vector2(1, 0)),   // Top left
             */
         };
 
@@ -135,11 +137,19 @@ namespace Final
 
             font = Content.Load<SpriteFont>("font");
             effect = Content.Load<Effect>("SubdivisionShader");
+            Texture wave = Content.Load<Texture>("perlinNoise");
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+
+            // Changing the active texture
+            if(Keyboard.GetState().IsKeyDown(Keys.D1) && !previousKeyboardState.IsKeyDown(Keys.D1)) { pictureName = "perlinNoise"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D2) && !previousKeyboardState.IsKeyDown(Keys.D2)) { pictureName = "marble"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D3) && !previousKeyboardState.IsKeyDown(Keys.D3)) { pictureName = "city"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D4) && !previousKeyboardState.IsKeyDown(Keys.D4)) { pictureName = "Texture"; }
+            if(Keyboard.GetState().IsKeyDown(Keys.D5) && !previousKeyboardState.IsKeyDown(Keys.D5)) { pictureName = "logo_mg"; }
 
             // Increase the tesselation height
             if(Keyboard.GetState().IsKeyDown(Keys.D))
@@ -258,7 +268,7 @@ namespace Final
             Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(world));
             effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
 
-            effect.Parameters["DisplacementTexture"].SetValue(Content.Load<Texture>("perlinNoise"));
+            effect.Parameters["DisplacementTexture"].SetValue(Content.Load<Texture>(pictureName));
             effect.Parameters["DisplacementHeight"].SetValue(textureDisplacement);
 
             effect.Parameters["HeightMapColors"].SetValue(toggleHeightColor);
@@ -287,6 +297,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "d/D - Change Displacement Height: " + textureDisplacement.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Showing Heightmap Colors: " + toggleHeightColor, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Showing the Texture Used: " + toggleTexture, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Name of Texture Used: " + pictureName, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
@@ -302,6 +313,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "C: Clear Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "E: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "R: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "1-2-3-4-5: Change Displacement Texture", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 
