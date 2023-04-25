@@ -36,7 +36,7 @@ namespace Final
         KeyboardState previousKeyboardState;
 
         bool triangleColor = false, areVerticesColorful = false;
-        bool toggleHeightColor = false;
+        bool toggleHeightColor = false, toggleTexture = false;
         bool isLatest = true;
         float textureDisplacement = 1f;
         float tesselation = 8;
@@ -151,6 +151,10 @@ namespace Final
             if(Keyboard.GetState().IsKeyDown(Keys.E)) { toggleHeightColor = true; }
             else { toggleHeightColor = false; }
 
+            // Toggle displaying the texture
+            if (Keyboard.GetState().IsKeyDown(Keys.R)) { toggleTexture = true; }
+            else { toggleTexture = false; }
+
             // Toggle triangle visualization
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousKeyboardState.IsKeyDown(Keys.Space)) { VisualizeTriangles(); }
 
@@ -257,6 +261,7 @@ namespace Final
             effect.Parameters["DisplacementHeight"].SetValue(textureDisplacement);
 
             effect.Parameters["HeightMapColors"].SetValue(toggleHeightColor);
+            effect.Parameters["ShowTexture"].SetValue(toggleTexture);
 
             //effect.Parameters["TesselationFactor"].SetValue(tesselation);
             //effect.Parameters["GeometryGeneration"].SetValue(geometryGeneration);
@@ -280,6 +285,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "UP/DOWN - Subdivision Iteration: " + subdivisionIteration, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "d/D - Change Displacement Height: " + textureDisplacement.ToString("0.00"), Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "Showing Heightmap Colors: " + toggleHeightColor, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "Showing the Texture Used: " + toggleTexture, Vector2.UnitX + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             if (showHelp)
             {
@@ -294,6 +300,7 @@ namespace Final
                 _spriteBatch.DrawString(font, "UP: Subdivide the Triangles", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "C: Clear Triangle Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
                 _spriteBatch.DrawString(font, "E: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
+                _spriteBatch.DrawString(font, "R: Toggle Height Map Colors", Vector2.UnitX * 500 + Vector2.UnitY * 15 * (i++), Color.Black);
             }
             _spriteBatch.End();
 

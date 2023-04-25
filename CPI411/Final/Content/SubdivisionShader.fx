@@ -12,6 +12,7 @@ float DisplacementHeight;
 float GeometryGeneration;
 
 bool HeightMapColors;
+bool ShowTexture;
 
 SamplerState DisplacementSampler = sampler_state {
 	Texture = <DisplacementTexture>;
@@ -83,7 +84,7 @@ VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR
 {
-	return tex2D(DisplacementSampler, input.TextureCoordinate);
+	return ShowTexture ? tex2D(DisplacementSampler, input.TextureCoordinate) : input.Color;
 }
 
 /*TrianglePatchOutput TrianglePatchFunction(InputPatch<VertexShaderOutput, 3> inputPatch, uint patchID : SV_PrimitiveID)
