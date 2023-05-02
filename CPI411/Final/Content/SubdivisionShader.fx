@@ -28,8 +28,6 @@ struct VertexShaderInput {
 	float4 Color : COLOR0;
 	float4 Normal : NORMAL0;
 	float2 TextureCoordinate : TEXCOORD0;
-	//float4 Tangent : TANGENT0;
-	//float4 Binormal : BINORMAL0;
 };
 
 struct VertexShaderOutput {
